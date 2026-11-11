@@ -48,7 +48,10 @@ npm install -D @types/leaflet @types/mapbox__polyline
 - No hay capa de tráfico gratuita, así que el interruptor **Tráfico** del mockup
   queda fuera del alcance.
 
-## Marcadores con el diseño de DESIGN.md
+## Marcadores
+
+Los colores y tamaños de paradas, unidades y línea de la ruta están en
+[DESIGN.md](DESIGN.md#mapa).
 
 Para paradas y unidades se usan marcadores de HTML con `L.divIcon`, así se pueden
 pintar con las mismas clases de Tailwind del resto de la app:
