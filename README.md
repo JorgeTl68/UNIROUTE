@@ -40,7 +40,7 @@ se actualiza esta tabla con la fecha.
 
 ## Instalación local
 
-Requisitos: PHP 8.3 o superior, Composer, MySQL y Node.js 22.18+ de la rama 22
+Requisitos: PHP 8.4 o superior, Composer, MySQL y Node.js 22.18+ de la rama 22
 o 24.11+ de la rama 24. Se incluye `.nvmrc` con Node 22.22.0.
 
 1. Crear una base MySQL vacía llamada `uniroute`.
