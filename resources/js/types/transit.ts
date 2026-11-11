@@ -17,7 +17,7 @@ export type IsoDate = string;
 /** Hora local de Saltillo "HH:MM:SS". */
 export type TimeOfDay = string;
 
-/** Coordenada en el formato que usa Google Maps. */
+/** Coordenada en el formato {lat, lng} que acepta Leaflet. */
 export type LatLng = {
     lat: number;
     lng: number;
@@ -72,7 +72,7 @@ export type TransitRoute = Timestamps & {
     description: string | null;
     /** Color hexadecimal de la línea en el mapa, por ejemplo "#91db2a". */
     color: string;
-    /** Polilínea codificada que devuelve Google Routes API. */
+    /** Polilínea codificada (precisión 5) que devuelve OSRM. */
     encoded_polyline: string | null;
     frequency_minutes: number;
     service_starts_at: TimeOfDay;

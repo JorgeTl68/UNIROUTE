@@ -14,11 +14,11 @@ caché en archivos y colas en base de datos. UNIROUTE utiliza su propia base
 
 ## Equipo
 
-| Equipo | Área                       | Integrantes                                                                                         |
-| ------ | -------------------------- | --------------------------------------------------------------------------------------------------- |
-| 1      | Administración             | Adaia (flota y conductores), Enrique (rutas y operación)                                            |
-| 2      | Experiencia del estudiante | Andrés (diseño y layout), Sosa (Google Maps y Dashboard en Vivo), Kiroz (rutas, paradas y horarios) |
-| 3      | Plataforma                 | Jorge (líder técnico y backend núcleo), Santana (tiempo real y rastreo)                             |
+| Equipo | Área                       | Integrantes                                                                                  |
+| ------ | -------------------------- | -------------------------------------------------------------------------------------------- |
+| 1      | Administración             | Adaia (flota y conductores), Enrique (rutas y operación)                                     |
+| 2      | Experiencia del estudiante | Andrés (diseño y layout), Sosa (mapa y Dashboard en Vivo), Kiroz (rutas, paradas y horarios) |
+| 3      | Plataforma                 | Jorge (líder técnico y backend núcleo), Santana (tiempo real y rastreo)                      |
 
 Cada equipo es dueño de sus carpetas; ver [CONTRIBUTING.md](CONTRIBUTING.md).
 
@@ -27,16 +27,16 @@ Cada equipo es dueño de sus carpetas; ver [CONTRIBUTING.md](CONTRIBUTING.md).
 Las propuestas se confirman en la reunión de arranque (S0). Cuando una cambie,
 se actualiza esta tabla con la fecha.
 
-| #   | Tema              | Decisión                                                                                | Estado                | Alternativa o nota                                                          |
-| --- | ----------------- | --------------------------------------------------------------------------------------- | --------------------- | --------------------------------------------------------------------------- |
-| 1   | Mapa              | Google Maps Platform con `@vis.gl/react-google-maps` (Maps JavaScript API y Routes API) | Decidida (2026-11-10) | Requiere facturación activa; ver [docs/google-maps.md](docs/google-maps.md) |
-| 2   | Tiempo real       | Laravel Reverb con `@laravel/echo-react`                                                | Propuesta             | Plan B: `usePoll` de Inertia cada 5 s                                       |
-| 3   | Íconos            | `lucide-react` (ya instalado) con tabla de equivalencias del mockup                     | Propuesta             | Material Symbols iguala el mockup, pero carga la fuente completa            |
-| 4   | Origen del GPS    | Simulador (`php artisan uniroute:simular`) y pantalla de conductor                      | Propuesta             | El GPS del celular solo funciona con HTTPS                                  |
-| 5   | Radios de esquina | 4, 8 y 12 px, como en los mockups HTML                                                  | Propuesta             | DESIGN.md trae otras dos escalas distintas                                  |
-| 6   | Tema              | Solo modo claro en la v1                                                                | Propuesta             | DESIGN.md no define colores oscuros                                         |
-| 7   | Gráficas          | Recharts                                                                                | Propuesta             | Es la base de los charts de shadcn/ui                                       |
-| 8   | Idioma del código | Tablas, columnas y código en inglés; textos de la interfaz en español                   | Propuesta             | Ver [docs/modelo-de-datos.md](docs/modelo-de-datos.md)                      |
+| #   | Tema              | Decisión                                                                        | Estado                | Alternativa o nota                                                                             |
+| --- | ----------------- | ------------------------------------------------------------------------------- | --------------------- | ---------------------------------------------------------------------------------------------- |
+| 1   | Mapa              | Leaflet con `react-leaflet` y mapas de OpenStreetMap; rutas por calles con OSRM | Decidida (2026-11-11) | Google Maps se descartó porque exige un prepago de 600 MXN; ver [docs/mapas.md](docs/mapas.md) |
+| 2   | Tiempo real       | Laravel Reverb con `@laravel/echo-react`                                        | Propuesta             | Plan B: `usePoll` de Inertia cada 5 s                                                          |
+| 3   | Íconos            | `lucide-react` (ya instalado) con tabla de equivalencias del mockup             | Propuesta             | Material Symbols iguala el mockup, pero carga la fuente completa                               |
+| 4   | Origen del GPS    | Simulador (`php artisan uniroute:simular`) y pantalla de conductor              | Propuesta             | El GPS del celular solo funciona con HTTPS                                                     |
+| 5   | Radios de esquina | 4, 8 y 12 px, como en los mockups HTML                                          | Propuesta             | DESIGN.md trae otras dos escalas distintas                                                     |
+| 6   | Tema              | Solo modo claro en la v1                                                        | Propuesta             | DESIGN.md no define colores oscuros                                                            |
+| 7   | Gráficas          | Recharts                                                                        | Propuesta             | Es la base de los charts de shadcn/ui                                                          |
+| 8   | Idioma del código | Tablas, columnas y código en inglés; textos de la interfaz en español           | Propuesta             | Ver [docs/modelo-de-datos.md](docs/modelo-de-datos.md)                                         |
 
 ## Instalación local
 
@@ -45,8 +45,7 @@ o 24.11+ de la rama 24. Se incluye `.nvmrc` con Node 22.22.0.
 
 1. Crear una base MySQL vacía llamada `uniroute`.
 2. Ejecutar `composer install` y `npm install`.
-3. Copiar `.env.example` a `.env`, ajustar las credenciales de MySQL y
-   agregar las llaves de Google Maps (ver [docs/google-maps.md](docs/google-maps.md)).
+3. Copiar `.env.example` a `.env` y ajustar las credenciales de MySQL.
 4. Ejecutar `php artisan key:generate` y `php artisan migrate --seed`.
 5. Ejecutar `npm run build`.
 
@@ -111,8 +110,10 @@ se generan con `php artisan wayfinder:generate --with-form` o al compilar.
 - [CONTRIBUTING.md](CONTRIBUTING.md): ramas, PRs, revisión y definición de terminado.
 - [docs/modelo-de-datos.md](docs/modelo-de-datos.md): diagrama entidad-relación y
   valores de cada estado.
-- [docs/google-maps.md](docs/google-maps.md): configuración de Google Cloud,
-  llaves y control de costos.
+- [docs/mapas.md](docs/mapas.md): Leaflet, capas de OpenStreetMap y cómo trazar
+  rutas por las calles con OSRM.
+- [docs/marca.md](docs/marca.md): logos de UniRoute, cuándo usar cada uno y su
+  paleta.
 - `resources/js/types/transit.ts`: tipos compartidos del dominio de transporte.
 
 Documentación oficial del starter: https://laravel.com/docs/13.x/starter-kits

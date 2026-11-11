@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="360" viewBox="0 0 360 360" role="img" aria-label="Logo UniRoute"><title>UniRoute</title><g>
+    <path d="M103 51 L75 184 Q62 246 89 269 Q114 293 161 290 Q219 286 232 234 L261 101"
+      stroke="#FFFFFF" stroke-width="47" stroke-linejoin="round" stroke-linecap="round" fill="none"/>
+    <path d="M236 104 L260 115" stroke="#FFFFFF" stroke-width="45" stroke-linecap="square" />
+    <path d="M246 25 C226 25 211 40 211 60 C211 81 231 102 246 120 C263 101 282 81 282 60 C282 40 266 25 246 25 Z M246 44 A16 16 0 1 0 246 76 A16 16 0 1 0 246 44 Z" fill="#84CC16" fill-rule="evenodd" />
+    <g>
+       <rect x="114" y="142" width="106" height="112" rx="25" fill="#FFFFFF"/>
+       <rect x="123" y="150" width="88" height="13" rx="6" fill="#17243A"/>
+       <rect x="112" y="160" width="110" height="62" rx="11" fill="#17243A"/>
+       <path d="M158 165 L140 215 M175 165 L157 215" stroke="#76849A" stroke-width="5" opacity="0.75"/>
+       <rect x="104" y="171" width="10" height="31" rx="5" fill="#FFFFFF"/>
+       <rect x="220" y="171" width="10" height="31" rx="5" fill="#FFFFFF"/>
+       <path d="M127 234 Q130 230 139 230 L149 230 Q155 230 155 237 L155 241 L129 241 Z" fill="#17243A"/>
+       <path d="M181 230 L193 230 Q202 230 207 235 L205 241 L180 241 L180 236 Z" fill="#17243A"/>
+       <rect x="131" y="249" width="19" height="17" rx="5" fill="#FFFFFF"/>
+       <rect x="184" y="249" width="19" height="17" rx="5" fill="#FFFFFF"/>
+    </g>
+    <path d="M54 229 Q25 240 28 263 Q32 296 108 284 Q166 275 221 245 Q179 285 105 303 Q15 319 10 278 Q6 248 54 229 Z" fill="#E8BD7C" />
+    </g></svg>
