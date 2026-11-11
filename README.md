@@ -27,16 +27,16 @@ Cada equipo es dueño de sus carpetas; ver [CONTRIBUTING.md](CONTRIBUTING.md).
 Las propuestas se confirman en la reunión de arranque (S0). Cuando una cambie,
 se actualiza esta tabla con la fecha.
 
-| #   | Tema              | Decisión                                                                        | Estado                | Alternativa o nota                                                                              |
-| --- | ----------------- | ------------------------------------------------------------------------------- | --------------------- | ----------------------------------------------------------------------------------------------- |
-| 1   | Mapa              | Leaflet con `react-leaflet` y mapas de OpenStreetMap; rutas por calles con OSRM | Decidida (2026-11-11) | Google Maps se descartó porque exige un prepago de 600 MXN; ver [docs/mapas.md](docs/mapas.md)  |
-| 2   | Tiempo real       | Laravel Reverb con `@laravel/echo-react`                                        | Propuesta             | Plan B: `usePoll` de Inertia cada 5 s                                                           |
-| 3   | Íconos            | `lucide-react` (ya instalado) con tabla de equivalencias del mockup             | Propuesta             | Material Symbols iguala el mockup, pero carga la fuente completa                                |
-| 4   | Origen del GPS    | Simulador (`php artisan uniroute:simular`) y pantalla de conductor              | Propuesta             | El GPS del celular solo funciona con HTTPS                                                      |
-| 5   | Radios de esquina | 4, 8 y 12 px, como en los mockups HTML                                          | Propuesta             | `app.css` quedó en 8, 10 y 12 px; ver [docs/DESIGN.md](docs/DESIGN.md#esquinas)                 |
-| 6   | Tema              | Solo modo claro en la v1                                                        | Propuesta             | En `main` (PR #7) toda la app quedó en oscuro; ver [docs/DESIGN.md](docs/DESIGN.md#tema-oscuro) |
-| 7   | Gráficas          | Recharts                                                                        | Propuesta             | Es la base de los charts de shadcn/ui                                                           |
-| 8   | Idioma del código | Tablas, columnas y código en inglés; textos de la interfaz en español           | Propuesta             | Ver [docs/modelo-de-datos.md](docs/modelo-de-datos.md)                                          |
+| #   | Tema              | Decisión                                                                        | Estado                | Alternativa o nota                                                                             |
+| --- | ----------------- | ------------------------------------------------------------------------------- | --------------------- | ---------------------------------------------------------------------------------------------- |
+| 1   | Mapa              | Leaflet con `react-leaflet` y mapas de OpenStreetMap; rutas por calles con OSRM | Decidida (2026-11-11) | Google Maps se descartó porque exige un prepago de 600 MXN; ver [docs/mapas.md](docs/mapas.md) |
+| 2   | Tiempo real       | Laravel Reverb con `@laravel/echo-react`                                        | Propuesta             | Plan B: `usePoll` de Inertia cada 5 s                                                          |
+| 3   | Íconos            | `lucide-react` (ya instalado) con tabla de equivalencias del mockup             | Propuesta             | Material Symbols iguala el mockup, pero carga la fuente completa                               |
+| 4   | Origen del GPS    | Simulador (`php artisan uniroute:simular`) y pantalla de conductor              | Propuesta             | El GPS del celular solo funciona con HTTPS                                                     |
+| 5   | Radios de esquina | 4, 8 y 12 px, como en los mockups HTML                                          | Propuesta             | `app.css` quedó en 8, 10 y 12 px; ver [docs/DESIGN.md](docs/DESIGN.md#esquinas)                |
+| 6   | Tema              | Toda la app en oscuro, con la paleta de login y registro                        | Decidida (2026-11-11) | Antes se proponía solo modo claro; ver [docs/DESIGN.md](docs/DESIGN.md#tema-oscuro)            |
+| 7   | Gráficas          | Recharts                                                                        | Propuesta             | Es la base de los charts de shadcn/ui                                                          |
+| 8   | Idioma del código | Tablas, columnas y código en inglés; textos de la interfaz en español           | Propuesta             | Ver [docs/modelo-de-datos.md](docs/modelo-de-datos.md)                                         |
 
 ## Instalación local
 

@@ -25,8 +25,8 @@ copia su configuración.
   Datos grandes (hora de llegada, minutos) y textos cortos.
 - Azul nocturno como base, dorado champán como acento de marca y verde
   señalización para lo que está en vivo o ya pasó.
-- En los mockups, login y registro van con fondo oscuro y el resto de la app es
-  clara. En `main` toda la app quedó en oscuro (ver [Tema oscuro](#tema-oscuro)).
+- Toda la app va con fondo oscuro, con la paleta de login y registro (ver
+  [Tema oscuro](#tema-oscuro)). Solo el demo del mapa sigue en claro.
 
 ## Color
 
@@ -63,6 +63,9 @@ color del texto que va encima de `X`.
 | `on-tertiary-container` | `#3f6e00` | Verde para texto sobre fondo claro ("Ya pasó") y halo de la línea de la ruta     |
 
 ### Superficies y texto (tema claro)
+
+Vienen del demo del mapa. Como la app va en oscuro, no se usan en pantallas
+nuevas; quedan como referencia hasta que el mapa se pase a oscuro.
 
 | Token                      | Hex       | Uso                                                 |
 | -------------------------- | --------- | --------------------------------------------------- |
@@ -243,8 +246,7 @@ El autobús del marcador de la unidad va relleno; con lucide se logra con
   `InputError`).
 - Casilla ("Recordarme"): 16 px con `accent-[#e0c297]`.
 
-Todavía no hay mockup de formularios en tema claro (pantallas de
-administración).
+Los formularios de administración usan estos mismos campos.
 
 ### Tarjetas e insignias (claro)
 
@@ -324,12 +326,11 @@ color de la parada, tarjeta en `surface-container-low` (la siguiente en
 
 ## Tema oscuro
 
-En los mockups solo login y registro van en oscuro (llevan
-`<meta name="color-scheme" content="dark">`); el resto de la app es clara, como
-dice la decisión 6 del README.
+Toda la app va en oscuro con la paleta de login y registro (decisión 6 del
+README, decidida el 2026-11-11). En `app.css`, `:root` y `.dark` son iguales y
+llevan `color-scheme: dark`, así que no hay un modo claro que activar.
 
-En `main`, el PR #7 dejó toda la app en oscuro: `:root` y `.dark` tienen la misma
-paleta de login y `color-scheme: dark`. Falta decidir cuál se queda (ver
+Lo único que sigue en claro es el demo del mapa; falta pasarlo a oscuro (ver
 [Pendientes de decidir](#pendientes-de-decidir)).
 
 ## Movimiento
@@ -342,8 +343,6 @@ paleta de login y `color-scheme: dark`. Falta decidir cuál se queda (ver
   `motion-safe:` para respetar a quien desactiva las animaciones.
 
 ## Tokens en `app.css`
-
-### Lo que ya está en `main`
 
 El PR #7 pasó la paleta oscura de los mockups a `app.css` con nombres en
 español:
@@ -370,44 +369,15 @@ español:
   (por ejemplo `bg-primary-hover` o `text-live`).
 - `--radius: 0.75rem`: `rounded-lg` da 12 px, `rounded-md` 10 px y `rounded-sm`
   8 px. En login y registro, campos y botones se fijan en 8 px.
-
-### Si se mantiene el tema claro (decisión 6)
-
-**Propuesta.** Equivalencias con las variables de shadcn para las pantallas
-claras:
-
-| Variable de shadcn                          | Token                      | Hex       |
-| ------------------------------------------- | -------------------------- | --------- |
-| `--background`                              | `surface`                  | `#f7f9ff` |
-| `--foreground`                              | `on-surface`               | `#161c22` |
-| `--card`, `--popover`                       | `surface-container-lowest` | `#ffffff` |
-| `--card-foreground`, `--popover-foreground` | `on-surface`               | `#161c22` |
-| `--primary`                                 | `primary-container`        | `#17243a` |
-| `--primary-foreground`                      | `on-primary`               | `#ffffff` |
-| `--secondary`                               | `secondary-fixed`          | `#fddeb1` |
-| `--secondary-foreground`                    | `primary-container`        | `#17243a` |
-| `--muted`                                   | `surface-container-low`    | `#eff4fc` |
-| `--muted-foreground`                        | `on-surface-variant`       | `#44474d` |
-| `--accent`                                  | `surface-container`        | `#e9eef6` |
-| `--accent-foreground`                       | `primary-container`        | `#17243a` |
-| `--destructive`                             | `error`                    | `#ba1a1a` |
-| `--border`, `--input`                       | `surface-variant`          | `#dde3eb` |
-| `--ring`                                    | `focus-ring`               | `#b69b72` |
-
-- Ojo al copiar clases de los mockups: `primary` y `secondary` no son los mismos
-  colores que en la app. En los mockups `primary` es el azul nocturno
-  (`#020e24`) y `secondary` el dorado oscuro para texto (`#715b37`); en la app
-  `primary` es el color del botón principal.
-- Los tokens del tema claro sin equivalente en shadcn (`brand-gold`,
-  `brand-green`, `on-tertiary-container`, `surface-container-high`, `outline`,
-  `error-container` y el dorado oscuro `#715b37`) se registran en `@theme`.
+- Ojo al copiar clases de los mockups: los nombres no son los mismos que en la
+  app. `bg-primary` del mockup es `bg-background`, `bg-primary-container` es
+  `bg-card` y el botón dorado (`bg-secondary-fixed`) es `bg-primary`.
 
 ## Pendientes de decidir
 
-1. **Tema.** Los mockups y la decisión 6 del README dejan en oscuro solo login y
-   registro; en `main` (PR #7) toda la app quedó en oscuro. Si se queda así, hay
-   que actualizar la decisión 6 y pasar a oscuro las pantallas que en el demo
-   son claras (mapa y lista de paradas).
+1. **Mapa y lista de paradas en oscuro.** El demo es claro y la capa de
+   [mapas.md](mapas.md) está filtrada para verse clara. Falta decidir cómo se ven
+   el mapa, el panel y los marcadores sobre fondo oscuro.
 2. **Dorado y verde.** El texto del DESIGN.md original usaba los colores del
    logo (`#B69B72`, `#84CC16`) y los tokens de los mockups usan otros
    (`#715b37`, `#91db2a`). Aquí se conservan todos, cada uno con su uso: el del
@@ -419,6 +389,6 @@ claras:
    `app.css` quedó en 8, 10 y 12 px. El DESIGN.md original traía otras dos
    escalas que no se conservaron.
 4. **Íconos.** Material Symbols o `lucide-react` (decisión 3 del README).
-5. **Pantallas sin mockup.** Panel de administración, sidebar, tablas,
-   formularios en claro y gráficas. Se diseñan con estos mismos tokens y, cuando
-   haya mockup, se agregan aquí.
+5. **Pantallas sin mockup.** Panel de administración, sidebar, tablas y
+   gráficas. Se diseñan con la paleta oscura de `app.css` y, cuando haya mockup,
+   se agregan aquí.
