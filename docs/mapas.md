@@ -21,15 +21,27 @@ npm install -D @types/leaflet @types/mapbox__polyline
 
 ## Capas del mapa
 
-| Capa            | URL de los mosaicos                                                                             | Atribución obligatoria                 |
-| --------------- | ----------------------------------------------------------------------------------------------- | -------------------------------------- |
-| Mapa (claro)    | `https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png`                                | `© OpenStreetMap contributors © CARTO` |
-| Mapa (estándar) | `https://tile.openstreetmap.org/{z}/{x}/{y}.png`                                                | `© OpenStreetMap contributors`         |
-| Satélite        | `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}` | `Tiles © Esri`                         |
+| Capa     | URL de los mosaicos                                                                             | Atribución obligatoria         |
+| -------- | ----------------------------------------------------------------------------------------------- | ------------------------------ |
+| Mapa     | `https://tile.openstreetmap.org/{z}/{x}/{y}.png`                                                | `© OpenStreetMap contributors` |
+| Satélite | `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}` | `Tiles © Esri`                 |
 
-- **Recomendada:** la capa clara de CARTO, que se parece al mapa gris del mockup
-  del Dashboard. Es gratuita para proyectos no comerciales.
-- El selector **Mapa / Satélite** del mockup cambia entre la capa clara y la de Esri.
+- **Mapa claro como el del mockup:** se usa la capa de OpenStreetMap con un filtro
+  de CSS. En `<TileLayer>` se pasa `className="osm-claro"` y en el CSS:
+
+    ```css
+    .osm-claro {
+        filter: grayscale(0.85) brightness(1.06) contrast(0.92);
+    }
+    ```
+
+- **No usar CARTO:** su capa clara (`basemaps.cartocdn.com`) ahora pide llave y
+  muestra "API KEY REQUIRED" en lugar del mapa.
+- El selector **Mapa / Satélite** del mockup cambia entre la capa de OpenStreetMap y
+  la de Esri.
+- Los mapas necesitan que la página se abra desde un sitio (`uniroute.test` o
+  `localhost:8000`), no como archivo suelto, porque OpenStreetMap pide saber desde
+  dónde se carga.
 - La atribución se pasa en la propiedad `attribution` de `<TileLayer>` y **siempre
   debe verse**; Leaflet la muestra en la esquina inferior derecha.
 - Son servidores gratuitos de uso justo: nada de descargar mosaicos en masa.
