@@ -47,8 +47,27 @@ o 24.11+ de la rama 24. Se incluye `.nvmrc` con Node 22.22.0.
 2. Ejecutar `composer install` y `npm install`.
 3. Copiar `.env.example` a `.env`, ajustar las credenciales de MySQL y
    agregar las llaves de Google Maps (ver [docs/google-maps.md](docs/google-maps.md)).
-4. Ejecutar `php artisan key:generate` y `php artisan migrate`.
+4. Ejecutar `php artisan key:generate` y `php artisan migrate --seed`.
 5. Ejecutar `npm run build`.
+
+Para reiniciar la base con los datos de prueba: `php artisan migrate:fresh --seed`
+(borra todo lo que haya en la base local). Los seeders se pueden correr varias
+veces con `php artisan db:seed` sin duplicar datos.
+
+### Usuarios de prueba
+
+Todos usan la contraseña definida en `DemoUserSeeder::DEMO_PASSWORD` y ya tienen
+el correo verificado.
+
+| Rol           | Correo                                                        |
+| ------------- | ------------------------------------------------------------- |
+| Administrador | `admin@uniroute.test`                                         |
+| Estudiante    | `estudiante@uniroute.test`                                    |
+| Conductor     | `conductor@uniroute.test` (y otros tres en `FleetSeeder.php`) |
+
+Las rutas, paradas, unidades y conductores son **provisionales**: los nombres
+vienen de los mockups y las coordenadas son aproximadas. Se reemplazan con los
+datos reales de S0-05 (Enrique) y S0-06 (Adaia) en `database/seeders/`.
 
 En PowerShell, usar `npm.cmd` si la política de ejecución bloquea `npm.ps1`.
 Si el Node predeterminado es 25, usar el Node compatible de Laragon solo
