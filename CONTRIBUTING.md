@@ -6,8 +6,7 @@ Guía para los 3 equipos. Si algo aquí ya no se cumple, se corrige en un PR.
 
 1. Sigue la sección "Instalación local" del [README](README.md).
 2. Usa Node 22 (`.nvmrc`). Con Node 25, `npm` falla.
-3. Pide a Jorge las llaves de Google Maps y ponlas solo en tu `.env`
-   (ver [docs/google-maps.md](docs/google-maps.md)).
+3. El mapa usa OpenStreetMap y no necesita llaves (ver [docs/mapas.md](docs/mapas.md)).
 
 ## Ramas
 
@@ -75,7 +74,7 @@ Al terminar, corre `composer lint` para que Pint acomode el formato.
 
 ## Secretos
 
-- `.env` nunca se sube. Las llaves de Google van solo ahí.
+- `.env` nunca se sube. Cualquier llave o contraseña va solo ahí.
 - Si subes una llave por error, avisa a Jorge de inmediato para rotarla.
 
 ## Definición de terminado

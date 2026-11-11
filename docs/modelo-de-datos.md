@@ -88,7 +88,7 @@ erDiagram
         string name
         text description "nullable"
         string color "hex, por ejemplo #91db2a"
-        text encoded_polyline "de Routes API, nullable"
+        text encoded_polyline "de OSRM, nullable"
         smallint frequency_minutes
         time service_starts_at
         time service_ends_at

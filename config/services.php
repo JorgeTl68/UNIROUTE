@@ -28,10 +28,10 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
-    'google_maps' => [
-        // Solo para llamadas desde el servidor (Routes API). La llave del
-        // navegador va en VITE_GOOGLE_MAPS_API_KEY. Ver docs/google-maps.md.
-        'server_key' => env('GOOGLE_MAPS_SERVER_KEY'),
+    'osrm' => [
+        // Servidor de rutas por calles sobre OpenStreetMap. No usa llave.
+        // Ver docs/mapas.md.
+        'url' => env('OSRM_URL', 'https://router.project-osrm.org'),
     ],
 
     'slack' => [
