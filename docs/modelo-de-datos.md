@@ -1,8 +1,33 @@
 # Modelo de datos
 
-Propuesta para revisar entre todos en S0, antes de crear las migraciones (S1-01).
 Los tipos de TypeScript equivalentes están en `resources/js/types/transit.ts`;
-si cambias una tabla, cambia también el tipo en el mismo PR.
+si cambias una tabla, cambia también el tipo y su API Resource en el mismo PR.
+
+## Estado de las tablas
+
+| Tabla                                         | Modelo          | Migración creada en |
+| --------------------------------------------- | --------------- | ------------------- |
+| `campuses`                                    | `Campus`        | S1-01 (Jorge)       |
+| `users` (+ `role`, `student_id`, `campus_id`) | `User`          | S1-02 (Jorge)       |
+| `routes`                                      | `TransitRoute`  | S1-01 (Jorge)       |
+| `stops`, `route_stop`                         | `Stop`          | S1-01 (Jorge)       |
+| `vehicles`                                    | `Vehicle`       | S1-01 (Jorge)       |
+| `driver_profiles`                             | `DriverProfile` | S1-01 (Jorge)       |
+| `schedules`                                   | `Schedule`      | S1-01 (Jorge)       |
+| `trips`                                       | `Trip`          | S1-01 (Jorge)       |
+| `vehicle_positions`                           | pendiente       | S1-08 (Santana)     |
+| `incidents`                                   | pendiente       | S4-04 (Enrique)     |
+| `arrival_alarms`, `favorite_routes`           | pendiente       | S4-02 (Kiroz)       |
+| `notifications`                               | estándar        | S4-01 (Santana)     |
+
+- El modelo de la tabla `routes` se llama `TransitRoute` para no confundirlo con
+  las rutas web; sus llaves foráneas son `route_id`.
+- Los estados son enums de PHP en `app/Enums/` con su texto en español (`label()`).
+- Para mandar datos a una página de Inertia se usan los API Resources de
+  `app/Http/Resources/` (sin envoltura `data`); cada uno indica su tipo de
+  TypeScript.
+- Permisos: middleware `role:admin` (o `role:admin,driver`) para proteger rutas y
+  policies en `app/Policies/` para cada modelo (`$user->can('update', $trip)`).
 
 ## Convenciones
 

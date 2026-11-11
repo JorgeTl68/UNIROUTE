@@ -12,11 +12,11 @@ Guía para los 3 equipos. Si algo aquí ya no se cumple, se corrige en un PR.
 ## Ramas
 
 - `main` está protegida: solo entra código por PR con 1 aprobación y el CI en verde.
-- Crea tu rama desde `main` actualizada:
-    - `feat/<modulo>-<descripcion>` para funciones nuevas, por ejemplo
-      `feat/admin-registrar-unidad`.
-    - `fix/<descripcion>` para correcciones, por ejemplo `fix/eta-negativo`.
-    - `docs/<descripcion>` para documentación.
+- Crea tu rama desde `main` actualizada. El nombre va **en inglés**:
+    - `feat/<module>-<description>` para funciones nuevas, por ejemplo
+      `feat/admin-register-vehicle`.
+    - `fix/<description>` para correcciones, por ejemplo `fix/negative-eta`.
+    - `docs/<description>` para documentación.
 - Antes de abrir el PR, trae los cambios de `main` a tu rama
   (`git pull origin main`) y resuelve conflictos en tu máquina.
 
@@ -27,7 +27,9 @@ Guía para los 3 equipos. Si algo aquí ya no se cumple, se corrige en un PR.
 
 ## Pull requests
 
-- Pequeños: 400 líneas o menos. Si crece, divídelo.
+- No hay límite de tamaño: un PR puede cubrir una actividad completa del plan.
+  Si es grande, divide el trabajo en varios commits para que se pueda revisar
+  paso a paso.
 - Al menos uno por persona cada 2 días, aunque sea parcial (márcalo como borrador).
 - Llena la plantilla: actividad del plan (por ejemplo `S1-07`), cómo probarlo y capturas.
 - Una vez por sprint, revisa un PR de otro equipo para conocer todo el código.
@@ -47,6 +49,23 @@ algo de otra persona, avísale antes.
 | `pages/admin/fleet/`, `app/Http/Controllers/Admin/`                | Adaia                  |
 | `pages/admin/routes/`, `routes/admin.php`                          | Enrique                |
 | `resources/js/types/transit.ts`                                    | Jorge (cambios por PR) |
+
+## Crear archivos
+
+Todo archivo nuevo de Laravel se crea con su comando `php artisan make:*` y
+después se completa. Así queda en la carpeta correcta, con el namespace y la
+plantilla de Laravel. Ejemplos:
+
+```bash
+php artisan make:migration create_incidents_table
+php artisan make:model Incident --factory
+php artisan make:policy IncidentPolicy --model=Incident
+php artisan make:request StoreIncidentRequest
+php artisan make:resource IncidentResource
+php artisan make:test Transit/IncidentTest
+```
+
+Al terminar, corre `composer lint` para que Pint acomode el formato.
 
 ## Migraciones
 

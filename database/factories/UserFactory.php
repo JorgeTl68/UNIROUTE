@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Enums\UserRole;
+use App\Models\DriverProfile;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -27,6 +29,7 @@ class UserFactory extends Factory
         return [
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
+            'role' => UserRole::Student,
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
@@ -34,6 +37,42 @@ class UserFactory extends Factory
             'two_factor_recovery_codes' => null,
             'two_factor_confirmed_at' => null,
         ];
+    }
+
+    /**
+     * Estudiante con matrícula.
+     */
+    public function student(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => UserRole::Student,
+            'student_id' => fake()->unique()->numerify('2026####'),
+        ]);
+    }
+
+    /**
+     * Conductor (sin perfil; ver withDriverProfile()).
+     */
+    public function driver(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => UserRole::Driver,
+        ]);
+    }
+
+    /**
+     * Conductor con su perfil de licencia.
+     */
+    public function withDriverProfile(): static
+    {
+        return $this->driver()->has(DriverProfile::factory(), 'driverProfile');
+    }
+
+    public function admin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => UserRole::Admin,
+        ]);
     }
 
     /**

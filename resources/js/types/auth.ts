@@ -1,7 +1,12 @@
+import type { UserRole } from './transit';
+
 export type User = {
     id: number;
     name: string;
     email: string;
+    role: UserRole;
+    student_id: string | null;
+    campus_id: number | null;
     avatar?: string;
     email_verified_at: string | null;
     two_factor_enabled?: boolean;
