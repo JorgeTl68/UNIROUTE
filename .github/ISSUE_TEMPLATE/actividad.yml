@@ -1,0 +1,62 @@
+name: Actividad del plan
+description: Una tarea del backlog de UniRoute (S0 a S5).
+title: "[S0-00] "
+labels: ["actividad"]
+body:
+  - type: input
+    id: id
+    attributes:
+      label: ID de la actividad
+      description: Como aparece en el plan, por ejemplo S1-07.
+      placeholder: S1-07
+    validations:
+      required: true
+  - type: dropdown
+    id: sprint
+    attributes:
+      label: Sprint
+      options:
+        - S0 · Arranque
+        - S1 · Fundaciones
+        - S2 · Pantallas
+        - S3 · En vivo
+        - S4 · Alertas
+        - S5 · Cierre
+    validations:
+      required: true
+  - type: dropdown
+    id: equipo
+    attributes:
+      label: Equipo
+      options:
+        - Equipo 1 · Administración
+        - Equipo 2 · Experiencia del estudiante
+        - Equipo 3 · Plataforma
+    validations:
+      required: true
+  - type: input
+    id: responsable
+    attributes:
+      label: Responsable
+      placeholder: Jorge
+    validations:
+      required: true
+  - type: textarea
+    id: descripcion
+    attributes:
+      label: Qué hay que hacer
+    validations:
+      required: true
+  - type: input
+    id: depende
+    attributes:
+      label: Depende de
+      description: IDs que deben estar terminados antes de empezar.
+      placeholder: S0-03, S1-01
+  - type: textarea
+    id: criterios
+    attributes:
+      label: Se considera terminada cuando
+      value: |
+        - [ ]
+        - [ ] Cumple la definición de terminado de CONTRIBUTING.md
