@@ -38,9 +38,9 @@ El favicon de la pestaña del navegador ya es el de UniRoute (`public/favicon.sv
 | Verde señalización | `#84CC16` |
 | Blanco             | `#FFFFFF` |
 
-Ojo para S1-04 (tokens): el dorado y el verde del logo coinciden con el texto de
-DESIGN.md (`#B69B72`, `#84CC16`), no con los tokens de los mockups (`#715b37`,
-`#91db2a`). Conviene decidir cuál manda antes de pasar los colores a `app.css`.
+Ojo con los tokens: los mockups usan además un dorado y un verde distintos a los
+del logo (`#715b37`, `#91db2a`). En [DESIGN.md](DESIGN.md#color) se conservan
+todos, cada uno con su uso; falta que el equipo lo confirme.
 
 ## Detalles técnicos
 

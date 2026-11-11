@@ -1,0 +1,759 @@
+<!doctype html>
+<!--
+  Mockup de Iniciar sesión · UniRoute (versión oscura)
+  Referencia para S2-08 (Andrés). Su pareja es registro.html.
+
+  Notas para implementarlo en el proyecto:
+  - Iniciar sesión y Crear cuenta son páginas separadas (/login y /register),
+    como en el starter y en la mayoría de los sistemas. Cada una enlaza a la
+    otra con un texto pequeño debajo del formulario.
+  - Fondo oscuro solo en estas pantallas de acceso; el resto de la app es clara.
+    Colores propios de estas pantallas (ver docs/DESIGN.md): #2f3e57 (bordes
+    sobre fondo oscuro) y #ffb4ab (errores sobre fondo oscuro).
+  - Usar resources/js/layouts/auth/auth-split-layout.tsx (cambiar el import en
+    layouts/auth-layout.tsx). El panel izquierdo es la columna del mapa y es el
+    mismo en login y registro.
+  - No copiar el Tailwind por CDN ni su config: los colores salen de los tokens
+    de resources/css/app.css (S1-04).
+  - Campos de Fortify: email, password y remember. "¿Olvidaste tu contraseña?"
+    va a la ruta password.request y la passkey usa passkey-verify.tsx.
+  - Los errores van debajo del campo (componente InputError).
+-->
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="color-scheme" content="dark" />
+        <title>UniRoute · Iniciar sesión</title>
+        <link href="https://fonts.googleapis.com" rel="preconnect" />
+        <link crossorigin href="https://fonts.gstatic.com" rel="preconnect" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+            rel="stylesheet"
+        />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block"
+            rel="stylesheet"
+        />
+        <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+        <script id="tailwind-config">
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            'tertiary-fixed-dim': '#91db2a',
+                            'secondary-fixed': '#fddeb1',
+                            'on-primary': '#ffffff',
+                            'secondary-fixed-dim': '#e0c297',
+                            'primary-container': '#17243a',
+                            'primary-fixed': '#d6e3ff',
+                            'primary-fixed-dim': '#bac7e4',
+                            'on-primary-container': '#7e8ba6',
+                            'inverse-on-surface': '#ecf1f9',
+                            primary: '#020e24',
+                            'night-border': '#2f3e57',
+                            'error-soft': '#ffb4ab',
+                            'focus-ring': '#b69b72',
+                        },
+                        borderRadius: {
+                            DEFAULT: '0.25rem',
+                            lg: '0.5rem',
+                            xl: '0.75rem',
+                            full: '9999px',
+                        },
+                        spacing: {
+                            'space-xs': '0.25rem',
+                            'space-sm': '0.5rem',
+                            'space-md': '1rem',
+                            'space-lg': '1.5rem',
+                            'space-xl': '2rem',
+                            'margin-desktop': '2rem',
+                        },
+                        fontFamily: {
+                            'headline-xl': ['Inter'],
+                            'headline-md': ['Inter'],
+                            'headline-sm': ['Inter'],
+                            'body-lg': ['Inter'],
+                            'body-md': ['Inter'],
+                            'label-md': ['Inter'],
+                            'label-sm': ['Inter'],
+                            caption: ['Inter'],
+                        },
+                        fontSize: {
+                            'headline-xl': [
+                                '40px',
+                                {
+                                    lineHeight: '48px',
+                                    letterSpacing: '-0.02em',
+                                    fontWeight: '700',
+                                },
+                            ],
+                            'headline-md': [
+                                '24px',
+                                { lineHeight: '32px', fontWeight: '600' },
+                            ],
+                            'headline-sm': [
+                                '20px',
+                                { lineHeight: '28px', fontWeight: '600' },
+                            ],
+                            'body-lg': [
+                                '16px',
+                                { lineHeight: '24px', fontWeight: '400' },
+                            ],
+                            'body-md': [
+                                '14px',
+                                { lineHeight: '20px', fontWeight: '400' },
+                            ],
+                            'label-md': [
+                                '13px',
+                                {
+                                    lineHeight: '18px',
+                                    letterSpacing: '0.01em',
+                                    fontWeight: '500',
+                                },
+                            ],
+                            'label-sm': [
+                                '12px',
+                                {
+                                    lineHeight: '16px',
+                                    letterSpacing: '0.02em',
+                                    fontWeight: '500',
+                                },
+                            ],
+                            caption: [
+                                '11px',
+                                {
+                                    lineHeight: '14px',
+                                    letterSpacing: '0.04em',
+                                    fontWeight: '600',
+                                },
+                            ],
+                        },
+                    },
+                },
+            };
+        </script>
+        <style>
+            :root {
+                color-scheme: dark;
+            }
+            html,
+            body {
+                margin: 0;
+                padding: 0;
+                background: #020e24;
+            }
+            body {
+                font-family:
+                    'Inter', ui-sans-serif, system-ui, 'Segoe UI', sans-serif;
+                -webkit-font-smoothing: antialiased;
+            }
+            .material-symbols-outlined {
+                width: 1em;
+                overflow: hidden;
+                flex: none;
+            }
+            input:-webkit-autofill,
+            input:-webkit-autofill:hover,
+            input:-webkit-autofill:focus {
+                -webkit-text-fill-color: #ecf1f9;
+                caret-color: #ecf1f9;
+                -webkit-box-shadow: 0 0 0 1000px #17243a inset;
+                transition: background-color 9999s ease-out 0s;
+            }
+            @media (prefers-reduced-motion: reduce) {
+                .animate-ping,
+                .animate-spin {
+                    animation: none !important;
+                }
+                .ping-ring {
+                    display: none;
+                }
+            }
+        </style>
+    </head>
+    <body class="text-inverse-on-surface bg-primary">
+        <div class="flex min-h-screen">
+            <!-- PANEL IZQUIERDO: identidad y mapa (solo escritorio; igual en registro.html) -->
+            <section
+                class="bg-primary-container text-on-primary p-margin-desktop relative hidden flex-col justify-between overflow-hidden border-r border-white/5 lg:flex lg:w-1/2 xl:w-[55%]"
+                aria-label="UniRoute"
+            >
+                <svg
+                    class="absolute inset-0 h-full w-full"
+                    viewBox="0 0 600 800"
+                    preserveAspectRatio="xMidYMid slice"
+                    aria-hidden="true"
+                >
+                    <defs>
+                        <pattern
+                            id="calles"
+                            width="80"
+                            height="80"
+                            patternUnits="userSpaceOnUse"
+                        >
+                            <path
+                                d="M 0 40 L 80 40 M 40 0 L 40 80"
+                                fill="none"
+                                stroke="#ffffff"
+                                stroke-opacity="0.05"
+                                stroke-width="2"
+                            ></path>
+                        </pattern>
+                    </defs>
+                    <rect width="600" height="800" fill="url(#calles)"></rect>
+                    <path
+                        d="M -40 300 L 640 180"
+                        stroke="#ffffff"
+                        stroke-opacity="0.07"
+                        stroke-width="14"
+                        fill="none"
+                    ></path>
+                    <path
+                        d="M 120 -20 L 300 820"
+                        stroke="#ffffff"
+                        stroke-opacity="0.07"
+                        stroke-width="12"
+                        fill="none"
+                    ></path>
+                    <path
+                        d="M -40 640 C 160 600, 320 700, 640 610"
+                        stroke="#d5e3f0"
+                        stroke-opacity="0.08"
+                        stroke-width="26"
+                        fill="none"
+                    ></path>
+                    <path
+                        d="M 260 -20 L 310 120 L 230 260 L 330 330 L 400 440 L 350 540 L 480 630 L 580 780"
+                        fill="none"
+                        stroke="#4d7c0f"
+                        stroke-opacity="0.55"
+                        stroke-width="12"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    ></path>
+                    <path
+                        d="M 260 -20 L 310 120 L 230 260 L 330 330 L 400 440 L 350 540 L 480 630 L 580 780"
+                        fill="none"
+                        stroke="#a3e635"
+                        stroke-width="6"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    ></path>
+                    <path
+                        d="M 280 295 L 330 330 L 400 440 L 350 540 L 480 630 L 580 780"
+                        fill="none"
+                        stroke="#ffffff"
+                        stroke-opacity="0.6"
+                        stroke-width="2"
+                        stroke-dasharray="6 8"
+                        stroke-linecap="round"
+                    ></path>
+                    <circle
+                        cx="310"
+                        cy="120"
+                        r="7"
+                        fill="#17243a"
+                        stroke="#ffffff"
+                        stroke-width="3"
+                    ></circle>
+                    <circle
+                        cx="230"
+                        cy="260"
+                        r="7"
+                        fill="#17243a"
+                        stroke="#ffffff"
+                        stroke-width="3"
+                    ></circle>
+                    <circle
+                        cx="480"
+                        cy="630"
+                        r="7"
+                        fill="#17243a"
+                        stroke="#ffffff"
+                        stroke-width="3"
+                    ></circle>
+                    <circle
+                        cx="580"
+                        cy="780"
+                        r="9"
+                        fill="#91db2a"
+                        stroke="#ffffff"
+                        stroke-width="3"
+                    ></circle>
+                    <circle
+                        class="ping-ring"
+                        cx="280"
+                        cy="295"
+                        r="22"
+                        fill="#91db2a"
+                        fill-opacity="0.25"
+                    >
+                        <animate
+                            attributeName="r"
+                            values="18;34;18"
+                            dur="2.4s"
+                            repeatCount="indefinite"
+                        ></animate>
+                        <animate
+                            attributeName="fill-opacity"
+                            values="0.35;0;0.35"
+                            dur="2.4s"
+                            repeatCount="indefinite"
+                        ></animate>
+                    </circle>
+                    <g transform="translate(280 295) rotate(35)">
+                        <rect
+                            x="-24"
+                            y="-14"
+                            width="48"
+                            height="28"
+                            rx="7"
+                            fill="#fddeb1"
+                            stroke="#17243a"
+                            stroke-width="3"
+                        ></rect>
+                        <rect
+                            x="-19"
+                            y="-9"
+                            width="8"
+                            height="18"
+                            rx="2"
+                            fill="#17243a"
+                        ></rect>
+                        <text
+                            x="5"
+                            y="4"
+                            text-anchor="middle"
+                            font-family="Inter, sans-serif"
+                            font-size="9"
+                            font-weight="800"
+                            fill="#17243a"
+                        >
+                            UTC
+                        </text>
+                    </g>
+                </svg>
+                <div
+                    class="from-primary-container via-primary-container/60 absolute inset-0 bg-gradient-to-t from-35% via-55% to-transparent"
+                ></div>
+
+                <div class="gap-space-sm relative z-10 flex items-center">
+                    <div
+                        class="flex h-10 w-10 items-center justify-center rounded-lg bg-white/10"
+                    >
+                        <span
+                            class="material-symbols-outlined text-secondary-fixed text-[24px]"
+                            >directions_bus</span
+                        >
+                    </div>
+                    <div class="flex flex-col">
+                        <span
+                            class="font-headline-sm text-headline-sm text-on-primary leading-none font-bold tracking-tight"
+                            >UniRoute</span
+                        >
+                        <span
+                            class="font-caption text-caption text-secondary-fixed-dim mt-1 font-semibold tracking-wider uppercase"
+                            >Campus Mobility</span
+                        >
+                    </div>
+                </div>
+
+                <div class="space-y-space-lg relative z-10 max-w-lg">
+                    <span
+                        class="font-label-sm text-label-sm text-tertiary-fixed-dim inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 font-semibold"
+                    >
+                        <span class="relative flex h-2 w-2"
+                            ><span
+                                class="bg-tertiary-fixed-dim absolute inline-flex h-full w-full animate-ping rounded-full opacity-75"
+                            ></span
+                            ><span
+                                class="bg-tertiary-fixed-dim relative inline-flex h-2 w-2 rounded-full"
+                            ></span
+                        ></span>
+                        Servicio en tiempo real
+                    </span>
+                    <h1
+                        class="font-headline-xl text-headline-xl text-on-primary"
+                    >
+                        Tu transporte universitario, en tiempo real.
+                    </h1>
+                    <p class="font-body-lg text-body-lg text-primary-fixed-dim">
+                        Consulta rutas, paradas y la llegada de tu unidad desde
+                        cualquier lugar del campus.
+                    </p>
+                    <ul class="space-y-space-sm">
+                        <li class="gap-space-sm flex items-center">
+                            <span
+                                class="flex h-9 w-9 items-center justify-center rounded-lg bg-white/10"
+                                ><span
+                                    class="material-symbols-outlined text-tertiary-fixed-dim text-[20px]"
+                                    >fmd_good</span
+                                ></span
+                            ><span
+                                class="font-body-md text-body-md text-on-primary"
+                                >Ubica tu unidad en el mapa en vivo</span
+                            >
+                        </li>
+                        <li class="gap-space-sm flex items-center">
+                            <span
+                                class="flex h-9 w-9 items-center justify-center rounded-lg bg-white/10"
+                                ><span
+                                    class="material-symbols-outlined text-secondary-fixed text-[20px]"
+                                    >notifications_active</span
+                                ></span
+                            ><span
+                                class="font-body-md text-body-md text-on-primary"
+                                >Recibe un aviso antes de que llegue a tu
+                                parada</span
+                            >
+                        </li>
+                        <li class="gap-space-sm flex items-center">
+                            <span
+                                class="flex h-9 w-9 items-center justify-center rounded-lg bg-white/10"
+                                ><span
+                                    class="material-symbols-outlined text-primary-fixed-dim text-[20px]"
+                                    >schedule</span
+                                ></span
+                            ><span
+                                class="font-body-md text-body-md text-on-primary"
+                                >Consulta horarios por ruta y campus</span
+                            >
+                        </li>
+                    </ul>
+                </div>
+
+                <div
+                    class="font-caption text-caption text-primary-fixed-dim relative z-10 flex items-center justify-between"
+                >
+                    <span
+                        >Universidad Tecnológica de Coahuila · Saltillo – Ramos
+                        Arizpe</span
+                    >
+                    <span>© 2026 UniRoute</span>
+                </div>
+            </section>
+
+            <!-- PANEL DERECHO: iniciar sesión -->
+            <main class="flex min-h-screen flex-1 flex-col bg-primary">
+                <div
+                    class="flex flex-1 items-center justify-center px-4 py-10 sm:px-8"
+                >
+                    <div class="space-y-space-xl w-full max-w-[380px]">
+                        <!-- Logo en celular -->
+                        <div class="gap-space-sm flex items-center lg:hidden">
+                            <div
+                                class="bg-primary-container flex h-10 w-10 items-center justify-center rounded-lg"
+                            >
+                                <span
+                                    class="material-symbols-outlined text-secondary-fixed text-[24px]"
+                                    >directions_bus</span
+                                >
+                            </div>
+                            <div class="flex flex-col">
+                                <span
+                                    class="font-headline-sm text-headline-sm text-on-primary leading-none font-bold tracking-tight"
+                                    >UniRoute</span
+                                >
+                                <span
+                                    class="font-caption text-caption text-secondary-fixed-dim mt-1 font-semibold tracking-wider uppercase"
+                                    >Campus Mobility</span
+                                >
+                            </div>
+                        </div>
+
+                        <div class="space-y-1">
+                            <h2
+                                class="font-headline-md text-headline-md text-on-primary font-bold tracking-tight"
+                            >
+                                Inicia sesión
+                            </h2>
+                            <p
+                                class="font-body-md text-body-md text-primary-fixed-dim"
+                            >
+                                Entra con tu correo y contraseña para ver tus
+                                rutas.
+                            </p>
+                        </div>
+
+                        <form
+                            id="form-login"
+                            class="space-y-space-md"
+                            novalidate
+                        >
+                            <div>
+                                <label
+                                    for="login-email"
+                                    class="font-label-md text-label-md text-primary-fixed mb-1.5 block font-semibold"
+                                    >Correo electrónico</label
+                                >
+                                <div class="relative">
+                                    <span
+                                        class="material-symbols-outlined text-on-primary-container pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-[18px]"
+                                        >mail</span
+                                    >
+                                    <input
+                                        id="login-email"
+                                        name="email"
+                                        type="email"
+                                        autocomplete="email"
+                                        required
+                                        autofocus
+                                        placeholder="tu.correo@ejemplo.com"
+                                        aria-describedby="login-email-error"
+                                        class="bg-primary-container border-night-border text-inverse-on-surface placeholder:text-on-primary-container font-body-md text-body-md focus:border-focus-ring focus:ring-focus-ring/50 w-full rounded-lg border py-2.5 pr-3 pl-10 transition-colors outline-none focus:ring-2"
+                                    />
+                                </div>
+                                <p
+                                    id="login-email-error"
+                                    class="font-label-sm text-label-sm text-error-soft mt-1.5 flex hidden items-center gap-1"
+                                >
+                                    <span
+                                        class="material-symbols-outlined text-[16px]"
+                                        >error</span
+                                    ><span class="msg"></span>
+                                </p>
+                            </div>
+
+                            <div>
+                                <div
+                                    class="mb-1.5 flex items-center justify-between"
+                                >
+                                    <label
+                                        for="login-password"
+                                        class="font-label-md text-label-md text-primary-fixed font-semibold"
+                                        >Contraseña</label
+                                    >
+                                    <a
+                                        href="#"
+                                        class="font-label-sm text-label-sm text-secondary-fixed-dim hover:text-secondary-fixed font-semibold hover:underline"
+                                        >¿Olvidaste tu contraseña?</a
+                                    >
+                                </div>
+                                <div class="relative">
+                                    <span
+                                        class="material-symbols-outlined text-on-primary-container pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-[18px]"
+                                        >lock</span
+                                    >
+                                    <input
+                                        id="login-password"
+                                        name="password"
+                                        type="password"
+                                        autocomplete="current-password"
+                                        required
+                                        placeholder="Tu contraseña"
+                                        aria-describedby="login-password-error"
+                                        class="bg-primary-container border-night-border text-inverse-on-surface placeholder:text-on-primary-container font-body-md text-body-md focus:border-focus-ring focus:ring-focus-ring/50 w-full rounded-lg border py-2.5 pr-11 pl-10 transition-colors outline-none focus:ring-2"
+                                    />
+                                    <button
+                                        type="button"
+                                        class="toggle-pass text-primary-fixed-dim absolute top-1/2 right-1.5 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg hover:bg-white/5"
+                                        data-target="login-password"
+                                        aria-label="Mostrar contraseña"
+                                    >
+                                        <span
+                                            class="material-symbols-outlined text-[18px]"
+                                            >visibility</span
+                                        >
+                                    </button>
+                                </div>
+                                <p
+                                    id="login-password-error"
+                                    class="font-label-sm text-label-sm text-error-soft mt-1.5 flex hidden items-center gap-1"
+                                >
+                                    <span
+                                        class="material-symbols-outlined text-[16px]"
+                                        >error</span
+                                    ><span class="msg"></span>
+                                </p>
+                            </div>
+
+                            <label
+                                for="login-remember"
+                                class="flex cursor-pointer items-center gap-2 select-none"
+                            >
+                                <input
+                                    id="login-remember"
+                                    name="remember"
+                                    type="checkbox"
+                                    class="h-4 w-4 rounded accent-[#e0c297]"
+                                />
+                                <span
+                                    class="font-body-md text-body-md text-inverse-on-surface"
+                                    >Recordarme</span
+                                >
+                            </label>
+
+                            <button
+                                type="submit"
+                                class="submit gap-space-xs px-space-md bg-secondary-fixed hover:bg-secondary-fixed-dim text-primary-container font-label-md text-label-md inline-flex w-full items-center justify-center rounded-lg py-3 font-bold shadow-lg shadow-black/30 transition-all active:scale-[0.98]"
+                            >
+                                <span
+                                    class="material-symbols-outlined text-primary-container icon text-[18px]"
+                                    >login</span
+                                >
+                                <span class="label">Iniciar sesión</span>
+                            </button>
+
+                            <div
+                                class="gap-space-sm flex items-center"
+                                aria-hidden="true"
+                            >
+                                <span class="h-px flex-1 bg-white/10"></span>
+                                <span
+                                    class="font-caption text-caption text-on-primary-container uppercase"
+                                    >o</span
+                                >
+                                <span class="h-px flex-1 bg-white/10"></span>
+                            </div>
+
+                            <button
+                                type="button"
+                                class="gap-space-xs px-space-md border-night-border text-inverse-on-surface font-label-md text-label-md inline-flex w-full items-center justify-center rounded-lg border bg-white/5 py-2.5 font-semibold transition-colors hover:bg-white/10"
+                            >
+                                <span
+                                    class="material-symbols-outlined text-secondary-fixed-dim text-[18px]"
+                                    >passkey</span
+                                >
+                                <span>Entrar con passkey</span>
+                            </button>
+                        </form>
+
+                        <div class="space-y-space-sm text-center">
+                            <p
+                                class="font-label-md text-label-md text-primary-fixed-dim"
+                            >
+                                ¿No tienes cuenta?
+                                <a
+                                    href="registro.html"
+                                    class="text-secondary-fixed-dim hover:text-secondary-fixed font-semibold hover:underline"
+                                    >Regístrate</a
+                                >
+                            </p>
+                            <p
+                                class="font-label-sm text-label-sm text-on-primary-container"
+                            >
+                                ¿Eres conductor o administrador? Tu cuenta la
+                                crea el área de transporte.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <footer
+                    class="font-caption text-caption text-on-primary-container flex flex-wrap items-center justify-between gap-2 border-t border-white/5 px-4 py-4 sm:px-8"
+                >
+                    <span class="flex items-center gap-1.5"
+                        ><span
+                            class="bg-tertiary-fixed-dim h-1.5 w-1.5 rounded-full"
+                        ></span
+                        >UniRoute · Campus Mobility</span
+                    >
+                    <span class="lg:hidden"
+                        >Universidad Tecnológica de Coahuila</span
+                    >
+                </footer>
+            </main>
+        </div>
+
+        <!-- Aviso de demostración -->
+        <div
+            id="toast"
+            class="bg-primary-container border-night-border text-on-primary font-label-md text-label-md fixed bottom-5 left-1/2 z-50 hidden -translate-x-1/2 items-center gap-2 rounded-xl border px-4 py-3 shadow-xl shadow-black/40"
+            role="status"
+            aria-live="polite"
+        >
+            <span
+                class="material-symbols-outlined text-tertiary-fixed-dim text-[18px]"
+                >check_circle</span
+            ><span class="msg"></span>
+        </div>
+
+        <script>
+            (function () {
+                document.querySelectorAll('.toggle-pass').forEach(function (b) {
+                    b.addEventListener('click', function () {
+                        var input = document.getElementById(b.dataset.target);
+                        var show = input.type === 'password';
+                        input.type = show ? 'text' : 'password';
+                        b.querySelector('span').textContent = show
+                            ? 'visibility_off'
+                            : 'visibility';
+                        b.setAttribute(
+                            'aria-label',
+                            show ? 'Ocultar contraseña' : 'Mostrar contraseña',
+                        );
+                    });
+                });
+
+                function setError(id, msg) {
+                    var input = document.getElementById(id);
+                    var box = document.getElementById(id + '-error');
+                    input.classList.toggle('border-error-soft', !!msg);
+                    input.classList.toggle('border-night-border', !msg);
+                    input.setAttribute('aria-invalid', msg ? 'true' : 'false');
+                    box.querySelector('.msg').textContent = msg || '';
+                    box.classList.toggle('hidden', !msg);
+                    return !msg;
+                }
+
+                function toast(msg) {
+                    var t = document.getElementById('toast');
+                    t.querySelector('.msg').textContent = msg;
+                    t.classList.remove('hidden');
+                    t.classList.add('flex');
+                    clearTimeout(t._h);
+                    t._h = setTimeout(function () {
+                        t.classList.add('hidden');
+                        t.classList.remove('flex');
+                    }, 3200);
+                }
+
+                document
+                    .getElementById('form-login')
+                    .addEventListener('submit', function (e) {
+                        e.preventDefault();
+                        var email = document
+                            .getElementById('login-email')
+                            .value.trim();
+                        var pass =
+                            document.getElementById('login-password').value;
+                        var ok = setError(
+                            'login-email',
+                            !email
+                                ? 'Escribe tu correo electrónico.'
+                                : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+                                  ? 'El correo no tiene un formato válido.'
+                                  : '',
+                        );
+                        ok =
+                            setError(
+                                'login-password',
+                                !pass ? 'Escribe tu contraseña.' : '',
+                            ) && ok;
+                        if (!ok) {
+                            return;
+                        }
+                        var btn = this.querySelector('.submit');
+                        var label = btn.querySelector('.label');
+                        var icon = btn.querySelector('.icon');
+                        btn.disabled = true;
+                        btn.classList.add('opacity-80');
+                        label.textContent = 'Entrando…';
+                        icon.textContent = 'progress_activity';
+                        icon.classList.add('animate-spin');
+                        setTimeout(function () {
+                            btn.disabled = false;
+                            btn.classList.remove('opacity-80');
+                            label.textContent = 'Iniciar sesión';
+                            icon.textContent = 'login';
+                            icon.classList.remove('animate-spin');
+                            toast(
+                                'Mockup: aquí se enviaría el inicio de sesión a Fortify.',
+                            );
+                        }, 1200);
+                    });
+            })();
+        </script>
+    </body>
+</html>
