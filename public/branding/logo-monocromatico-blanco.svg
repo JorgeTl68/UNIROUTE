@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="338" viewBox="0 0 1200 338" role="img" aria-label="Logo UniRoute"><title>UniRoute</title><g transform="translate(4,-7) scale(0.91)"><defs>
+       <mask id="mono-window" maskUnits="userSpaceOnUse" x="0" y="0" width="360" height="360">
+         <rect width="360" height="360" fill="white"/>
+         <rect x="112" y="160" width="106" height="61" rx="10" fill="black"/>
+         <path d="M134 231 L157 231 Q160 231 160 236 L160 241 L136 241 Q132 241 132 237 Z M179 231 L201 231 Q204 231 204 237 L204 241 L180 241 Q176 241 176 237 Z" fill="black"/>
+       </mask>
+     </defs><g mask="url(#mono-window)">
+         <path d="M103 51 L75 184 Q62 246 89 269 Q114 293 161 290 Q219 286 232 234 L261 101" stroke="#FFFFFF" stroke-width="47" stroke-linejoin="round" stroke-linecap="round" fill="none"/>
+         <rect x="114" y="142" width="106" height="112" rx="24" fill="#FFFFFF"/>
+         <rect x="104" y="171" width="10" height="31" rx="4" fill="#FFFFFF"/><rect x="220" y="171" width="10" height="31" rx="4" fill="#FFFFFF"/>
+         <rect x="131" y="249" width="19" height="17" rx="5" fill="#FFFFFF"/><rect x="184" y="249" width="19" height="17" rx="5" fill="#FFFFFF"/>
+         <path d="M236 104 L260 115" stroke="#FFFFFF" stroke-width="45" stroke-linecap="square" />
+         <path d="M246 25 C226 25 211 40 211 60 C211 81 231 102 246 120 C263 101 282 81 282 60 C282 40 266 25 246 25 Z M246 44 A16 16 0 1 0 246 76 A16 16 0 1 0 246 44 Z" fill="#FFFFFF" fill-rule="evenodd"/>
+         <path d="M54 229 Q25 240 28 263 Q32 296 108 284 Q166 275 221 245 Q179 285 105 303 Q15 319 10 278 Q6 248 54 229 Z" fill="#FFFFFF"/>
+       </g></g><path d="M349 73 V252" stroke="#FFFFFF" stroke-width="3" opacity=".6"/><text x="387" y="202" font-family="Inter, DejaVu Sans, sans-serif" font-weight="800" font-style="italic" font-size="112" letter-spacing="-3" fill="#FFFFFF">Uni</text>
+    <text x="566.20" y="202" font-family="Inter, DejaVu Sans, sans-serif" font-weight="800" font-style="italic" font-size="112" letter-spacing="-3" fill="#FFFFFF">Route</text></svg>
