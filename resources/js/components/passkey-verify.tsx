@@ -15,6 +15,7 @@ type Props = {
     label?: string;
     loadingLabel?: string;
     separator?: string;
+    separatorFirst?: boolean;
 };
 
 export default function PasskeyVerify({
@@ -22,6 +23,7 @@ export default function PasskeyVerify({
     label,
     loadingLabel,
     separator,
+    separatorFirst = false,
 }: Props = {}) {
     const { verify, isLoading, error, isSupported } = usePasskeyVerify({
         ...(routes && {
@@ -40,7 +42,7 @@ export default function PasskeyVerify({
     }
 
     return (
-        <>
+        <div className="flex flex-col">
             <div className="grid gap-2">
                 <Button
                     type="button"
@@ -59,7 +61,9 @@ export default function PasskeyVerify({
                 )}
             </div>
 
-            <div className="relative my-6">
+            <div
+                className={`relative my-5 ${separatorFirst ? 'order-first' : ''}`}
+            >
                 <div className="absolute inset-0 flex items-center">
                     <Separator className="w-full" />
                 </div>
@@ -69,6 +73,6 @@ export default function PasskeyVerify({
                     </span>
                 </div>
             </div>
-        </>
+        </div>
     );
 }
