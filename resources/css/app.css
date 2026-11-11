@@ -9,15 +9,18 @@
 
 @theme {
     --font-sans:
-        'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
-        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
-        'Noto Color Emoji';
+        'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+        'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 
     --radius-lg: var(--radius);
     --radius-md: calc(var(--radius) - 2px);
     --radius-sm: calc(var(--radius) - 4px);
 
     --color-background: var(--background);
+    --color-primary-hover: var(--boton-hover);
+    --color-live: var(--verde-tiempo-real);
+    --color-route: var(--verde-rutas);
+    --color-placeholder: var(--placeholder);
     --color-foreground: var(--foreground);
 
     --color-card: var(--card);
@@ -61,75 +64,56 @@
     --color-sidebar-ring: var(--sidebar-ring);
 }
 
-:root {
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
-    --primary-foreground: oklch(0.985 0 0);
-    --secondary: oklch(0.97 0 0);
-    --secondary-foreground: oklch(0.205 0 0);
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
-    --destructive: oklch(0.577 0.245 27.325);
-    --destructive-foreground: oklch(0.577 0.245 27.325);
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
-    --ring: oklch(0.87 0 0);
-    --chart-1: oklch(0.646 0.222 41.116);
-    --chart-2: oklch(0.6 0.118 184.704);
-    --chart-3: oklch(0.398 0.07 227.392);
-    --chart-4: oklch(0.828 0.189 84.429);
-    --chart-5: oklch(0.769 0.188 70.08);
-    --radius: 0.625rem;
-    --sidebar: oklch(0.985 0 0);
-    --sidebar-foreground: oklch(0.145 0 0);
-    --sidebar-primary: oklch(0.205 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.97 0 0);
-    --sidebar-accent-foreground: oklch(0.205 0 0);
-    --sidebar-border: oklch(0.922 0 0);
-    --sidebar-ring: oklch(0.87 0 0);
-}
-
+/* UniRoute uses the same institutional palette in both appearance modes. */
+:root,
 .dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.145 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.145 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.985 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.396 0.141 25.723);
-    --destructive-foreground: oklch(0.637 0.237 25.331);
-    --border: oklch(0.269 0 0);
-    --input: oklch(0.269 0 0);
-    --ring: oklch(0.439 0 0);
-    --chart-1: oklch(0.488 0.243 264.376);
-    --chart-2: oklch(0.696 0.17 162.48);
-    --chart-3: oklch(0.769 0.188 70.08);
-    --chart-4: oklch(0.627 0.265 303.9);
-    --chart-5: oklch(0.645 0.246 16.439);
-    --sidebar: oklch(0.205 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.985 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(0.269 0 0);
-    --sidebar-ring: oklch(0.439 0 0);
+    color-scheme: dark;
+    --fondo-principal: #020e24;
+    --fondo-paneles: #17243a;
+    --bordes: #2f3e57;
+    --boton-principal: #fddeb1;
+    --boton-hover: #e0c297;
+    --focus: #b69b72;
+    --verde-tiempo-real: #91db2a;
+    --verde-rutas: #a3e635;
+    --texto-principal: #ffffff;
+    --texto-formularios: #ecf1f9;
+    --texto-secundario: #bac7e4;
+    --placeholder: #7e8ba6;
+    --error: #ffb4ab;
+    --background: #020e24;
+    --foreground: #ecf1f9;
+    --card: #17243a;
+    --card-foreground: #ecf1f9;
+    --popover: #17243a;
+    --popover-foreground: #ecf1f9;
+    --primary: #fddeb1;
+    --primary-foreground: #020e24;
+    --secondary: #2f3e57;
+    --secondary-foreground: #ecf1f9;
+    --muted: #17243a;
+    --muted-foreground: #bac7e4;
+    --accent: #2f3e57;
+    --accent-foreground: #fddeb1;
+    --destructive: #ffb4ab;
+    --destructive-foreground: #020e24;
+    --border: #2f3e57;
+    --input: #2f3e57;
+    --ring: #b69b72;
+    --chart-1: #91db2a;
+    --chart-2: #fddeb1;
+    --chart-3: #a3e635;
+    --chart-4: #e0c297;
+    --chart-5: #bac7e4;
+    --radius: 0.75rem;
+    --sidebar: #17243a;
+    --sidebar-foreground: #ecf1f9;
+    --sidebar-primary: #fddeb1;
+    --sidebar-primary-foreground: #020e24;
+    --sidebar-accent: #2f3e57;
+    --sidebar-accent-foreground: #fddeb1;
+    --sidebar-border: #2f3e57;
+    --sidebar-ring: #b69b72;
 }
 
 @layer base {
@@ -139,5 +123,49 @@
 
     body {
         @apply bg-background text-foreground;
+        font-variant-numeric: tabular-nums;
     }
+}
+
+@layer base {
+    h1,
+    h2,
+    h3,
+    h4 {
+        color: var(--texto-principal);
+    }
+    input::placeholder,
+    textarea::placeholder {
+        color: var(--placeholder);
+    }
+    select {
+        color-scheme: dark;
+    }
+}
+
+/* Login and registration share the two-panel transit composition. */
+.auth-map-grid {
+    background-image:
+        linear-gradient(#bac7e409 2px, transparent 2px),
+        linear-gradient(90deg, #bac7e409 2px, transparent 2px);
+    background-size: 120px 120px;
+}
+.auth-transit input:not([type='checkbox']),
+.auth-transit button[data-slot='button'] {
+    min-height: 44px;
+    border-radius: 8px;
+}
+.auth-transit label {
+    color: var(--texto-secundario);
+}
+.auth-field-icon {
+    position: absolute;
+    top: 50%;
+    left: 14px;
+    z-index: 1;
+    width: 17px;
+    height: 17px;
+    transform: translateY(-50%);
+    color: var(--placeholder);
+    pointer-events: none;
 }
