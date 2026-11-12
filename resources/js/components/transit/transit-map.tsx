@@ -7,6 +7,7 @@ import {
     MapContainer,
     Marker,
     Polyline,
+    Popup,
     TileLayer,
     Tooltip,
     useMap,
@@ -17,6 +18,7 @@ import {
     unitIcon,
     userIcon,
 } from '@/components/transit/map-icons';
+import { StreetViewLink } from '@/components/transit/street-view-link';
 import { cn } from '@/lib/utils';
 import type {
     PositionSnapshot,
@@ -278,6 +280,21 @@ export function TransitMap({
                                 <Tooltip direction="top" offset={[0, -16]}>
                                     {stop.name}
                                 </Tooltip>
+                                <Popup
+                                    className="transit-popup"
+                                    offset={[0, -12]}
+                                    closeButton={false}
+                                >
+                                    <p className="text-sm font-semibold">
+                                        {stop.name}
+                                    </p>
+                                    <StreetViewLink
+                                        name={stop.name}
+                                        latitude={stop.latitude}
+                                        longitude={stop.longitude}
+                                        className="mt-1"
+                                    />
+                                </Popup>
                             </Marker>
                         ))}
                         <FitToPath path={selectedPath} />
