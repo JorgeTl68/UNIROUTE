@@ -13,6 +13,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 require __DIR__.'/settings.php';
+require __DIR__.'/admin.php';
 
 Route::middleware(['auth', 'verified', 'role:admin'])
     ->get('/admin/fleet', [VehicleController::class, 'index'])
