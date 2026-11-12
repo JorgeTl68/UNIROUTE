@@ -63,9 +63,12 @@ return [
     | will be used by the PHP date and date-time functions. The timezone
     | is set to "UTC" by default as it is suitable for most use cases.
     |
+    | UniRoute usa la hora de Saltillo: los horarios de salida se capturan en
+    | hora local y se comparan con now() para las próximas salidas y la ETA.
+    |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => 'America/Monterrey',
 
     /*
     |--------------------------------------------------------------------------

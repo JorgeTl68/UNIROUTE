@@ -91,6 +91,26 @@ La aplicación estará en `http://localhost:8000`. Con Laragon, el sitio debe
 apuntar a `public/` y `APP_URL` debe coincidir con su dominio local.
 El correo se escribe en el registro local hasta configurar un proveedor SMTP.
 
+### Viajes y rastreo
+
+Los viajes del día se generan a partir de los horarios, y eso lo hace el
+programador de tareas de Laravel. En local se deja corriendo en otra terminal:
+
+```sh
+php artisan schedule:work
+```
+
+Corre `uniroute:generar-viajes` a las 00:10 y `uniroute:limpiar-posiciones` a
+las 03:00, en hora de Saltillo (`America/Monterrey`). Para no esperar:
+
+```sh
+php artisan uniroute:generar-viajes
+php artisan uniroute:simular --intervalo=5
+```
+
+El simulador mueve las unidades sobre el trazado de cada ruta y guarda sus
+posiciones; se detiene con Ctrl+C.
+
 ## Verificación
 
 ```sh

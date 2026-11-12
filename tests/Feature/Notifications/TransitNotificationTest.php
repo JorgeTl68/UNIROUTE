@@ -60,7 +60,7 @@ class TransitNotificationTest extends TestCase
             'stop_id' => 2,
             'trip_id' => 3,
             'url' => '/routes/1',
-            'sent_at' => '2026-11-11T16:41:00+00:00',
+            'sent_at' => $sentAt->toIso8601String(),
         ], $notification->toArray($user));
     }
 

@@ -71,16 +71,30 @@ function signature(stops: Array<{ id: number }>) {
     return stops.map((stop) => String(stop.id)).join('|');
 }
 
-function FitMap({ positions }: { positions: [number, number][] }) {
+const defaultCenter: [number, number] = [25.4262, -100.9925];
+
+/**
+ * Encuadra el mapa solo cuando cambian las paradas o el campus, no en cada
+ * render: así no se pierde el zoom mientras se llenan los demás campos.
+ */
+function FitMap({
+    positions,
+    fallback,
+}: {
+    positions: [number, number][];
+    fallback: [number, number];
+}) {
     const map = useMap();
 
     useEffect(() => {
-        if (positions.length === 1) {
+        if (positions.length === 0) {
+            map.setView(fallback, 13);
+        } else if (positions.length === 1) {
             map.setView(positions[0], 14);
-        } else if (positions.length > 1) {
+        } else {
             map.fitBounds(positions, { padding: [36, 36] });
         }
-    }, [map, positions]);
+    }, [map, positions, fallback]);
 
     return null;
 }
@@ -107,6 +121,7 @@ export default function CreateRoute({
         preview_token: '',
     });
     const [stopToAdd, setStopToAdd] = useState('');
+    const [tracing, setTracing] = useState(false);
     const selectedStops = form.data.stops
         .map((routeStop) => ({
             routeStop,
@@ -119,9 +134,27 @@ export default function CreateRoute({
     const previewIsCurrent = Boolean(
         preview && signature(form.data.stops) === signature(preview.stops),
     );
+    // Depende de los IDs en orden, no del arreglo de paradas: editar los
+    // minutos o cualquier otro campo no debe volver a encuadrar el mapa.
+    const stopIds = signature(form.data.stops);
     const directPositions = useMemo<[number, number][]>(
-        () => selectedStops.map(({ stop }) => [stop.latitude, stop.longitude]),
-        [selectedStops],
+        () =>
+            stopIds
+                .split('|')
+                .map((id) => stops.find((stop) => String(stop.id) === id))
+                .filter((stop): stop is Stop => stop !== undefined)
+                .map((stop) => [stop.latitude, stop.longitude]),
+        [stopIds, stops],
+    );
+    const selectedCampus = campuses.find(
+        (campus) => String(campus.id) === form.data.campus_id,
+    );
+    const campusCenter = useMemo<[number, number]>(
+        () =>
+            selectedCampus
+                ? [selectedCampus.latitude, selectedCampus.longitude]
+                : defaultCenter,
+        [selectedCampus],
     );
     const tracedPositions = useMemo<[number, number][]>(() => {
         if (!preview || !previewIsCurrent) return [];
@@ -138,9 +171,7 @@ export default function CreateRoute({
     const mapPositions = tracedPositions.length
         ? tracedPositions
         : directPositions;
-    const mapCenter: [number, number] = directPositions[0] ?? [
-        25.4262, -100.9925,
-    ];
+    const mapCenter: [number, number] = directPositions[0] ?? campusCenter;
     const errors = form.errors as Record<string, string | undefined>;
 
     useEffect(() => {
@@ -192,9 +223,11 @@ export default function CreateRoute({
 
     const calculateTrace = () => {
         form.clearErrors();
+        setTracing(true);
         form.post('/admin/routes/trace', {
             preserveScroll: true,
             preserveState: true,
+            onFinish: () => setTracing(false),
         });
     };
 
@@ -230,7 +263,9 @@ export default function CreateRoute({
                             disabled={form.processing || !previewIsCurrent}
                         >
                             <Save className="size-4" />
-                            {form.processing ? 'Guardando…' : 'Guardar ruta'}
+                            {form.processing && !tracing
+                                ? 'Guardando…'
+                                : 'Guardar ruta'}
                         </Button>
                     </div>
                 </div>
@@ -681,7 +716,7 @@ export default function CreateRoute({
                                     }
                                 >
                                     <Sparkles className="size-4" />
-                                    {form.processing
+                                    {tracing
                                         ? 'Calculando…'
                                         : 'Calcular trazado'}
                                 </Button>
@@ -733,7 +768,10 @@ export default function CreateRoute({
                                         </Tooltip>
                                     </CircleMarker>
                                 ))}
-                                <FitMap positions={directPositions} />
+                                <FitMap
+                                    positions={directPositions}
+                                    fallback={campusCenter}
+                                />
                             </MapContainer>
                         </Card>
                     </section>
