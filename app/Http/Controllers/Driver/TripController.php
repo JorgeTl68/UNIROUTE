@@ -8,6 +8,7 @@ use App\Http\Requests\Driver\UpdateOccupancyRequest;
 use App\Models\Trip;
 use App\Services\Tracking\EtaCalculator;
 use App\Services\Tracking\TripLifecycle;
+use App\Services\Transit\LiveNetwork;
 use DomainException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -22,12 +23,12 @@ use Inertia\Response;
  */
 class TripController extends Controller
 {
-    public function show(Request $request, EtaCalculator $etaCalculator): Response
+    public function show(Request $request, EtaCalculator $etaCalculator, LiveNetwork $network): Response
     {
         $trips = Trip::query()
             ->where('driver_id', $request->user()->id)
             ->whereDate('scheduled_at', today())
-            ->with(['route.stops', 'vehicle'])
+            ->with(['route.stops', 'vehicle', 'latestPosition'])
             ->orderBy('scheduled_at')
             ->get();
 
@@ -45,8 +46,17 @@ class TripController extends Controller
                 'started_at' => $current->started_at?->toIso8601String(),
                 'occupancy' => $current->occupancy,
                 'route' => [
-                    ...$current->route->only(['id', 'number', 'name', 'color']),
+                    ...$current->route->only(['id', 'number', 'name', 'color', 'encoded_polyline']),
                     'first_stop' => $current->route->stops->first()?->name,
+                    'last_stop' => $current->route->stops->last()?->name,
+                ],
+                'stops' => $network->tripTimeline($current),
+                'position' => $current->latestPosition === null ? null : [
+                    'latitude' => $current->latestPosition->latitude,
+                    'longitude' => $current->latestPosition->longitude,
+                    'speed_kmh' => $current->latestPosition->speed_kmh,
+                    'heading' => $current->latestPosition->heading,
+                    'recorded_at' => $current->latestPosition->recorded_at->toIso8601String(),
                 ],
                 'vehicle' => $current->vehicle?->only(['id', 'code', 'plate', 'capacity']),
                 'next_stop' => $next === null ? null : [

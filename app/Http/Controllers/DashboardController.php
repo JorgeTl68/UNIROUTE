@@ -6,6 +6,7 @@ use App\Http\Resources\IncidentResource;
 use App\Models\Incident;
 use App\Services\Transit\CurrentCampus;
 use App\Services\Transit\LiveNetwork;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -16,8 +17,13 @@ use Inertia\Response;
  */
 class DashboardController extends Controller
 {
-    public function __invoke(Request $request, CurrentCampus $currentCampus, LiveNetwork $network): Response
+    public function __invoke(Request $request, CurrentCampus $currentCampus, LiveNetwork $network): Response|RedirectResponse
     {
+        // El conductor trabaja en "Modo conductor"; es su pantalla de inicio.
+        if ($request->user()->isDriver()) {
+            return to_route('driver.trip');
+        }
+
         $campus = $currentCampus->resolve($request);
 
         return Inertia::render('dashboard', [
