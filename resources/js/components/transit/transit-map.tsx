@@ -18,7 +18,7 @@ import {
     unitIcon,
     userIcon,
 } from '@/components/transit/map-icons';
-import { StreetViewLink } from '@/components/transit/street-view-link';
+import { StreetViewDialog } from '@/components/transit/street-view-dialog';
 import { cn } from '@/lib/utils';
 import type {
     PositionSnapshot,
@@ -288,10 +288,8 @@ export function TransitMap({
                                     <p className="text-sm font-semibold">
                                         {stop.name}
                                     </p>
-                                    <StreetViewLink
-                                        name={stop.name}
-                                        latitude={stop.latitude}
-                                        longitude={stop.longitude}
+                                    <StreetViewDialog
+                                        stop={stop}
                                         className="mt-1"
                                     />
                                 </Popup>

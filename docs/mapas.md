@@ -109,10 +109,38 @@ curl "https://router.project-osrm.org/route/v1/driving/-101.0005,25.4232;-100.99
   ruta se calcula solo al guardarla, no hay problema.
 - Si algún día falla, la URL se cambia en `OSRM_URL` del `.env` sin tocar código.
 
+## Vista de calle (Mapillary)
+
+"Ver en 360°" (detalle de ruta y globo de la parada en el mapa) abre un modal
+con la foto de calle más cercana a la parada, sin salir de UniRoute. Las fotos
+son de **Mapillary**: abiertas, gratis y sin tarjeta. Leaflet por sí solo no
+tiene vista de calle, y Google Street View dentro de la app pediría llave con
+facturación.
+
+- `App\Services\Transit\StreetView` busca en la API de Mapillary las fotos a
+  menos de 100 m de la parada, toma la más cercana y la guarda una semana en
+  caché. Si no hay ninguna, también se recuerda; si Mapillary no responde, se
+  vuelve a intentar la siguiente vez.
+- `GET /stops/{stop}/street-view` regresa la foto y el token, porque el visor
+  (`mapillary-js`) lo necesita en el navegador. Es el token de cliente,
+  pensado para ser público.
+- El visor se carga aparte (`React.lazy`) solo al abrir el modal.
+- Sin fotos cerca, o sin token, el modal muestra la parada en la vista
+  satelital de Esri.
+- Cobertura revisada el 2026-11-12: buena en el centro de Saltillo, en Blvd.
+  Valdez Sánchez hasta Arteaga y en la carretera a Monterrey; frente a la UTC
+  (Av. Industrial Metalúrgica) no hay fotos.
+
+Para sacar el token: crear una cuenta en mapillary.com, ir a **Dashboard →
+Developers → Register application** y copiar el **Client Token** (empieza con
+`MLY|`) en `MAPILLARY_TOKEN`.
+
 ## Variables de entorno
 
 ```dotenv
 OSRM_URL=https://router.project-osrm.org
+MAPILLARY_TOKEN=MLY|...
 ```
 
-Ninguna otra: los mapas no usan llaves.
+Los mapas y el trazado no usan llaves; el token de Mapillary solo es para la
+vista de calle y, sin él, la app funciona igual (muestra la vista satelital).
