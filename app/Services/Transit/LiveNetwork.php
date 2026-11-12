@@ -32,7 +32,7 @@ class LiveNetwork
     /**
      * Rutas activas del campus para el Dashboard en Vivo.
      *
-     * @return list<array<string, mixed>>
+     * @return array<int, array<string, mixed>>
      */
     public function routesFor(Campus $campus, ?User $user): array
     {
@@ -82,7 +82,7 @@ class LiveNetwork
                 'campus' => ['id' => $route->campus->id, 'name' => $route->campus->name],
                 'is_favorite' => $user !== null && $user->favoriteRoutes()->whereKey($route->id)->exists(),
             ],
-            'stops' => $this->stopTimeline($route, $lead === null ? null : collect($lead['etas'])->keyBy('stop_id')),
+            'stops' => $this->stopTimeline($route, $lead['etas'] ?? null),
             'vehicles' => $live->map(fn (array $live): array => $this->liveVehicle($live['trip'], $live['etas']))->all(),
             'upcoming_departures' => $this->upcomingDepartures($route),
         ];
@@ -104,7 +104,7 @@ class LiveNetwork
     }
 
     /**
-     * @return list<array<string, mixed>>
+     * @return array<int, array<string, mixed>>
      */
     private function stopPoints(TransitRoute $route): array
     {
@@ -113,8 +113,8 @@ class LiveNetwork
             'name' => $stop->name,
             'latitude' => $stop->latitude,
             'longitude' => $stop->longitude,
-            'position' => (int) $stop->pivot->getAttribute('position'),
-            'minutes_from_start' => (int) $stop->pivot->getAttribute('minutes_from_start'),
+            'position' => (int) $stop->pivot?->getAttribute('position'),
+            'minutes_from_start' => (int) $stop->pivot?->getAttribute('minutes_from_start'),
             'has_shelter' => $stop->has_shelter,
         ])->values()->all();
     }
@@ -204,15 +204,16 @@ class LiveNetwork
      * passed (ya pasó), current (la unidad está ahí), next (siguiente) o
      * pending. Sin unidad en viaje, todas quedan pending.
      *
-     * @param  Collection<int, array{stop_id: int, stop_name: string, trip_id: int|null, distance_meters: float, eta_minutes: int, arrives_at: CarbonImmutable, delay_minutes: int}>|null  $etas
-     * @return list<array<string, mixed>>
+     * @param  list<array{stop_id: int, stop_name: string, trip_id: int|null, distance_meters: float, eta_minutes: int, arrives_at: CarbonImmutable, delay_minutes: int}>|null  $etas
+     * @return array<int, array<string, mixed>>
      */
-    private function stopTimeline(TransitRoute $route, ?Collection $etas): array
+    private function stopTimeline(TransitRoute $route, ?array $etas): array
     {
-        $firstAhead = $etas?->keys()->first();
+        $byStop = collect($etas ?? [])->keyBy('stop_id');
+        $firstAhead = $etas[0]['stop_id'] ?? null;
 
-        return collect($this->stopPoints($route))->map(function (array $stop) use ($etas, $firstAhead): array {
-            $eta = $etas?->get($stop['id']);
+        return collect($this->stopPoints($route))->map(function (array $stop) use ($etas, $byStop, $firstAhead): array {
+            $eta = $byStop->get($stop['id']);
             $state = match (true) {
                 $etas === null => 'pending',
                 $eta === null => 'passed',
@@ -254,7 +255,7 @@ class LiveNetwork
      * Salidas que quedan hoy, con la unidad y el conductor si el viaje ya
      * está generado y asignado.
      *
-     * @return list<array<string, mixed>>
+     * @return array<int, array<string, mixed>>
      */
     private function upcomingDepartures(TransitRoute $route): array
     {

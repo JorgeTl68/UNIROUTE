@@ -2,8 +2,11 @@
 
 namespace Tests\Feature\Tracking;
 
+use App\Enums\TripStatus;
 use App\Models\Stop;
 use App\Models\TransitRoute;
+use App\Models\Trip;
+use App\Models\User;
 use App\Models\Vehicle;
 use App\Models\VehiclePosition;
 use App\Services\Tracking\Polyline;
@@ -111,5 +114,30 @@ class SimulateFleetCommandTest extends TestCase
         ])
             ->assertFailed()
             ->expectsOutputToContain('No hay rutas activas');
+    }
+
+    public function test_start_option_opens_one_trip_per_route_with_a_free_unit_and_driver(): void
+    {
+        $routes = TransitRoute::factory()->count(2)->create([
+            'encoded_polyline' => Polyline::encode([[25.40, -101.00], [25.42, -101.02]]),
+        ]);
+        Vehicle::factory()->count(3)->create();
+        $drivers = User::factory()->driver()->count(2)->create();
+
+        $this->artisan('uniroute:simular', [
+            '--iniciar' => true,
+            '--intervalo' => 0,
+            '--iteraciones' => 1,
+        ])->assertSuccessful();
+
+        $trips = Trip::query()->inProgress()->get();
+
+        $this->assertCount(2, $trips);
+        $this->assertEqualsCanonicalizing($routes->modelKeys(), $trips->pluck('route_id')->all());
+        $this->assertEqualsCanonicalizing($drivers->modelKeys(), $trips->pluck('driver_id')->all());
+        $this->assertSame(TripStatus::InProgress, $trips->first()->status);
+        // Solo se mueven las unidades con viaje, y cada posición queda ligada a él.
+        $this->assertDatabaseCount('vehicle_positions', 2);
+        $this->assertSame(2, VehiclePosition::query()->whereNotNull('trip_id')->count());
     }
 }

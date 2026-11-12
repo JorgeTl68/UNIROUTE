@@ -221,7 +221,7 @@ class SimulateFleetCommand extends Command
     private function vehiclesOnTrips(Collection $routes): Collection
     {
         return Vehicle::query()
-            ->whereIn('id', Trip::query()->inProgress()->whereIn('route_id', $routes->modelKeys())->select('vehicle_id'))
+            ->whereIn('id', Trip::query()->inProgress()->whereIn('route_id', $routes->pluck('id'))->select('vehicle_id'))
             ->orderBy('id')
             ->get();
     }

@@ -26,7 +26,8 @@ class NotificationController extends Controller
         $user = $request->user();
 
         return Inertia::render('notifications/index', [
-            'notifications' => $user->notifications()
+            // "items" y no "notifications": esa prop ya la comparte el header.
+            'items' => $user->notifications()
                 ->latest()
                 ->limit(self::LIMIT)
                 ->get()

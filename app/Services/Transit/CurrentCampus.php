@@ -23,6 +23,6 @@ class CurrentCampus
             }
         }
 
-        return $request->user()?->campus ?? Campus::query()->orderBy('id')->first();
+        return $request->user()->campus ?? Campus::query()->orderBy('id')->first();
     }
 }

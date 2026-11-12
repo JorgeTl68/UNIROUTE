@@ -50,7 +50,7 @@ class ScheduleController extends Controller
                 'stops' => $route->stops->map(fn (Stop $stop): array => [
                     'id' => $stop->id,
                     'name' => $stop->name,
-                    'minutes_from_start' => (int) $stop->pivot->getAttribute('minutes_from_start'),
+                    'minutes_from_start' => (int) $stop->pivot?->getAttribute('minutes_from_start'),
                 ])->values(),
                 'departures' => $route->schedules
                     ->map(fn (Schedule $schedule): string => substr($schedule->departs_at, 0, 5))

@@ -12,7 +12,7 @@ import type {
 type RouteTag = Pick<TransitRoute, 'id' | 'number' | 'name' | 'color'>;
 
 type Props = {
-    notifications: AppNotification[];
+    items: AppNotification[];
     alarms: {
         id: number;
         minutes_before: number;
@@ -46,7 +46,7 @@ function RouteBadge({ route }: { route: RouteTag }) {
 }
 
 export default function Notifications({
-    notifications,
+    items: notifications,
     alarms,
     favorites,
 }: Props) {
