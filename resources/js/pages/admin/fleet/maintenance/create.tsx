@@ -183,9 +183,3 @@ export default function CreateMaintenance({
         </>
     );
 }
-CreateMaintenance.layout = {
-    breadcrumbs: [
-        { title: 'Mantenimiento', href: '/admin/fleet/maintenance' },
-        { title: 'Reportar falla', href: '/admin/fleet/maintenance/create' },
-    ],
-};

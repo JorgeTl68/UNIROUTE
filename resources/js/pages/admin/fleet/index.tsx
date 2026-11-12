@@ -850,6 +850,3 @@ export default function Fleet({
         </>
     );
 }
-Fleet.layout = {
-    breadcrumbs: [{ title: 'Administración de flota', href: '/admin/fleet' }],
-};

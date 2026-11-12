@@ -251,9 +251,3 @@ export default function CreateVehicle({ statuses, amenities }: Props) {
         </>
     );
 }
-CreateVehicle.layout = {
-    breadcrumbs: [
-        { title: 'Administración de flota', href: '/admin/fleet' },
-        { title: 'Registrar unidad', href: '/admin/fleet/create' },
-    ],
-};

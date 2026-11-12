@@ -292,9 +292,3 @@ export default function Maintenance({
         </>
     );
 }
-Maintenance.layout = {
-    breadcrumbs: [
-        { title: 'Flota', href: '/admin/fleet' },
-        { title: 'Mantenimiento', href: '/admin/fleet/maintenance' },
-    ],
-};

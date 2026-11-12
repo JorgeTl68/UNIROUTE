@@ -223,9 +223,3 @@ export default function Drivers({ drivers, filters, stats }: Props) {
         </>
     );
 }
-Drivers.layout = {
-    breadcrumbs: [
-        { title: 'Flota', href: '/admin/fleet' },
-        { title: 'Conductores', href: '/admin/fleet/drivers' },
-    ],
-};

@@ -214,9 +214,3 @@ export default function CreateDriver({
         </>
     );
 }
-CreateDriver.layout = {
-    breadcrumbs: [
-        { title: 'Conductores', href: '/admin/fleet/drivers' },
-        { title: 'Registrar conductor', href: '/admin/fleet/drivers/create' },
-    ],
-};

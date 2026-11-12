@@ -258,9 +258,3 @@ export default function MaintenanceDetail({ record, scheduledTrips }: Props) {
         </>
     );
 }
-MaintenanceDetail.layout = {
-    breadcrumbs: [
-        { title: 'Mantenimiento', href: '/admin/fleet/maintenance' },
-        { title: 'Detalle del reporte', href: '#' },
-    ],
-};
