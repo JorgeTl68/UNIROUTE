@@ -1,0 +1,394 @@
+<!doctype html>
+<!--
+  Mockup: Pantalla de Conductor · UniRoute
+  Para S3-07 (Jorge). Se usa en el celular del conductor, dentro de la unidad.
+
+  Notas para implementarlo:
+  - Página resources/js/pages/driver/trip.tsx, rutas en routes/driver.php,
+    solo para el rol conductor. Sin sidebar: botones grandes y una sola columna.
+  - Iniciar viaje marca trips.started_at; desde ahí el navegador manda su
+    ubicación cada 5 s (watchPosition) a vehicle_positions. Solo funciona con
+    HTTPS: en local se prueba con el simulador (S1-09).
+  - Ocupación: los botones − y + cambian trips.occupancy (de 0 a la capacidad
+    de la unidad).
+  - Terminar viaje marca trips.ended_at y deja de mandar la ubicación.
+  - "Reportar incidencia" abre el mismo formulario de emergencia.
+  - Los botones de abajo ("Antes de iniciar" / "En ruta") solo existen en el
+    mockup para ver los dos estados.
+-->
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="color-scheme" content="dark" />
+        <title>UniRoute · Modo conductor</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+            rel="stylesheet"
+        />
+        <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+        <script src="assets/uniroute.js"></script>
+        <script src="https://unpkg.com/lucide@0.475.0/dist/umd/lucide.min.js"></script>
+    </head>
+    <body class="bg-background text-foreground">
+        <main
+            class="mx-auto flex min-h-screen max-w-md flex-col px-4 pt-4 pb-24"
+        >
+            <!-- Encabezado -->
+            <header class="flex items-center justify-between gap-3">
+                <div class="flex items-center gap-2.5">
+                    <img
+                        src="../../public/branding/isotipo-oscuro.svg"
+                        alt=""
+                        class="size-9"
+                    />
+                    <div>
+                        <p class="text-base leading-none font-bold text-white">
+                            Modo conductor
+                        </p>
+                        <p class="mt-1 text-xs text-muted-foreground">
+                            Manuel González
+                        </p>
+                    </div>
+                </div>
+                <span
+                    data-estado-gps
+                    class="flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1.5 text-xs font-semibold text-muted-foreground"
+                >
+                    <i data-lucide="satellite" class="size-3.5"></i>GPS en
+                    espera
+                </span>
+            </header>
+
+            <!-- Viaje -->
+            <section class="mt-5 rounded-2xl border border-border bg-card p-5">
+                <div class="flex items-start justify-between gap-3">
+                    <div>
+                        <p
+                            class="text-gold text-[11px] font-semibold tracking-wider uppercase"
+                        >
+                            Viaje de las 16:24
+                        </p>
+                        <h1 class="mt-1 text-xl font-bold">
+                            Ruta 1 · Campus Central – Santa Fe
+                        </h1>
+                        <p class="mt-1 text-sm text-muted-foreground">
+                            BUS-UTC-01 · UTC-101-A · 40 lugares
+                        </p>
+                    </div>
+                    <span
+                        class="flex size-10 shrink-0 items-center justify-center rounded-md bg-live text-base font-extrabold text-primary-foreground"
+                        >1</span
+                    >
+                </div>
+
+                <!-- Antes de iniciar -->
+                <div data-vista="antes" class="mt-5 space-y-3">
+                    <div
+                        class="flex items-start gap-3 rounded-xl bg-primary/10 p-3 text-sm"
+                    >
+                        <i
+                            data-lucide="map-pin"
+                            class="mt-0.5 size-4 shrink-0 text-primary"
+                        ></i>
+                        <span class="text-muted-foreground"
+                            >Sales de
+                            <span class="font-semibold text-foreground"
+                                >Campus Central - Puerta Principal</span
+                            >. El navegador te va a pedir permiso para usar tu
+                            ubicación.</span
+                        >
+                    </div>
+                    <button
+                        type="button"
+                        data-iniciar
+                        class="flex w-full items-center justify-center gap-3 rounded-2xl bg-primary py-5 text-lg font-extrabold text-primary-foreground shadow-lg shadow-black/30 active:scale-[0.98]"
+                    >
+                        <i data-lucide="play" class="size-6 fill-current"></i
+                        >Iniciar viaje
+                    </button>
+                </div>
+
+                <!-- En ruta -->
+                <div data-vista="en-ruta" class="mt-5 hidden space-y-4">
+                    <div
+                        class="flex items-center justify-between rounded-xl bg-live/10 px-4 py-3"
+                    >
+                        <span
+                            class="flex items-center gap-2 text-sm font-semibold text-live"
+                        >
+                            <span class="relative flex size-2.5"
+                                ><span
+                                    class="absolute inline-flex size-full animate-ping rounded-full bg-live opacity-75"
+                                ></span
+                                ><span
+                                    class="relative inline-flex size-2.5 rounded-full bg-live"
+                                ></span
+                            ></span>
+                            En ruta · enviando ubicación
+                        </span>
+                        <span class="text-xs text-muted-foreground"
+                            >hace 2 s</span
+                        >
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="rounded-xl bg-background/50 p-3">
+                            <p
+                                class="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase"
+                            >
+                                Siguiente parada
+                            </p>
+                            <p class="mt-1 text-base font-bold text-white">
+                                Fracc. Arborea
+                            </p>
+                            <p class="text-xs text-primary">ETA 2 min</p>
+                        </div>
+                        <div class="rounded-xl bg-background/50 p-3">
+                            <p
+                                class="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase"
+                            >
+                                Tiempo de viaje
+                            </p>
+                            <p class="mt-1 text-base font-bold text-white">
+                                18:42
+                            </p>
+                            <p class="text-xs text-live">A tiempo</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Ocupación -->
+            <section
+                data-vista="en-ruta"
+                class="mt-4 hidden rounded-2xl border border-border bg-card p-5"
+                aria-labelledby="titulo-ocupacion"
+            >
+                <div class="flex items-center justify-between">
+                    <h2 id="titulo-ocupacion" class="text-base font-bold">
+                        Pasajeros a bordo
+                    </h2>
+                    <span
+                        data-porcentaje
+                        class="bg-gold/15 text-gold rounded-full px-2 py-0.5 text-[11px] font-bold"
+                        >70 %</span
+                    >
+                </div>
+                <div class="mt-4 flex items-center justify-between gap-4">
+                    <button
+                        type="button"
+                        data-menos
+                        class="flex size-20 items-center justify-center rounded-2xl border border-border bg-secondary text-foreground active:scale-95"
+                        aria-label="Bajó un pasajero"
+                    >
+                        <i data-lucide="minus" class="size-8"></i>
+                    </button>
+                    <p class="text-center">
+                        <span
+                            data-ocupacion
+                            class="block text-6xl font-extrabold text-white"
+                            >28</span
+                        ><span class="text-sm text-muted-foreground"
+                            >de 40</span
+                        >
+                    </p>
+                    <button
+                        type="button"
+                        data-mas
+                        class="flex size-20 items-center justify-center rounded-2xl bg-primary text-primary-foreground active:scale-95"
+                        aria-label="Subió un pasajero"
+                    >
+                        <i data-lucide="plus" class="size-8"></i>
+                    </button>
+                </div>
+                <div class="mt-4 h-2 overflow-hidden rounded-full bg-secondary">
+                    <div
+                        data-barra
+                        class="bg-gold h-full w-[70%] rounded-full transition-all"
+                    ></div>
+                </div>
+            </section>
+
+            <section data-vista="en-ruta" class="mt-4 hidden grid-cols-2 gap-3">
+                <a
+                    href="emergencia.html"
+                    class="flex items-center justify-center gap-2 rounded-xl border border-border bg-card py-4 text-sm font-semibold text-foreground"
+                    ><i
+                        data-lucide="triangle-alert"
+                        class="text-warning size-5"
+                    ></i
+                    >Reportar incidencia</a
+                >
+                <button
+                    type="button"
+                    data-terminar
+                    class="flex items-center justify-center gap-2 rounded-xl border border-destructive/50 bg-destructive/10 py-4 text-sm font-bold text-destructive"
+                >
+                    <i data-lucide="square" class="size-5 fill-current"></i
+                    >Terminar viaje
+                </button>
+            </section>
+
+            <!-- Viajes del día -->
+            <section class="mt-4 rounded-2xl border border-border bg-card p-5">
+                <h2 class="text-base font-bold">Tus viajes de hoy</h2>
+                <ul class="mt-3 divide-y divide-border text-sm">
+                    <li class="flex items-center justify-between py-3">
+                        <span class="text-muted-foreground"
+                            ><span
+                                class="font-bold text-placeholder line-through"
+                                >07:00</span
+                            >
+                            · Ruta 1</span
+                        ><span
+                            class="rounded-full bg-secondary px-2 py-0.5 text-[11px] font-semibold text-muted-foreground"
+                            >Terminado</span
+                        >
+                    </li>
+                    <li class="flex items-center justify-between py-3">
+                        <span class="text-muted-foreground"
+                            ><span
+                                class="font-bold text-placeholder line-through"
+                                >12:12</span
+                            >
+                            · Ruta 1</span
+                        ><span
+                            class="rounded-full bg-secondary px-2 py-0.5 text-[11px] font-semibold text-muted-foreground"
+                            >Terminado</span
+                        >
+                    </li>
+                    <li class="flex items-center justify-between py-3">
+                        <span class="text-foreground"
+                            ><span class="font-bold text-white">16:24</span> ·
+                            Ruta 1</span
+                        ><span
+                            data-estado-viaje
+                            class="rounded-full bg-primary/15 px-2 py-0.5 text-[11px] font-bold text-primary"
+                            >Ahora</span
+                        >
+                    </li>
+                    <li class="flex items-center justify-between py-3">
+                        <span class="text-foreground"
+                            ><span class="font-bold text-white">19:00</span> ·
+                            Ruta 1</span
+                        ><span
+                            class="rounded-full bg-secondary px-2 py-0.5 text-[11px] font-semibold text-muted-foreground"
+                            >Programado</span
+                        >
+                    </li>
+                </ul>
+            </section>
+        </main>
+
+        <!-- Solo para el mockup -->
+        <div
+            class="fixed inset-x-0 bottom-3 z-40 mx-auto flex w-max gap-1 rounded-full border border-border bg-card/95 p-1 text-xs shadow-xl backdrop-blur"
+        >
+            <span class="px-2 py-1.5 text-placeholder">Mockup:</span>
+            <button
+                type="button"
+                data-demo="antes"
+                class="rounded-full bg-primary px-3 py-1.5 font-semibold text-primary-foreground"
+            >
+                Antes de iniciar
+            </button>
+            <button
+                type="button"
+                data-demo="en-ruta"
+                class="rounded-full px-3 py-1.5 font-semibold text-muted-foreground"
+            >
+                En ruta
+            </button>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var ocupacion = 28;
+                var capacidad = 40;
+                var gps = document.querySelector('[data-estado-gps]');
+
+                function mostrar(vista) {
+                    document
+                        .querySelectorAll('[data-vista]')
+                        .forEach(function (el) {
+                            var on = el.dataset.vista === vista;
+                            el.classList.toggle('hidden', !on);
+                            if (
+                                el.tagName === 'SECTION' &&
+                                el.classList.contains('grid-cols-2')
+                            ) {
+                                el.classList.toggle('grid', on);
+                            }
+                        });
+                    document
+                        .querySelectorAll('[data-demo]')
+                        .forEach(function (b) {
+                            var on = b.dataset.demo === vista;
+                            b.classList.toggle('bg-primary', on);
+                            b.classList.toggle('text-primary-foreground', on);
+                            b.classList.toggle('text-muted-foreground', !on);
+                        });
+                    var enRuta = vista === 'en-ruta';
+                    gps.className =
+                        'flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold ' +
+                        (enRuta
+                            ? 'bg-live/15 text-live'
+                            : 'bg-secondary text-muted-foreground');
+                    gps.innerHTML =
+                        '<i data-lucide="satellite" class="size-3.5"></i>' +
+                        (enRuta ? 'GPS activo' : 'GPS en espera');
+                    UR.icons();
+                }
+
+                function pintar() {
+                    var pct = Math.round((ocupacion / capacidad) * 100);
+                    document.querySelector('[data-ocupacion]').textContent =
+                        ocupacion;
+                    document.querySelector('[data-porcentaje]').textContent =
+                        pct + ' %';
+                    var barra = document.querySelector('[data-barra]');
+                    barra.style.width = pct + '%';
+                    barra.className =
+                        'h-full rounded-full transition-all ' +
+                        (pct >= 85
+                            ? 'bg-destructive'
+                            : pct >= 50
+                              ? 'bg-gold'
+                              : 'bg-live');
+                }
+
+                document
+                    .querySelector('[data-iniciar]')
+                    .addEventListener('click', function () {
+                        mostrar('en-ruta');
+                        UR.toast('Viaje iniciado');
+                    });
+                document
+                    .querySelector('[data-terminar]')
+                    .addEventListener('click', function () {
+                        mostrar('antes');
+                        UR.toast('Viaje terminado');
+                    });
+                document
+                    .querySelector('[data-mas]')
+                    .addEventListener('click', function () {
+                        ocupacion = Math.min(capacidad, ocupacion + 1);
+                        pintar();
+                    });
+                document
+                    .querySelector('[data-menos]')
+                    .addEventListener('click', function () {
+                        ocupacion = Math.max(0, ocupacion - 1);
+                        pintar();
+                    });
+                document.querySelectorAll('[data-demo]').forEach(function (b) {
+                    b.addEventListener('click', function () {
+                        mostrar(b.dataset.demo);
+                    });
+                });
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,499 @@
+<!doctype html>
+<!--
+  Mockup: Conductores · UniRoute
+  Para S3-05 (Adaia). Ya hay una versión en main (PR #7,
+  pages/admin/fleet/drivers y assignments).
+
+  Notas para implementarlo:
+  - Lista de usuarios con rol conductor y su driver_profile (licencia,
+    antigüedad y calificación).
+  - "Asignación rápida" crea o cambia el viaje (trips) con conductor, unidad y
+    ruta; los relevos de turno son los viajes de hoy ordenados por hora.
+  - "Agregar conductor" abre el alta (drivers/create): la cuenta la crea el área
+    de transporte, los conductores no se registran solos.
+-->
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="color-scheme" content="dark" />
+        <title>UniRoute · Conductores</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+            rel="stylesheet"
+        />
+        <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+        <script src="assets/uniroute.js"></script>
+        <script src="https://unpkg.com/lucide@0.475.0/dist/umd/lucide.min.js"></script>
+    </head>
+    <body
+        class="bg-background text-foreground"
+        data-pagina="admin"
+        data-rol="admin"
+    >
+        <main class="flex-1 space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+            <div class="flex flex-wrap items-end justify-between gap-4">
+                <div>
+                    <p
+                        class="text-gold text-[11px] font-semibold tracking-widest uppercase"
+                    >
+                        Panel de administración
+                    </p>
+                    <h1
+                        class="mt-1 text-2xl font-bold tracking-tight sm:text-3xl"
+                    >
+                        Conductores
+                    </h1>
+                    <p class="mt-1 text-sm text-muted-foreground">
+                        Quién maneja cada unidad, turnos y relevos.
+                    </p>
+                </div>
+                <button
+                    type="button"
+                    class="flex items-center gap-2 rounded-md bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground hover:bg-primary-hover"
+                >
+                    <i data-lucide="user-plus" class="size-4"></i>Agregar
+                    conductor
+                </button>
+            </div>
+
+            <nav
+                data-ur-tabs-admin="conductores"
+                aria-label="Secciones del panel"
+            ></nav>
+
+            <div class="flex flex-wrap gap-2">
+                <span
+                    class="flex items-center gap-2 rounded-full bg-live/15 px-3 py-1.5 text-xs font-semibold text-live"
+                    ><span class="size-1.5 rounded-full bg-live"></span>12 en
+                    turno</span
+                >
+                <span
+                    class="flex items-center gap-2 rounded-full bg-secondary px-3 py-1.5 text-xs font-semibold text-muted-foreground"
+                    ><span
+                        class="size-1.5 rounded-full bg-muted-foreground"
+                    ></span
+                    >3 en descanso</span
+                >
+                <span
+                    class="bg-warning/15 text-warning flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold"
+                    ><span class="bg-warning size-1.5 rounded-full"></span>2 sin
+                    asignar</span
+                >
+            </div>
+
+            <div class="grid gap-6 2xl:grid-cols-12">
+                <section
+                    class="min-w-0 overflow-hidden rounded-2xl border border-border bg-card 2xl:col-span-8"
+                >
+                    <div
+                        class="flex flex-wrap items-center justify-between gap-3 border-b border-border p-5"
+                    >
+                        <h2 class="text-lg font-bold">Plantilla</h2>
+                        <label class="relative w-full sm:w-64">
+                            <span class="sr-only">Buscar conductor</span>
+                            <i
+                                data-lucide="search"
+                                class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-placeholder"
+                            ></i>
+                            <input
+                                type="search"
+                                placeholder="Buscar por nombre o licencia"
+                                class="w-full rounded-md border border-border bg-background py-2 pr-3 pl-9 text-sm text-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/50"
+                            />
+                        </label>
+                    </div>
+                    <div class="relative overflow-x-auto">
+                        <table class="w-full min-w-[680px] text-left text-sm">
+                            <thead
+                                class="text-[11px] tracking-wider text-muted-foreground uppercase"
+                            >
+                                <tr class="border-b border-border">
+                                    <th class="px-5 py-3 font-semibold">
+                                        Conductor
+                                    </th>
+                                    <th class="px-5 py-3 font-semibold">
+                                        Unidad y ruta
+                                    </th>
+                                    <th class="px-5 py-3 font-semibold">
+                                        Turno
+                                    </th>
+                                    <th class="px-5 py-3 font-semibold">
+                                        Estado
+                                    </th>
+                                    <th class="px-5 py-3 font-semibold">
+                                        Calif.
+                                    </th>
+                                    <th class="px-5 py-3">
+                                        <span class="sr-only">Acciones</span>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-border">
+                                <tr class="hover:bg-secondary/30">
+                                    <td class="px-5 py-3.5">
+                                        <span class="flex items-center gap-3"
+                                            ><span
+                                                class="flex size-9 items-center justify-center rounded-full bg-secondary text-xs font-bold"
+                                                >MG</span
+                                            ><span
+                                                ><span
+                                                    class="block font-semibold text-white"
+                                                    >Manuel González</span
+                                                ><span
+                                                    class="block text-xs text-muted-foreground"
+                                                    >Lic. COAH-48211 · 6
+                                                    años</span
+                                                ></span
+                                            ></span
+                                        >
+                                    </td>
+                                    <td class="px-5 py-3.5">
+                                        <span class="block text-foreground"
+                                            >BUS-UTC-01</span
+                                        ><span
+                                            class="block text-xs text-muted-foreground"
+                                            >Ruta 1 · Santa Fe</span
+                                        >
+                                    </td>
+                                    <td
+                                        class="px-5 py-3.5 text-muted-foreground"
+                                    >
+                                        06:00 – 14:00
+                                    </td>
+                                    <td class="px-5 py-3.5">
+                                        <span
+                                            class="rounded-full bg-live/15 px-2 py-0.5 text-[11px] font-bold text-live"
+                                            >En turno</span
+                                        >
+                                    </td>
+                                    <td class="px-5 py-3.5">
+                                        <span
+                                            class="flex items-center gap-1 font-semibold text-primary"
+                                            ><i
+                                                data-lucide="star"
+                                                class="size-3.5 fill-current"
+                                            ></i
+                                            >4.9</span
+                                        >
+                                    </td>
+                                    <td class="px-5 py-3.5 text-right">
+                                        <button
+                                            type="button"
+                                            class="rounded-md border border-border px-2.5 py-1 text-xs font-semibold text-foreground hover:bg-secondary"
+                                        >
+                                            Relevo
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-secondary/30">
+                                    <td class="px-5 py-3.5">
+                                        <span class="flex items-center gap-3"
+                                            ><span
+                                                class="flex size-9 items-center justify-center rounded-full bg-secondary text-xs font-bold"
+                                                >LR</span
+                                            ><span
+                                                ><span
+                                                    class="block font-semibold text-white"
+                                                    >Laura Rivas</span
+                                                ><span
+                                                    class="block text-xs text-muted-foreground"
+                                                    >Lic. COAH-50917 · 3
+                                                    años</span
+                                                ></span
+                                            ></span
+                                        >
+                                    </td>
+                                    <td class="px-5 py-3.5">
+                                        <span class="block text-foreground"
+                                            >BUS-UTC-02</span
+                                        ><span
+                                            class="block text-xs text-muted-foreground"
+                                            >Ruta 2 · Ramos Arizpe</span
+                                        >
+                                    </td>
+                                    <td
+                                        class="px-5 py-3.5 text-muted-foreground"
+                                    >
+                                        06:30 – 14:30
+                                    </td>
+                                    <td class="px-5 py-3.5">
+                                        <span
+                                            class="rounded-full bg-live/15 px-2 py-0.5 text-[11px] font-bold text-live"
+                                            >En turno</span
+                                        >
+                                    </td>
+                                    <td class="px-5 py-3.5">
+                                        <span
+                                            class="flex items-center gap-1 font-semibold text-primary"
+                                            ><i
+                                                data-lucide="star"
+                                                class="size-3.5 fill-current"
+                                            ></i
+                                            >4.7</span
+                                        >
+                                    </td>
+                                    <td class="px-5 py-3.5 text-right">
+                                        <button
+                                            type="button"
+                                            class="rounded-md border border-border px-2.5 py-1 text-xs font-semibold text-foreground hover:bg-secondary"
+                                        >
+                                            Relevo
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-secondary/30">
+                                    <td class="px-5 py-3.5">
+                                        <span class="flex items-center gap-3"
+                                            ><span
+                                                class="flex size-9 items-center justify-center rounded-full bg-secondary text-xs font-bold"
+                                                >SV</span
+                                            ><span
+                                                ><span
+                                                    class="block font-semibold text-white"
+                                                    >Sofía Villarreal</span
+                                                ><span
+                                                    class="block text-xs text-muted-foreground"
+                                                    >Lic. COAH-39002 · 9
+                                                    años</span
+                                                ></span
+                                            ></span
+                                        >
+                                    </td>
+                                    <td class="px-5 py-3.5">
+                                        <span class="block text-foreground"
+                                            >BUS-UTC-03</span
+                                        ><span
+                                            class="block text-xs text-muted-foreground"
+                                            >Ruta 3 · desde las 15:00</span
+                                        >
+                                    </td>
+                                    <td
+                                        class="px-5 py-3.5 text-muted-foreground"
+                                    >
+                                        15:00 – 22:00
+                                    </td>
+                                    <td class="px-5 py-3.5">
+                                        <span
+                                            class="rounded-full bg-secondary px-2 py-0.5 text-[11px] font-bold text-muted-foreground"
+                                            >Descanso</span
+                                        >
+                                    </td>
+                                    <td class="px-5 py-3.5">
+                                        <span
+                                            class="flex items-center gap-1 font-semibold text-primary"
+                                            ><i
+                                                data-lucide="star"
+                                                class="size-3.5 fill-current"
+                                            ></i
+                                            >4.8</span
+                                        >
+                                    </td>
+                                    <td class="px-5 py-3.5 text-right">
+                                        <button
+                                            type="button"
+                                            class="rounded-md border border-border px-2.5 py-1 text-xs font-semibold text-foreground hover:bg-secondary"
+                                        >
+                                            Editar
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-secondary/30">
+                                    <td class="px-5 py-3.5">
+                                        <span class="flex items-center gap-3"
+                                            ><span
+                                                class="flex size-9 items-center justify-center rounded-full bg-secondary text-xs font-bold"
+                                                >AM</span
+                                            ><span
+                                                ><span
+                                                    class="block font-semibold text-white"
+                                                    >Arturo Morales</span
+                                                ><span
+                                                    class="block text-xs text-muted-foreground"
+                                                    >Lic. COAH-61540 ·
+                                                    suplente</span
+                                                ></span
+                                            ></span
+                                        >
+                                    </td>
+                                    <td
+                                        class="px-5 py-3.5 text-placeholder italic"
+                                    >
+                                        Sin asignar
+                                    </td>
+                                    <td
+                                        class="px-5 py-3.5 text-muted-foreground"
+                                    >
+                                        —
+                                    </td>
+                                    <td class="px-5 py-3.5">
+                                        <span
+                                            class="bg-warning/15 text-warning rounded-full px-2 py-0.5 text-[11px] font-bold"
+                                            >Sin asignar</span
+                                        >
+                                    </td>
+                                    <td
+                                        class="px-5 py-3.5 text-muted-foreground"
+                                    >
+                                        —
+                                    </td>
+                                    <td class="px-5 py-3.5 text-right">
+                                        <button
+                                            type="button"
+                                            class="rounded-md bg-primary px-2.5 py-1 text-xs font-bold text-primary-foreground"
+                                        >
+                                            Asignar
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <aside
+                    class="grid min-w-0 content-start gap-4 md:grid-cols-2 2xl:col-span-4 2xl:grid-cols-1"
+                >
+                    <form
+                        class="space-y-4 rounded-2xl border border-border bg-card p-5"
+                    >
+                        <h2 class="text-lg font-bold">Asignación rápida</h2>
+                        <div>
+                            <label
+                                for="a-conductor"
+                                class="mb-1.5 block text-[13px] font-semibold text-muted-foreground"
+                                >Conductor</label
+                            >
+                            <div class="relative">
+                                <select
+                                    id="a-conductor"
+                                    class="w-full appearance-none rounded-md border border-border bg-background px-3 py-2.5 pr-9 text-sm text-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/50"
+                                >
+                                    <option>Arturo Morales</option>
+                                    <option>Sofía Villarreal</option></select
+                                ><i
+                                    data-lucide="chevron-down"
+                                    class="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-placeholder"
+                                ></i>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label
+                                    for="a-unidad"
+                                    class="mb-1.5 block text-[13px] font-semibold text-muted-foreground"
+                                    >Unidad</label
+                                >
+                                <div class="relative">
+                                    <select
+                                        id="a-unidad"
+                                        class="w-full appearance-none rounded-md border border-border bg-background px-3 py-2.5 pr-9 text-sm text-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/50"
+                                    >
+                                        <option>BUS-UTC-04</option>
+                                        <option>BUS-UTC-05</option></select
+                                    ><i
+                                        data-lucide="chevron-down"
+                                        class="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-placeholder"
+                                    ></i>
+                                </div>
+                            </div>
+                            <div>
+                                <label
+                                    for="a-ruta"
+                                    class="mb-1.5 block text-[13px] font-semibold text-muted-foreground"
+                                    >Ruta</label
+                                >
+                                <div class="relative">
+                                    <select
+                                        id="a-ruta"
+                                        class="w-full appearance-none rounded-md border border-border bg-background px-3 py-2.5 pr-9 text-sm text-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/50"
+                                    >
+                                        <option>Ruta 4</option>
+                                        <option>Ruta 1</option></select
+                                    ><i
+                                        data-lucide="chevron-down"
+                                        class="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-placeholder"
+                                    ></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label
+                                for="a-turno"
+                                class="mb-1.5 block text-[13px] font-semibold text-muted-foreground"
+                                >Desde</label
+                            >
+                            <input
+                                id="a-turno"
+                                type="time"
+                                value="15:00"
+                                class="w-full rounded-md border border-border bg-background px-3 py-2.5 text-sm text-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/50"
+                            />
+                        </div>
+                        <button
+                            type="button"
+                            data-ur-toast="Arturo Morales asignado a Ruta 4"
+                            class="w-full rounded-md bg-primary py-2.5 text-sm font-bold text-primary-foreground hover:bg-primary-hover"
+                        >
+                            Asignar
+                        </button>
+                    </form>
+
+                    <div class="rounded-2xl border border-border bg-card p-5">
+                        <h2 class="text-lg font-bold">Relevos de hoy</h2>
+                        <ol class="relative mt-4 space-y-4">
+                            <span
+                                class="absolute top-2 bottom-2 left-[5px] w-0.5 bg-border"
+                                aria-hidden="true"
+                            ></span>
+                            <li class="relative flex gap-3">
+                                <span
+                                    class="relative z-10 mt-1.5 size-3 rounded-full bg-live"
+                                ></span
+                                ><span class="text-sm"
+                                    ><span class="font-semibold text-white"
+                                        >14:00</span
+                                    >
+                                    <span class="text-muted-foreground"
+                                        >· Manuel González entrega BUS-UTC-01 a
+                                        Roberto Hernández</span
+                                    ></span
+                                >
+                            </li>
+                            <li class="relative flex gap-3">
+                                <span
+                                    class="bg-gold relative z-10 mt-1.5 size-3 rounded-full"
+                                ></span
+                                ><span class="text-sm"
+                                    ><span class="font-semibold text-white"
+                                        >14:30</span
+                                    >
+                                    <span class="text-muted-foreground"
+                                        >· Laura Rivas entrega BUS-UTC-02 a
+                                        Esteban Peralta</span
+                                    ></span
+                                >
+                            </li>
+                            <li class="relative flex gap-3">
+                                <span
+                                    class="relative z-10 mt-1.5 size-3 rounded-full bg-secondary"
+                                ></span
+                                ><span class="text-sm"
+                                    ><span class="font-semibold text-white"
+                                        >15:00</span
+                                    >
+                                    <span class="text-muted-foreground"
+                                        >· Sofía Villarreal inicia en
+                                        BUS-UTC-03</span
+                                    ></span
+                                >
+                            </li>
+                        </ol>
+                    </div>
+                </aside>
+            </div>
+        </main>
+    </body>
+</html>

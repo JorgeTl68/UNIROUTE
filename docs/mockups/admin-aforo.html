@@ -1,0 +1,468 @@
+<!doctype html>
+<!--
+  Mockup: Reportes de aforo · UniRoute
+  Para S4-05 (Enrique).
+
+  Notas para implementarlo:
+  - Datos de trips.occupancy (lo que captura el conductor con − y +).
+  - La gráfica es Recharts (BarChart) con los colores de DESIGN.md: barras en
+    secondary y la hora pico en primary.
+  - "Exportar CSV" descarga la misma tabla con el filtro aplicado.
+  - Viaje saturado: ocupación de 85 % o más.
+-->
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="color-scheme" content="dark" />
+        <title>UniRoute · Reportes de aforo</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+            rel="stylesheet"
+        />
+        <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+        <script src="assets/uniroute.js"></script>
+        <script src="https://unpkg.com/lucide@0.475.0/dist/umd/lucide.min.js"></script>
+    </head>
+    <body
+        class="bg-background text-foreground"
+        data-pagina="admin"
+        data-rol="admin"
+    >
+        <main class="flex-1 space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+            <div class="flex flex-wrap items-end justify-between gap-4">
+                <div>
+                    <p
+                        class="text-gold text-[11px] font-semibold tracking-widest uppercase"
+                    >
+                        Panel de administración
+                    </p>
+                    <h1
+                        class="mt-1 text-2xl font-bold tracking-tight sm:text-3xl"
+                    >
+                        Reportes de aforo
+                    </h1>
+                    <p class="mt-1 text-sm text-muted-foreground">
+                        Cuántos pasajeros viajan, a qué hora y en qué ruta.
+                    </p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <div
+                        class="flex rounded-md border border-border bg-card p-1"
+                        role="group"
+                        aria-label="Periodo"
+                    >
+                        <button
+                            type="button"
+                            class="rounded px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground"
+                            aria-pressed="false"
+                        >
+                            Hoy
+                        </button>
+                        <button
+                            type="button"
+                            class="rounded bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground"
+                            aria-pressed="true"
+                        >
+                            Semana
+                        </button>
+                        <button
+                            type="button"
+                            class="rounded px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground"
+                            aria-pressed="false"
+                        >
+                            Mes
+                        </button>
+                    </div>
+                    <button
+                        type="button"
+                        data-ur-toast="Descargando aforo-semana.csv"
+                        class="flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-xs font-semibold text-foreground hover:bg-secondary"
+                    >
+                        <i data-lucide="download" class="size-4"></i>Exportar
+                        CSV
+                    </button>
+                </div>
+            </div>
+
+            <nav
+                data-ur-tabs-admin="aforo"
+                aria-label="Secciones del panel"
+            ></nav>
+
+            <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                <div class="rounded-2xl border border-border bg-card p-5">
+                    <p
+                        class="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase"
+                    >
+                        Pasajeros
+                    </p>
+                    <p class="mt-2 text-3xl font-extrabold text-white">6 284</p>
+                    <p class="text-xs text-live">+8 % vs. semana pasada</p>
+                </div>
+                <div class="rounded-2xl border border-border bg-card p-5">
+                    <p
+                        class="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase"
+                    >
+                        Hora pico
+                    </p>
+                    <p class="mt-2 text-3xl font-extrabold text-primary">
+                        07:00
+                    </p>
+                    <p class="text-xs text-muted-foreground">
+                        88 % de ocupación
+                    </p>
+                </div>
+                <div class="rounded-2xl border border-border bg-card p-5">
+                    <p
+                        class="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase"
+                    >
+                        Ocupación promedio
+                    </p>
+                    <p class="mt-2 text-3xl font-extrabold text-white">68 %</p>
+                    <p class="text-xs text-muted-foreground">en 352 viajes</p>
+                </div>
+                <div class="rounded-2xl border border-border bg-card p-5">
+                    <p
+                        class="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase"
+                    >
+                        Viajes saturados
+                    </p>
+                    <p class="mt-2 text-3xl font-extrabold text-destructive">
+                        17
+                    </p>
+                    <p class="text-xs text-muted-foreground">85 % o más</p>
+                </div>
+            </div>
+
+            <section
+                class="rounded-2xl border border-border bg-card p-5"
+                aria-labelledby="titulo-grafica"
+            >
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <h2 id="titulo-grafica" class="text-lg font-bold">
+                            Pasajeros por hora
+                        </h2>
+                        <p class="text-xs text-muted-foreground">
+                            Promedio de lunes a viernes, todas las rutas
+                        </p>
+                    </div>
+                    <div
+                        class="flex items-center gap-4 text-xs text-muted-foreground"
+                    >
+                        <span class="flex items-center gap-1.5"
+                            ><span
+                                class="size-2.5 rounded-sm bg-secondary"
+                            ></span
+                            >Pasajeros</span
+                        >
+                        <span class="flex items-center gap-1.5"
+                            ><span class="size-2.5 rounded-sm bg-primary"></span
+                            >Hora pico</span
+                        >
+                    </div>
+                </div>
+                <div
+                    class="mt-6 flex h-56 items-end gap-1.5 border-b border-border sm:gap-3"
+                    role="img"
+                    aria-label="Pasajeros por hora: el pico es a las 07:00 con 1 060 pasajeros"
+                >
+                    <div class="flex h-full flex-1 flex-col justify-end">
+                        <div
+                            class="rounded-t bg-secondary"
+                            style="height: 34%"
+                        ></div>
+                    </div>
+                    <div class="flex h-full flex-1 flex-col justify-end">
+                        <span
+                            class="mb-1 text-center text-[10px] font-bold text-primary"
+                            >1 060</span
+                        >
+                        <div
+                            class="rounded-t bg-primary"
+                            style="height: 92%"
+                        ></div>
+                    </div>
+                    <div class="flex h-full flex-1 flex-col justify-end">
+                        <div
+                            class="rounded-t bg-secondary"
+                            style="height: 61%"
+                        ></div>
+                    </div>
+                    <div class="flex h-full flex-1 flex-col justify-end">
+                        <div
+                            class="rounded-t bg-secondary"
+                            style="height: 38%"
+                        ></div>
+                    </div>
+                    <div class="flex h-full flex-1 flex-col justify-end">
+                        <div
+                            class="rounded-t bg-secondary"
+                            style="height: 30%"
+                        ></div>
+                    </div>
+                    <div class="flex h-full flex-1 flex-col justify-end">
+                        <div
+                            class="rounded-t bg-secondary"
+                            style="height: 44%"
+                        ></div>
+                    </div>
+                    <div class="flex h-full flex-1 flex-col justify-end">
+                        <div
+                            class="rounded-t bg-secondary"
+                            style="height: 70%"
+                        ></div>
+                    </div>
+                    <div class="flex h-full flex-1 flex-col justify-end">
+                        <div
+                            class="rounded-t bg-secondary"
+                            style="height: 52%"
+                        ></div>
+                    </div>
+                    <div class="flex h-full flex-1 flex-col justify-end">
+                        <div
+                            class="rounded-t bg-secondary"
+                            style="height: 41%"
+                        ></div>
+                    </div>
+                    <div class="flex h-full flex-1 flex-col justify-end">
+                        <div
+                            class="rounded-t bg-secondary"
+                            style="height: 47%"
+                        ></div>
+                    </div>
+                    <div class="flex h-full flex-1 flex-col justify-end">
+                        <div
+                            class="rounded-t bg-secondary"
+                            style="height: 33%"
+                        ></div>
+                    </div>
+                    <div class="flex h-full flex-1 flex-col justify-end">
+                        <div
+                            class="rounded-t bg-secondary"
+                            style="height: 76%"
+                        ></div>
+                    </div>
+                    <div class="flex h-full flex-1 flex-col justify-end">
+                        <div
+                            class="rounded-t bg-secondary"
+                            style="height: 49%"
+                        ></div>
+                    </div>
+                    <div class="flex h-full flex-1 flex-col justify-end">
+                        <div
+                            class="rounded-t bg-secondary"
+                            style="height: 28%"
+                        ></div>
+                    </div>
+                    <div class="flex h-full flex-1 flex-col justify-end">
+                        <div
+                            class="rounded-t bg-secondary"
+                            style="height: 19%"
+                        ></div>
+                    </div>
+                    <div class="flex h-full flex-1 flex-col justify-end">
+                        <div
+                            class="rounded-t bg-secondary"
+                            style="height: 11%"
+                        ></div>
+                    </div>
+                </div>
+                <div
+                    class="mt-2 flex gap-1.5 text-center text-[10px] text-muted-foreground sm:gap-3"
+                >
+                    <span class="flex-1">06</span
+                    ><span class="flex-1 font-semibold text-primary">07</span
+                    ><span class="flex-1">08</span><span class="flex-1">09</span
+                    ><span class="flex-1">10</span><span class="flex-1">11</span
+                    ><span class="flex-1">12</span><span class="flex-1">13</span
+                    ><span class="flex-1">14</span><span class="flex-1">15</span
+                    ><span class="flex-1">16</span><span class="flex-1">17</span
+                    ><span class="flex-1">18</span><span class="flex-1">19</span
+                    ><span class="flex-1">20</span
+                    ><span class="flex-1">21</span>
+                </div>
+            </section>
+
+            <section
+                class="overflow-hidden rounded-2xl border border-border bg-card"
+                aria-labelledby="titulo-tabla"
+            >
+                <h2
+                    id="titulo-tabla"
+                    class="border-b border-border p-5 text-lg font-bold"
+                >
+                    Por ruta
+                </h2>
+                <div class="relative overflow-x-auto">
+                    <table class="w-full min-w-[620px] text-left text-sm">
+                        <thead
+                            class="text-[11px] tracking-wider text-muted-foreground uppercase"
+                        >
+                            <tr class="border-b border-border">
+                                <th class="px-5 py-3 font-semibold">Ruta</th>
+                                <th class="px-5 py-3 text-right font-semibold">
+                                    Viajes
+                                </th>
+                                <th class="px-5 py-3 text-right font-semibold">
+                                    Pasajeros
+                                </th>
+                                <th class="px-5 py-3 font-semibold">
+                                    Ocupación promedio
+                                </th>
+                                <th class="px-5 py-3 text-right font-semibold">
+                                    Saturados
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-border">
+                            <tr>
+                                <td class="px-5 py-3">
+                                    <span class="flex items-center gap-2"
+                                        ><span
+                                            class="flex size-6 items-center justify-center rounded bg-live text-[11px] font-extrabold text-primary-foreground"
+                                            >1</span
+                                        >Campus Central – Santa Fe</span
+                                    >
+                                </td>
+                                <td
+                                    class="px-5 py-3 text-right text-muted-foreground"
+                                >
+                                    162
+                                </td>
+                                <td
+                                    class="px-5 py-3 text-right font-semibold text-white"
+                                >
+                                    3 120
+                                </td>
+                                <td class="px-5 py-3">
+                                    <span class="flex items-center gap-2"
+                                        ><span
+                                            class="h-1.5 w-28 overflow-hidden rounded-full bg-secondary"
+                                            ><span
+                                                class="bg-gold block h-full w-[74%] rounded-full"
+                                            ></span></span
+                                        >74 %</span
+                                    >
+                                </td>
+                                <td
+                                    class="px-5 py-3 text-right font-semibold text-destructive"
+                                >
+                                    9
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-5 py-3">
+                                    <span class="flex items-center gap-2"
+                                        ><span
+                                            class="flex size-6 items-center justify-center rounded bg-primary-hover text-[11px] font-extrabold text-primary-foreground"
+                                            >2</span
+                                        >Ramos Arizpe – Campus Central</span
+                                    >
+                                </td>
+                                <td
+                                    class="px-5 py-3 text-right text-muted-foreground"
+                                >
+                                    90
+                                </td>
+                                <td
+                                    class="px-5 py-3 text-right font-semibold text-white"
+                                >
+                                    1 980
+                                </td>
+                                <td class="px-5 py-3">
+                                    <span class="flex items-center gap-2"
+                                        ><span
+                                            class="h-1.5 w-28 overflow-hidden rounded-full bg-secondary"
+                                            ><span
+                                                class="bg-gold block h-full w-[81%] rounded-full"
+                                            ></span></span
+                                        >81 %</span
+                                    >
+                                </td>
+                                <td
+                                    class="px-5 py-3 text-right font-semibold text-destructive"
+                                >
+                                    7
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-5 py-3">
+                                    <span class="flex items-center gap-2"
+                                        ><span
+                                            class="flex size-6 items-center justify-center rounded bg-placeholder text-[11px] font-extrabold text-primary-foreground"
+                                            >3</span
+                                        >Fracc. Arborea – UTC Central</span
+                                    >
+                                </td>
+                                <td
+                                    class="px-5 py-3 text-right text-muted-foreground"
+                                >
+                                    70
+                                </td>
+                                <td
+                                    class="px-5 py-3 text-right font-semibold text-white"
+                                >
+                                    894
+                                </td>
+                                <td class="px-5 py-3">
+                                    <span class="flex items-center gap-2"
+                                        ><span
+                                            class="h-1.5 w-28 overflow-hidden rounded-full bg-secondary"
+                                            ><span
+                                                class="block h-full w-[46%] rounded-full bg-live"
+                                            ></span></span
+                                        >46 %</span
+                                    >
+                                </td>
+                                <td
+                                    class="px-5 py-3 text-right text-muted-foreground"
+                                >
+                                    0
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-5 py-3">
+                                    <span class="flex items-center gap-2"
+                                        ><span
+                                            class="bg-gold flex size-6 items-center justify-center rounded text-[11px] font-extrabold text-primary-foreground"
+                                            >4</span
+                                        >Saltillo 2000 – Campus Central</span
+                                    >
+                                </td>
+                                <td
+                                    class="px-5 py-3 text-right text-muted-foreground"
+                                >
+                                    30
+                                </td>
+                                <td
+                                    class="px-5 py-3 text-right font-semibold text-white"
+                                >
+                                    290
+                                </td>
+                                <td class="px-5 py-3">
+                                    <span class="flex items-center gap-2"
+                                        ><span
+                                            class="h-1.5 w-28 overflow-hidden rounded-full bg-secondary"
+                                            ><span
+                                                class="block h-full w-[32%] rounded-full bg-live"
+                                            ></span></span
+                                        >32 %</span
+                                    >
+                                </td>
+                                <td
+                                    class="px-5 py-3 text-right text-muted-foreground"
+                                >
+                                    1
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </body>
+</html>

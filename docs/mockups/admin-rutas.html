@@ -1,0 +1,542 @@
+<!doctype html>
+<!--
+  Mockup: Rutas y paradas (administración) · UniRoute
+  Para S1-13 (Enrique).
+
+  Notas para implementarlo:
+  - Página resources/js/pages/admin/routes/index.tsx, rutas en
+    routes/admin.php.
+  - Cada ruta muestra número, color, campus, paradas, duración (último
+    minutes_from_start), frecuencia y horario de servicio. El interruptor es
+    routes.is_active.
+  - La tabla de paradas es stops con las rutas que pasan por cada una y si
+    tiene techo (has_shelter).
+-->
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="color-scheme" content="dark" />
+        <title>UniRoute · Rutas y paradas</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+            rel="stylesheet"
+        />
+        <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+        <script src="assets/uniroute.js"></script>
+        <script src="https://unpkg.com/lucide@0.475.0/dist/umd/lucide.min.js"></script>
+    </head>
+    <body
+        class="bg-background text-foreground"
+        data-pagina="admin"
+        data-rol="admin"
+    >
+        <main class="flex-1 space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+            <div class="flex flex-wrap items-end justify-between gap-4">
+                <div>
+                    <p
+                        class="text-gold text-[11px] font-semibold tracking-widest uppercase"
+                    >
+                        Panel de administración
+                    </p>
+                    <h1
+                        class="mt-1 text-2xl font-bold tracking-tight sm:text-3xl"
+                    >
+                        Rutas y paradas
+                    </h1>
+                    <p class="mt-1 text-sm text-muted-foreground">
+                        Las rutas de cada campus y las paradas por las que
+                        pasan.
+                    </p>
+                </div>
+                <a
+                    href="admin-ruta-nueva.html"
+                    class="flex items-center gap-2 rounded-md bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground hover:bg-primary-hover"
+                    ><i data-lucide="plus" class="size-4"></i>Crear ruta</a
+                >
+            </div>
+
+            <nav
+                data-ur-tabs-admin="rutas"
+                aria-label="Secciones del panel"
+            ></nav>
+
+            <section class="grid gap-4 md:grid-cols-2" aria-label="Rutas">
+                <article
+                    class="overflow-hidden rounded-2xl border border-border bg-card"
+                >
+                    <div class="h-1.5 bg-live"></div>
+                    <div class="p-5">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex items-start gap-3">
+                                <span
+                                    class="flex size-10 items-center justify-center rounded-md bg-live text-base font-extrabold text-primary-foreground"
+                                    >1</span
+                                >
+                                <div>
+                                    <h2 class="font-bold">
+                                        Campus Central – Santa Fe
+                                    </h2>
+                                    <p class="text-xs text-muted-foreground">
+                                        Campus Central Saltillo
+                                    </p>
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                role="switch"
+                                aria-checked="true"
+                                aria-label="Ruta 1 activa"
+                                class="relative h-6 w-11 shrink-0 rounded-full bg-live"
+                            >
+                                <span
+                                    class="absolute top-1 left-[22px] size-4 rounded-full bg-primary-foreground"
+                                ></span>
+                            </button>
+                        </div>
+                        <dl class="mt-4 grid grid-cols-4 gap-2 text-center">
+                            <div class="rounded-lg bg-background/50 p-2">
+                                <dt
+                                    class="text-[10px] tracking-wider text-muted-foreground uppercase"
+                                >
+                                    Paradas
+                                </dt>
+                                <dd class="font-bold text-white">6</dd>
+                            </div>
+                            <div class="rounded-lg bg-background/50 p-2">
+                                <dt
+                                    class="text-[10px] tracking-wider text-muted-foreground uppercase"
+                                >
+                                    Duración
+                                </dt>
+                                <dd class="font-bold text-white">30 min</dd>
+                            </div>
+                            <div class="rounded-lg bg-background/50 p-2">
+                                <dt
+                                    class="text-[10px] tracking-wider text-muted-foreground uppercase"
+                                >
+                                    Cada
+                                </dt>
+                                <dd class="font-bold text-white">12 min</dd>
+                            </div>
+                            <div class="rounded-lg bg-background/50 p-2">
+                                <dt
+                                    class="text-[10px] tracking-wider text-muted-foreground uppercase"
+                                >
+                                    Servicio
+                                </dt>
+                                <dd class="font-bold text-white">06–22</dd>
+                            </div>
+                        </dl>
+                        <div class="mt-4 flex gap-2">
+                            <a
+                                href="admin-ruta-nueva.html"
+                                class="flex flex-1 items-center justify-center gap-2 rounded-md border border-border bg-secondary py-2 text-xs font-semibold text-foreground hover:bg-secondary/70"
+                                ><i data-lucide="pencil" class="size-3.5"></i
+                                >Editar</a
+                            >
+                            <a
+                                href="admin-horarios.html"
+                                class="flex flex-1 items-center justify-center gap-2 rounded-md border border-border bg-secondary py-2 text-xs font-semibold text-foreground hover:bg-secondary/70"
+                                ><i
+                                    data-lucide="calendar-clock"
+                                    class="size-3.5"
+                                ></i
+                                >Horarios</a
+                            >
+                        </div>
+                    </div>
+                </article>
+                <article
+                    class="overflow-hidden rounded-2xl border border-border bg-card"
+                >
+                    <div class="h-1.5 bg-primary-hover"></div>
+                    <div class="p-5">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex items-start gap-3">
+                                <span
+                                    class="flex size-10 items-center justify-center rounded-md bg-primary-hover text-base font-extrabold text-primary-foreground"
+                                    >2</span
+                                >
+                                <div>
+                                    <h2 class="font-bold">
+                                        Ramos Arizpe – Campus Central
+                                    </h2>
+                                    <p class="text-xs text-muted-foreground">
+                                        Campus Ramos Arizpe
+                                    </p>
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                role="switch"
+                                aria-checked="true"
+                                aria-label="Ruta 2 activa"
+                                class="relative h-6 w-11 shrink-0 rounded-full bg-live"
+                            >
+                                <span
+                                    class="absolute top-1 left-[22px] size-4 rounded-full bg-primary-foreground"
+                                ></span>
+                            </button>
+                        </div>
+                        <dl class="mt-4 grid grid-cols-4 gap-2 text-center">
+                            <div class="rounded-lg bg-background/50 p-2">
+                                <dt
+                                    class="text-[10px] tracking-wider text-muted-foreground uppercase"
+                                >
+                                    Paradas
+                                </dt>
+                                <dd class="font-bold text-white">4</dd>
+                            </div>
+                            <div class="rounded-lg bg-background/50 p-2">
+                                <dt
+                                    class="text-[10px] tracking-wider text-muted-foreground uppercase"
+                                >
+                                    Duración
+                                </dt>
+                                <dd class="font-bold text-white">35 min</dd>
+                            </div>
+                            <div class="rounded-lg bg-background/50 p-2">
+                                <dt
+                                    class="text-[10px] tracking-wider text-muted-foreground uppercase"
+                                >
+                                    Cada
+                                </dt>
+                                <dd class="font-bold text-white">20 min</dd>
+                            </div>
+                            <div class="rounded-lg bg-background/50 p-2">
+                                <dt
+                                    class="text-[10px] tracking-wider text-muted-foreground uppercase"
+                                >
+                                    Servicio
+                                </dt>
+                                <dd class="font-bold text-white">
+                                    06:30–21:30
+                                </dd>
+                            </div>
+                        </dl>
+                        <div class="mt-4 flex gap-2">
+                            <a
+                                href="admin-ruta-nueva.html"
+                                class="flex flex-1 items-center justify-center gap-2 rounded-md border border-border bg-secondary py-2 text-xs font-semibold text-foreground hover:bg-secondary/70"
+                                ><i data-lucide="pencil" class="size-3.5"></i
+                                >Editar</a
+                            >
+                            <a
+                                href="admin-horarios.html"
+                                class="flex flex-1 items-center justify-center gap-2 rounded-md border border-border bg-secondary py-2 text-xs font-semibold text-foreground hover:bg-secondary/70"
+                                ><i
+                                    data-lucide="calendar-clock"
+                                    class="size-3.5"
+                                ></i
+                                >Horarios</a
+                            >
+                        </div>
+                    </div>
+                </article>
+                <article
+                    class="overflow-hidden rounded-2xl border border-border bg-card"
+                >
+                    <div class="h-1.5 bg-placeholder"></div>
+                    <div class="p-5">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex items-start gap-3">
+                                <span
+                                    class="flex size-10 items-center justify-center rounded-md bg-placeholder text-base font-extrabold text-primary-foreground"
+                                    >3</span
+                                >
+                                <div>
+                                    <h2 class="font-bold">
+                                        Fracc. Arborea – UTC Central
+                                    </h2>
+                                    <p class="text-xs text-muted-foreground">
+                                        Campus Central Saltillo
+                                    </p>
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                role="switch"
+                                aria-checked="true"
+                                aria-label="Ruta 3 activa"
+                                class="relative h-6 w-11 shrink-0 rounded-full bg-live"
+                            >
+                                <span
+                                    class="absolute top-1 left-[22px] size-4 rounded-full bg-primary-foreground"
+                                ></span>
+                            </button>
+                        </div>
+                        <dl class="mt-4 grid grid-cols-4 gap-2 text-center">
+                            <div class="rounded-lg bg-background/50 p-2">
+                                <dt
+                                    class="text-[10px] tracking-wider text-muted-foreground uppercase"
+                                >
+                                    Paradas
+                                </dt>
+                                <dd class="font-bold text-white">3</dd>
+                            </div>
+                            <div class="rounded-lg bg-background/50 p-2">
+                                <dt
+                                    class="text-[10px] tracking-wider text-muted-foreground uppercase"
+                                >
+                                    Duración
+                                </dt>
+                                <dd class="font-bold text-white">14 min</dd>
+                            </div>
+                            <div class="rounded-lg bg-background/50 p-2">
+                                <dt
+                                    class="text-[10px] tracking-wider text-muted-foreground uppercase"
+                                >
+                                    Cada
+                                </dt>
+                                <dd class="font-bold text-white">15 min</dd>
+                            </div>
+                            <div class="rounded-lg bg-background/50 p-2">
+                                <dt
+                                    class="text-[10px] tracking-wider text-muted-foreground uppercase"
+                                >
+                                    Servicio
+                                </dt>
+                                <dd class="font-bold text-white">06–22</dd>
+                            </div>
+                        </dl>
+                        <div class="mt-4 flex gap-2">
+                            <a
+                                href="admin-ruta-nueva.html"
+                                class="flex flex-1 items-center justify-center gap-2 rounded-md border border-border bg-secondary py-2 text-xs font-semibold text-foreground hover:bg-secondary/70"
+                                ><i data-lucide="pencil" class="size-3.5"></i
+                                >Editar</a
+                            >
+                            <a
+                                href="admin-horarios.html"
+                                class="flex flex-1 items-center justify-center gap-2 rounded-md border border-border bg-secondary py-2 text-xs font-semibold text-foreground hover:bg-secondary/70"
+                                ><i
+                                    data-lucide="calendar-clock"
+                                    class="size-3.5"
+                                ></i
+                                >Horarios</a
+                            >
+                        </div>
+                    </div>
+                </article>
+                <article
+                    class="overflow-hidden rounded-2xl border border-border bg-card opacity-80"
+                >
+                    <div class="bg-gold h-1.5"></div>
+                    <div class="p-5">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex items-start gap-3">
+                                <span
+                                    class="bg-gold flex size-10 items-center justify-center rounded-md text-base font-extrabold text-primary-foreground"
+                                    >4</span
+                                >
+                                <div>
+                                    <h2 class="font-bold">
+                                        Saltillo 2000 – Campus Central
+                                    </h2>
+                                    <p class="text-xs text-muted-foreground">
+                                        Campus Central Saltillo · solo
+                                        vespertino
+                                    </p>
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                role="switch"
+                                aria-checked="false"
+                                aria-label="Ruta 4 activa"
+                                class="relative h-6 w-11 shrink-0 rounded-full bg-secondary"
+                            >
+                                <span
+                                    class="absolute top-1 left-1 size-4 rounded-full bg-muted-foreground"
+                                ></span>
+                            </button>
+                        </div>
+                        <dl class="mt-4 grid grid-cols-4 gap-2 text-center">
+                            <div class="rounded-lg bg-background/50 p-2">
+                                <dt
+                                    class="text-[10px] tracking-wider text-muted-foreground uppercase"
+                                >
+                                    Paradas
+                                </dt>
+                                <dd class="font-bold text-white">3</dd>
+                            </div>
+                            <div class="rounded-lg bg-background/50 p-2">
+                                <dt
+                                    class="text-[10px] tracking-wider text-muted-foreground uppercase"
+                                >
+                                    Duración
+                                </dt>
+                                <dd class="font-bold text-white">20 min</dd>
+                            </div>
+                            <div class="rounded-lg bg-background/50 p-2">
+                                <dt
+                                    class="text-[10px] tracking-wider text-muted-foreground uppercase"
+                                >
+                                    Cada
+                                </dt>
+                                <dd class="font-bold text-white">30 min</dd>
+                            </div>
+                            <div class="rounded-lg bg-background/50 p-2">
+                                <dt
+                                    class="text-[10px] tracking-wider text-muted-foreground uppercase"
+                                >
+                                    Servicio
+                                </dt>
+                                <dd class="font-bold text-white">15–21</dd>
+                            </div>
+                        </dl>
+                        <p
+                            class="mt-4 flex items-center gap-2 rounded-md bg-secondary/60 px-3 py-2 text-xs text-muted-foreground"
+                        >
+                            <i data-lucide="eye-off" class="size-3.5"></i
+                            >Desactivada: los estudiantes no la ven.
+                        </p>
+                    </div>
+                </article>
+            </section>
+
+            <section
+                class="overflow-hidden rounded-2xl border border-border bg-card"
+                aria-labelledby="titulo-paradas"
+            >
+                <div
+                    class="flex flex-wrap items-center justify-between gap-3 border-b border-border p-5"
+                >
+                    <h2 id="titulo-paradas" class="text-lg font-bold">
+                        Paradas
+                    </h2>
+                    <label class="relative w-full sm:w-64">
+                        <span class="sr-only">Buscar parada</span>
+                        <i
+                            data-lucide="search"
+                            class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-placeholder"
+                        ></i>
+                        <input
+                            type="search"
+                            placeholder="Buscar parada"
+                            class="w-full rounded-md border border-border bg-background py-2 pr-3 pl-9 text-sm text-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/50"
+                        />
+                    </label>
+                </div>
+                <div class="relative overflow-x-auto">
+                    <table class="w-full min-w-[600px] text-left text-sm">
+                        <thead
+                            class="text-[11px] tracking-wider text-muted-foreground uppercase"
+                        >
+                            <tr class="border-b border-border">
+                                <th class="px-5 py-3 font-semibold">Parada</th>
+                                <th class="px-5 py-3 font-semibold">Rutas</th>
+                                <th class="px-5 py-3 font-semibold">Techo</th>
+                                <th class="px-5 py-3 font-semibold">
+                                    Coordenadas
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-border">
+                            <tr>
+                                <td class="px-5 py-3 font-semibold text-white">
+                                    Campus Central - Puerta Principal
+                                </td>
+                                <td class="px-5 py-3">
+                                    <span class="flex gap-1"
+                                        ><span
+                                            class="flex size-6 items-center justify-center rounded bg-live text-[11px] font-extrabold text-primary-foreground"
+                                            >1</span
+                                        ><span
+                                            class="flex size-6 items-center justify-center rounded bg-primary-hover text-[11px] font-extrabold text-primary-foreground"
+                                            >2</span
+                                        ><span
+                                            class="flex size-6 items-center justify-center rounded bg-placeholder text-[11px] font-extrabold text-primary-foreground"
+                                            >3</span
+                                        ><span
+                                            class="bg-gold flex size-6 items-center justify-center rounded text-[11px] font-extrabold text-primary-foreground"
+                                            >4</span
+                                        ></span
+                                    >
+                                </td>
+                                <td class="px-5 py-3 text-live">
+                                    <i data-lucide="check" class="size-4"></i>
+                                </td>
+                                <td
+                                    class="px-5 py-3 text-xs text-muted-foreground"
+                                >
+                                    25.4231, -100.9802
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-5 py-3 font-semibold text-white">
+                                    Fraccionamiento Arborea
+                                </td>
+                                <td class="px-5 py-3">
+                                    <span class="flex gap-1"
+                                        ><span
+                                            class="flex size-6 items-center justify-center rounded bg-live text-[11px] font-extrabold text-primary-foreground"
+                                            >1</span
+                                        ><span
+                                            class="flex size-6 items-center justify-center rounded bg-placeholder text-[11px] font-extrabold text-primary-foreground"
+                                            >3</span
+                                        ></span
+                                    >
+                                </td>
+                                <td class="px-5 py-3 text-placeholder">—</td>
+                                <td
+                                    class="px-5 py-3 text-xs text-muted-foreground"
+                                >
+                                    25.4105, -100.9551
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-5 py-3 font-semibold text-white">
+                                    Plaza de Armas
+                                </td>
+                                <td class="px-5 py-3">
+                                    <span class="flex gap-1"
+                                        ><span
+                                            class="flex size-6 items-center justify-center rounded bg-primary-hover text-[11px] font-extrabold text-primary-foreground"
+                                            >2</span
+                                        ><span
+                                            class="bg-gold flex size-6 items-center justify-center rounded text-[11px] font-extrabold text-primary-foreground"
+                                            >4</span
+                                        ></span
+                                    >
+                                </td>
+                                <td class="px-5 py-3 text-live">
+                                    <i data-lucide="check" class="size-4"></i>
+                                </td>
+                                <td
+                                    class="px-5 py-3 text-xs text-muted-foreground"
+                                >
+                                    25.4248, -101.0005
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-5 py-3 font-semibold text-white">
+                                    Santa Fe
+                                </td>
+                                <td class="px-5 py-3">
+                                    <span class="flex gap-1"
+                                        ><span
+                                            class="flex size-6 items-center justify-center rounded bg-live text-[11px] font-extrabold text-primary-foreground"
+                                            >1</span
+                                        ></span
+                                    >
+                                </td>
+                                <td class="px-5 py-3 text-live">
+                                    <i data-lucide="check" class="size-4"></i>
+                                </td>
+                                <td
+                                    class="px-5 py-3 text-xs text-muted-foreground"
+                                >
+                                    25.3987, -100.9472
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </body>
+</html>

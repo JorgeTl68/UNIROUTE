@@ -1,0 +1,674 @@
+<!doctype html>
+<!--
+  Mockup: Dashboard en Vivo · UniRoute
+  Para S2-01 (Sosa). La versión de celular (hoja deslizable) es S4-07 (Andrés) y
+  el selector Mapa / Satélite con rutas cercanas es S4-08 (Sosa).
+
+  Notas para implementarlo:
+  - Página resources/js/pages/dashboard.tsx, ruta "dashboard". La ven todos los
+    roles; es la primera pantalla después de iniciar sesión.
+  - Props: rutas del campus elegido con su unidad en servicio, ocupación,
+    conductor, próxima parada, estado (StatusChip) y minutos de llegada.
+  - El mapa es TransitMap (S1-07) con Leaflet; aquí es un dibujo. La unidad se
+    mueve con Echo en S3-02 ("Actualizado hace X s").
+  - Filtros: Todas, En camino, Cercanas (necesita la ubicación del usuario) y
+    Favoritas (S4-02).
+  - En celular el mapa va arriba y la lista es una hoja que se desliza.
+  - Las clases son las de app.css: se copian tal cual. La base compartida está en
+    assets/uniroute.js y no se copia.
+-->
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="color-scheme" content="dark" />
+        <title>UniRoute · Dashboard en Vivo</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+            rel="stylesheet"
+        />
+        <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+        <script src="assets/uniroute.js"></script>
+        <script src="https://unpkg.com/lucide@0.475.0/dist/umd/lucide.min.js"></script>
+    </head>
+    <body
+        class="bg-background text-foreground"
+        data-pagina="dashboard"
+        data-rol="estudiante"
+    >
+        <main class="flex flex-1 flex-col lg:h-[calc(100vh-4rem)] lg:flex-row">
+            <!-- LISTA DE RUTAS -->
+            <section
+                class="relative z-10 order-2 -mt-6 flex flex-col rounded-t-2xl border-t border-border bg-background lg:order-1 lg:mt-0 lg:w-[400px] lg:shrink-0 lg:rounded-none lg:border-t-0 lg:border-r"
+                aria-label="Rutas del campus"
+            >
+                <div
+                    class="mx-auto mt-2.5 h-1.5 w-12 rounded-full bg-secondary lg:hidden"
+                ></div>
+
+                <!-- Llegada en celular -->
+                <div
+                    class="mx-4 mt-4 rounded-xl border border-border bg-card p-4 xl:hidden"
+                >
+                    <div class="flex items-center justify-between gap-3">
+                        <div>
+                            <p
+                                class="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase"
+                            >
+                                Tu unidad llega a las
+                            </p>
+                            <p class="text-3xl font-extrabold text-white">
+                                16:45
+                            </p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm font-semibold text-foreground">
+                                Ruta 1 · Santa Fe
+                            </p>
+                            <p class="text-xs text-muted-foreground">
+                                Parada a 450 m
+                            </p>
+                        </div>
+                    </div>
+                    <div class="mt-3 flex gap-2">
+                        <button
+                            type="button"
+                            data-ur-toast="Te avisaremos 5 minutos antes"
+                            class="flex flex-1 items-center justify-center gap-2 rounded-md border border-border bg-secondary py-2.5 text-sm font-semibold text-foreground"
+                        >
+                            <i data-lucide="bell-plus" class="size-4"></i
+                            >Avisarme
+                        </button>
+                        <a
+                            href="detalle-ruta.html"
+                            class="flex flex-1 items-center justify-center gap-2 rounded-md bg-primary py-2.5 text-sm font-bold text-primary-foreground"
+                        >
+                            Ver ruta<i
+                                data-lucide="chevron-right"
+                                class="size-4"
+                            ></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="space-y-3 p-4">
+                    <label class="relative block">
+                        <span class="sr-only">Buscar ruta</span>
+                        <i
+                            data-lucide="bus-front"
+                            class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-placeholder"
+                        ></i>
+                        <input
+                            type="search"
+                            placeholder="Buscar ruta, parada o colonia…"
+                            class="w-full rounded-md border border-border bg-card py-2.5 pr-10 pl-9 text-sm text-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/50"
+                        />
+                        <button
+                            type="button"
+                            class="absolute top-1/2 right-1.5 flex size-8 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary"
+                            aria-label="Más filtros"
+                        >
+                            <i
+                                data-lucide="sliders-horizontal"
+                                class="size-4"
+                            ></i>
+                        </button>
+                    </label>
+                    <div
+                        class="ur-scroll -mx-4 flex gap-2 overflow-x-auto px-4 pb-1"
+                        role="group"
+                        aria-label="Filtrar rutas"
+                    >
+                        <button
+                            type="button"
+                            class="filtro shrink-0 rounded-full bg-primary px-3.5 py-1.5 text-xs font-bold text-primary-foreground"
+                            aria-pressed="true"
+                        >
+                            Todas (4)
+                        </button>
+                        <button
+                            type="button"
+                            class="filtro flex shrink-0 items-center gap-1.5 rounded-full bg-card px-3.5 py-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground"
+                            aria-pressed="false"
+                        >
+                            <span class="size-1.5 rounded-full bg-live"></span
+                            >En camino (3)
+                        </button>
+                        <button
+                            type="button"
+                            class="filtro flex shrink-0 items-center gap-1.5 rounded-full bg-card px-3.5 py-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground"
+                            aria-pressed="false"
+                        >
+                            <i data-lucide="locate-fixed" class="size-3.5"></i
+                            >Cercanas (2)
+                        </button>
+                        <button
+                            type="button"
+                            class="filtro flex shrink-0 items-center gap-1.5 rounded-full bg-card px-3.5 py-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground"
+                            aria-pressed="false"
+                        >
+                            <i data-lucide="star" class="size-3.5"></i>Favoritas
+                            (1)
+                        </button>
+                    </div>
+                </div>
+
+                <div
+                    class="ur-scroll flex-1 space-y-3 px-4 pb-6 lg:overflow-y-auto"
+                >
+                    <!-- Ruta 1 (elegida) -->
+                    <article
+                        class="rounded-xl border border-primary/50 bg-card p-4 ring-1 ring-primary/30"
+                    >
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex min-w-0 items-start gap-3">
+                                <span
+                                    class="flex size-8 shrink-0 items-center justify-center rounded-md bg-live text-sm font-extrabold text-primary-foreground"
+                                    >1</span
+                                >
+                                <div class="min-w-0">
+                                    <h2
+                                        class="text-base leading-tight font-bold"
+                                    >
+                                        Campus Central – Santa Fe
+                                    </h2>
+                                    <p class="text-gold mt-0.5 text-xs">
+                                        Vía Manantiales del Valle
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="shrink-0 text-right">
+                                <span
+                                    class="inline-flex items-center gap-1.5 rounded-full bg-live/15 px-2 py-0.5 text-[11px] font-bold text-live"
+                                >
+                                    <span
+                                        class="size-1.5 animate-pulse rounded-full bg-live"
+                                    ></span
+                                    >En vivo
+                                </span>
+                                <p
+                                    class="mt-1 text-2xl font-extrabold text-white"
+                                >
+                                    4
+                                    <span
+                                        class="text-sm font-semibold text-muted-foreground"
+                                        >min</span
+                                    >
+                                </p>
+                            </div>
+                        </div>
+                        <div class="mt-3 rounded-lg bg-background/60 p-3">
+                            <div
+                                class="flex items-center justify-between text-xs"
+                            >
+                                <span
+                                    class="flex items-center gap-1.5 font-semibold text-foreground"
+                                    ><i
+                                        data-lucide="bus-front"
+                                        class="size-3.5 text-muted-foreground"
+                                    ></i
+                                    >BUS-UTC-01 · Mercedes Sprinter</span
+                                >
+                                <span class="text-muted-foreground">65 %</span>
+                            </div>
+                            <div
+                                class="mt-2 h-1.5 overflow-hidden rounded-full bg-secondary"
+                                role="progressbar"
+                                aria-valuenow="65"
+                                aria-valuemin="0"
+                                aria-valuemax="100"
+                                aria-label="Ocupación"
+                            >
+                                <div
+                                    class="bg-gold h-full w-[65%] rounded-full"
+                                ></div>
+                            </div>
+                            <div
+                                class="mt-2 flex items-center justify-between gap-2 text-[11px] text-muted-foreground"
+                            >
+                                <span>Conductor: Manuel González</span
+                                ><span>Próx.: Fracc. Arborea</span>
+                            </div>
+                        </div>
+                        <div
+                            class="mt-3 flex items-center justify-between gap-2"
+                        >
+                            <span
+                                class="flex items-center gap-1.5 text-xs text-muted-foreground"
+                                ><i
+                                    data-lucide="map-pin"
+                                    class="text-gold size-3.5"
+                                ></i
+                                >Parada Santa Fe a 450 m</span
+                            >
+                            <a
+                                href="detalle-ruta.html"
+                                class="flex items-center gap-1 rounded-md bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground hover:bg-primary-hover"
+                            >
+                                Ver ruta<i
+                                    data-lucide="chevron-right"
+                                    class="size-3.5"
+                                ></i>
+                            </a>
+                        </div>
+                    </article>
+
+                    <!-- Ruta 2 (demorada) -->
+                    <article
+                        class="rounded-xl border border-border bg-card p-4"
+                    >
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex min-w-0 items-start gap-3">
+                                <span
+                                    class="flex size-8 shrink-0 items-center justify-center rounded-md bg-primary-hover text-sm font-extrabold text-primary-foreground"
+                                    >2</span
+                                >
+                                <div class="min-w-0">
+                                    <h2
+                                        class="text-base leading-tight font-bold"
+                                    >
+                                        Ramos Arizpe – Campus Central
+                                    </h2>
+                                    <p
+                                        class="mt-0.5 text-xs text-muted-foreground"
+                                    >
+                                        Conexión Zona Industrial
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="shrink-0 text-right">
+                                <span
+                                    class="bg-warning/15 text-warning inline-flex rounded-full px-2 py-0.5 text-[11px] font-bold"
+                                    >Demorado</span
+                                >
+                                <p
+                                    class="mt-1 text-2xl font-extrabold text-white"
+                                >
+                                    9
+                                    <span
+                                        class="text-sm font-semibold text-muted-foreground"
+                                        >min</span
+                                    >
+                                </p>
+                            </div>
+                        </div>
+                        <div class="mt-3 rounded-lg bg-background/60 p-3">
+                            <div
+                                class="flex items-center justify-between text-xs"
+                            >
+                                <span
+                                    class="flex items-center gap-1.5 font-semibold text-foreground"
+                                    ><i
+                                        data-lucide="bus-front"
+                                        class="size-3.5 text-muted-foreground"
+                                    ></i
+                                    >BUS-UTC-02 · Volvo Access</span
+                                >
+                                <span class="font-semibold text-destructive"
+                                    >92 %</span
+                                >
+                            </div>
+                            <div
+                                class="mt-2 h-1.5 overflow-hidden rounded-full bg-secondary"
+                                role="progressbar"
+                                aria-valuenow="92"
+                                aria-valuemin="0"
+                                aria-valuemax="100"
+                                aria-label="Ocupación"
+                            >
+                                <div
+                                    class="h-full w-[92%] rounded-full bg-destructive"
+                                ></div>
+                            </div>
+                            <div
+                                class="mt-2 flex items-center justify-between gap-2 text-[11px] text-muted-foreground"
+                            >
+                                <span>Conductor: Laura Rivas</span
+                                ><span>Próx.: Plaza de Armas</span>
+                            </div>
+                        </div>
+                        <div
+                            class="mt-3 flex items-center justify-between gap-2"
+                        >
+                            <span
+                                class="text-warning flex items-center gap-1.5 text-xs"
+                                ><i
+                                    data-lucide="clock-alert"
+                                    class="size-3.5"
+                                ></i
+                                >Tráfico en Blvd. Plan de Guadalupe</span
+                            >
+                            <a
+                                href="detalle-ruta.html"
+                                class="rounded-md bg-secondary px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-secondary/70"
+                                >Detalles</a
+                            >
+                        </div>
+                    </article>
+
+                    <!-- Ruta 3 (a tiempo) -->
+                    <article
+                        class="rounded-xl border border-border bg-card p-4"
+                    >
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex min-w-0 items-start gap-3">
+                                <span
+                                    class="flex size-8 shrink-0 items-center justify-center rounded-md bg-placeholder text-sm font-extrabold text-primary-foreground"
+                                    >3</span
+                                >
+                                <div class="min-w-0">
+                                    <h2
+                                        class="text-base leading-tight font-bold"
+                                    >
+                                        Fracc. Arborea – UTC Central
+                                    </h2>
+                                    <p
+                                        class="mt-0.5 text-xs text-muted-foreground"
+                                    >
+                                        Línea directa estudiantes
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="shrink-0 text-right">
+                                <span
+                                    class="inline-flex rounded-full bg-live/15 px-2 py-0.5 text-[11px] font-bold text-live"
+                                    >A tiempo</span
+                                >
+                                <p
+                                    class="mt-1 text-2xl font-extrabold text-white"
+                                >
+                                    14
+                                    <span
+                                        class="text-sm font-semibold text-muted-foreground"
+                                        >min</span
+                                    >
+                                </p>
+                            </div>
+                        </div>
+                        <div class="mt-3 rounded-lg bg-background/60 p-3">
+                            <div
+                                class="flex items-center justify-between text-xs"
+                            >
+                                <span
+                                    class="flex items-center gap-1.5 font-semibold text-foreground"
+                                    ><i
+                                        data-lucide="bus-front"
+                                        class="size-3.5 text-muted-foreground"
+                                    ></i
+                                    >BUS-UTC-03 · Marcopolo Boxer</span
+                                >
+                                <span class="text-muted-foreground">35 %</span>
+                            </div>
+                            <div
+                                class="mt-2 h-1.5 overflow-hidden rounded-full bg-secondary"
+                                role="progressbar"
+                                aria-valuenow="35"
+                                aria-valuemin="0"
+                                aria-valuemax="100"
+                                aria-label="Ocupación"
+                            >
+                                <div
+                                    class="h-full w-[35%] rounded-full bg-live"
+                                ></div>
+                            </div>
+                            <div
+                                class="mt-2 flex items-center justify-between gap-2 text-[11px] text-muted-foreground"
+                            >
+                                <span>Conductor: Javier Castillo</span
+                                ><span>Próx.: Manantiales</span>
+                            </div>
+                        </div>
+                        <div
+                            class="mt-3 flex items-center justify-between gap-2"
+                        >
+                            <span
+                                class="flex items-center gap-1.5 text-xs text-live"
+                                ><i
+                                    data-lucide="circle-check"
+                                    class="size-3.5"
+                                ></i
+                                >Sin retrasos</span
+                            >
+                            <a
+                                href="detalle-ruta.html"
+                                class="rounded-md bg-secondary px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-secondary/70"
+                                >Detalles</a
+                            >
+                        </div>
+                    </article>
+
+                    <!-- Ruta 4 (programada) -->
+                    <article
+                        class="rounded-xl border border-border bg-card/60 p-4"
+                    >
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex min-w-0 items-start gap-3">
+                                <span
+                                    class="bg-gold flex size-8 shrink-0 items-center justify-center rounded-md text-sm font-extrabold text-primary-foreground"
+                                    >4</span
+                                >
+                                <div class="min-w-0">
+                                    <h2
+                                        class="text-base leading-tight font-bold"
+                                    >
+                                        Saltillo 2000 – Campus Central
+                                    </h2>
+                                    <p
+                                        class="mt-0.5 text-xs text-muted-foreground"
+                                    >
+                                        Turno vespertino
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="shrink-0 text-right">
+                                <span
+                                    class="inline-flex rounded-full bg-secondary px-2 py-0.5 text-[11px] font-bold text-muted-foreground"
+                                    >Programado</span
+                                >
+                                <p
+                                    class="mt-1 text-lg font-extrabold text-white"
+                                >
+                                    15:00
+                                </p>
+                            </div>
+                        </div>
+                        <p
+                            class="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground"
+                        >
+                            <i data-lucide="calendar-clock" class="size-3.5"></i
+                            >Primera salida hoy a las 15:00 desde Saltillo 2000
+                        </p>
+                    </article>
+                </div>
+            </section>
+
+            <!-- MAPA -->
+            <section
+                class="relative order-1 h-[55vh] overflow-hidden bg-card lg:order-2 lg:h-auto lg:flex-1"
+                aria-label="Mapa en vivo"
+                data-ur-mapa='{"recorrido":9,"otras":true,"usuario":[790,520],"unidades":[[320,260,"BUS-UTC-02"],[600,470,"BUS-UTC-03"]]}'
+            >
+                <!-- Ruta elegida -->
+                <div
+                    class="absolute top-3 left-3 hidden items-center gap-2 rounded-full border border-border bg-card/95 px-3 py-1.5 text-xs shadow-lg backdrop-blur sm:flex"
+                >
+                    <span
+                        class="size-2 animate-pulse rounded-full bg-live"
+                    ></span>
+                    <span class="font-semibold text-foreground"
+                        >Ruta 1 · Campus Central – Santa Fe</span
+                    >
+                    <span class="text-muted-foreground"
+                        >Actualizado hace 3 s</span
+                    >
+                </div>
+
+                <!-- Capas y controles -->
+                <div
+                    class="absolute top-3 right-3 flex flex-col items-end gap-2"
+                >
+                    <div
+                        class="flex rounded-xl border border-border bg-card/95 p-1 shadow-lg backdrop-blur"
+                        role="group"
+                        aria-label="Tipo de mapa"
+                    >
+                        <button
+                            type="button"
+                            class="rounded-md bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground"
+                            aria-pressed="true"
+                        >
+                            Mapa
+                        </button>
+                        <button
+                            type="button"
+                            class="rounded-md px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground"
+                            aria-pressed="false"
+                        >
+                            Satélite
+                        </button>
+                    </div>
+                    <div
+                        class="flex flex-col overflow-hidden rounded-xl border border-border bg-card/95 shadow-lg backdrop-blur"
+                    >
+                        <button
+                            type="button"
+                            class="flex size-10 items-center justify-center text-foreground hover:bg-secondary"
+                            aria-label="Rutas visibles"
+                        >
+                            <i data-lucide="layers" class="size-[18px]"></i>
+                        </button>
+                        <button
+                            type="button"
+                            class="text-warning flex size-10 items-center justify-center border-t border-border hover:bg-secondary"
+                            aria-label="Incidencias"
+                        >
+                            <i
+                                data-lucide="triangle-alert"
+                                class="size-[18px]"
+                            ></i>
+                        </button>
+                    </div>
+                </div>
+                <div
+                    class="absolute right-3 bottom-10 flex flex-col gap-2 xl:bottom-48"
+                >
+                    <button
+                        type="button"
+                        class="flex size-10 items-center justify-center rounded-xl border border-border bg-card/95 text-foreground shadow-lg hover:bg-secondary"
+                        aria-label="Mi ubicación"
+                    >
+                        <i data-lucide="locate-fixed" class="size-[18px]"></i>
+                    </button>
+                    <div
+                        class="flex flex-col overflow-hidden rounded-xl border border-border bg-card/95 shadow-lg"
+                    >
+                        <button
+                            type="button"
+                            class="flex size-10 items-center justify-center text-foreground hover:bg-secondary"
+                            aria-label="Acercar"
+                        >
+                            <i data-lucide="plus" class="size-[18px]"></i>
+                        </button>
+                        <button
+                            type="button"
+                            class="flex size-10 items-center justify-center border-t border-border text-foreground hover:bg-secondary"
+                            aria-label="Alejar"
+                        >
+                            <i data-lucide="minus" class="size-[18px]"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tarjeta de llegada (escritorio) -->
+                <div
+                    class="absolute right-20 bottom-6 left-6 hidden max-w-xl rounded-2xl border border-border bg-card/95 p-5 shadow-2xl shadow-black/50 backdrop-blur xl:block"
+                >
+                    <div class="flex items-center gap-5">
+                        <div class="shrink-0">
+                            <p
+                                class="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase"
+                            >
+                                Hora de arribo
+                            </p>
+                            <p class="text-4xl font-extrabold text-white">
+                                16:45
+                            </p>
+                        </div>
+                        <div class="h-12 w-px bg-border"></div>
+                        <div class="min-w-0">
+                            <p
+                                class="flex items-center gap-2 text-lg font-bold text-white"
+                            >
+                                <span class="size-2 rounded-full bg-live"></span
+                                >Línea 1 – Santa Fe
+                            </p>
+                            <p
+                                class="mt-0.5 flex items-center gap-1.5 text-sm text-muted-foreground"
+                            >
+                                <i
+                                    data-lucide="map-pin"
+                                    class="text-gold size-4"
+                                ></i
+                                >Próxima parada: Santa Fe · a 450 m
+                            </p>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex flex-wrap items-center gap-2">
+                        <button
+                            type="button"
+                            data-ur-toast="Te avisaremos 5 minutos antes"
+                            class="flex items-center gap-2 rounded-md border border-border bg-secondary px-4 py-2 text-sm font-semibold text-foreground hover:bg-secondary/70"
+                        >
+                            <i data-lucide="bell-plus" class="size-4"></i
+                            >Avisarme al llegar
+                        </button>
+                        <button
+                            type="button"
+                            data-ur-toast="Enlace copiado"
+                            class="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:bg-primary-hover"
+                        >
+                            <i data-lucide="share-2" class="size-4"></i
+                            >Compartir
+                        </button>
+                    </div>
+                    <div class="mt-4 flex items-center gap-3">
+                        <div
+                            class="h-2 flex-1 overflow-hidden rounded-full bg-secondary"
+                        >
+                            <div
+                                class="to-gold h-full w-[78%] rounded-full bg-gradient-to-r from-route"
+                            ></div>
+                        </div>
+                        <span class="text-xs font-bold text-foreground"
+                            >78 % del trayecto</span
+                        >
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var filtros = document.querySelectorAll('.filtro');
+                filtros.forEach(function (f) {
+                    f.addEventListener('click', function () {
+                        filtros.forEach(function (o) {
+                            var on = o === f;
+                            o.setAttribute(
+                                'aria-pressed',
+                                on ? 'true' : 'false',
+                            );
+                            o.classList.toggle('bg-primary', on);
+                            o.classList.toggle('text-primary-foreground', on);
+                            o.classList.toggle('font-bold', on);
+                            o.classList.toggle('bg-card', !on);
+                            o.classList.toggle('text-muted-foreground', !on);
+                        });
+                    });
+                });
+            });
+        </script>
+    </body>
+</html>
