@@ -48,9 +48,20 @@ export function AppSidebar() {
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <SidebarMenuButton size="lg" asChild>
+                        <SidebarMenuButton
+                            size="lg"
+                            asChild
+                            tooltip="UniRoute — Inicio"
+                        >
                             <Link href={dashboard()} prefetch>
-                                <AppLogo />
+                                <span className="flex min-w-0 items-center group-data-[collapsible=icon]:hidden">
+                                    <AppLogo />
+                                </span>
+                                <img
+                                    src="/branding/isotipo-oscuro.svg"
+                                    alt="UniRoute"
+                                    className="hidden size-6 shrink-0 object-contain group-data-[collapsible=icon]:block"
+                                />
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
