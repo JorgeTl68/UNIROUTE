@@ -10,6 +10,7 @@ Route::inertia('/', 'welcome')->name('home');
 
 require __DIR__.'/settings.php';
 require __DIR__.'/transit.php';
+require __DIR__.'/driver.php';
 require __DIR__.'/admin.php';
 
 Route::middleware(['auth', 'verified', 'role:admin'])

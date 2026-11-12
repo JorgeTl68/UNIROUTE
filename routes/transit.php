@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EmergencyController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Transit\ArrivalAlarmController;
 use App\Http\Controllers\Transit\FavoriteRouteController;
@@ -24,4 +25,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::get('notifications/{notification}', [NotificationController::class, 'open'])->name('notifications.open');
     Route::post('notifications/read-all', [NotificationController::class, 'markAllRead'])->name('notifications.read-all');
+
+    Route::get('emergency/create', [EmergencyController::class, 'create'])->name('emergency.create');
+    Route::post('emergency', [EmergencyController::class, 'store'])
+        ->middleware('throttle:5,1')
+        ->name('emergency.store');
 });
