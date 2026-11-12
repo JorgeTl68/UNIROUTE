@@ -21,6 +21,8 @@
     --color-live: var(--verde-tiempo-real);
     --color-route: var(--verde-rutas);
     --color-placeholder: var(--placeholder);
+    --color-warning: var(--advertencia);
+    --color-gold: var(--dorado);
     --color-foreground: var(--foreground);
 
     --color-card: var(--card);
@@ -81,6 +83,8 @@
     --texto-secundario: #bac7e4;
     --placeholder: #7e8ba6;
     --error: #ffb4ab;
+    --advertencia: #fbbf24;
+    --dorado: #b69b72;
     --background: #020e24;
     --foreground: #ecf1f9;
     --card: #17243a;
@@ -168,4 +172,53 @@
     transform: translateY(-50%);
     color: var(--placeholder);
     pointer-events: none;
+}
+
+/*
+ * Mapa con Leaflet (TransitMap). La capa de OpenStreetMap se oscurece con un
+ * filtro para que combine con el tema y resalten la ruta y las unidades.
+ */
+.transit-map.leaflet-container {
+    background: #0a1830;
+    font-family: inherit;
+}
+.osm-oscuro {
+    filter: invert(1) hue-rotate(195deg) saturate(0.45) brightness(0.85)
+        contrast(0.95);
+}
+.transit-map .leaflet-control-attribution {
+    background: rgb(2 14 36 / 0.75);
+    color: var(--texto-secundario);
+    font-size: 10px;
+}
+.transit-map .leaflet-control-attribution a {
+    color: var(--boton-hover);
+}
+.transit-marker {
+    background: transparent;
+    border: 0;
+}
+@keyframes transit-pulse {
+    0% {
+        transform: scale(0.85);
+        opacity: 0.7;
+    }
+    100% {
+        transform: scale(1.6);
+        opacity: 0;
+    }
+}
+@media (prefers-reduced-motion: no-preference) {
+    .transit-pulse {
+        animation: transit-pulse 1.8s ease-out infinite;
+    }
+}
+/* La unidad se desliza entre posiciones; al hacer zoom se mueve de golpe. */
+@media (prefers-reduced-motion: no-preference) {
+    .transit-unit {
+        transition: transform 1s linear;
+    }
+    .leaflet-zoom-anim .transit-unit {
+        transition: none;
+    }
 }

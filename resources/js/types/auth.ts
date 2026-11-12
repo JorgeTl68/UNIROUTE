@@ -7,6 +7,8 @@ export type User = {
     role: UserRole;
     student_id: string | null;
     campus_id: number | null;
+    /** Minutos de aviso por defecto para "Avisarme al llegar". */
+    alarm_minutes_before: number;
     avatar?: string;
     email_verified_at: string | null;
     two_factor_enabled?: boolean;

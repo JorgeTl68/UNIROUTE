@@ -2,7 +2,12 @@
 
 namespace App\Http\Middleware;
 
+use App\Http\Controllers\NotificationController;
+use App\Models\Campus;
+use App\Models\Trip;
+use App\Services\Transit\CurrentCampus;
 use Illuminate\Http\Request;
+use Illuminate\Notifications\DatabaseNotification;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -42,6 +47,24 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user(),
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
+            // Header y sidebar: se calculan solo con sesión y no en recargas parciales.
+            'campuses' => fn (): array => $request->user() === null ? [] : Campus::query()
+                ->orderBy('name')
+                ->get(['id', 'name', 'slug'])
+                ->all(),
+            'currentCampus' => fn (): ?array => $request->user() === null
+                ? null
+                : app(CurrentCampus::class)->resolve($request)?->only(['id', 'name', 'slug']),
+            'liveUnits' => fn (): int => $request->user() === null ? 0 : Trip::query()->inProgress()->count(),
+            'notifications' => fn (): ?array => $request->user() === null ? null : [
+                'unread' => $request->user()->unreadNotifications()->count(),
+                'latest' => $request->user()->notifications()
+                    ->latest()
+                    ->limit(5)
+                    ->get()
+                    ->map(fn (DatabaseNotification $notification): array => NotificationController::present($notification))
+                    ->all(),
+            ],
         ];
     }
 }
