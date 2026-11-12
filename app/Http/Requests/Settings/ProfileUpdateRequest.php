@@ -28,6 +28,10 @@ class ProfileUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        return $this->profileRules($this->user()->id);
+        return [
+            ...$this->profileRules($this->user()->id),
+            'campus_id' => ['sometimes', 'nullable', 'integer', 'exists:campuses,id'],
+            'alarm_minutes_before' => ['sometimes', 'integer', 'between:1,30'],
+        ];
     }
 }

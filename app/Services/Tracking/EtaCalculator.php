@@ -27,6 +27,12 @@ class EtaCalculator
     private const float PASSED_STOP_TOLERANCE_METERS = 30.0;
 
     /**
+     * Minutos de retraso desde los que una ruta se marca como "Demorada" y se
+     * avisa a quienes la tienen en favoritas.
+     */
+    public const int DELAY_THRESHOLD_MINUTES = 5;
+
+    /**
      * @return list<array{stop_id: int, stop_name: string, trip_id: int|null, distance_meters: float, eta_minutes: int, arrives_at: CarbonImmutable, delay_minutes: int}>
      */
     public function forRoute(

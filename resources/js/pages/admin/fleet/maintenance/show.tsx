@@ -4,7 +4,8 @@ import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { recordDate, severityLabels } from './index';
+import { severityLabels } from '@/components/admin/maintenance-form-dialog';
+import { recordDate } from './index';
 import type { MaintenanceRecord } from './index';
 type Props = {
     record: MaintenanceRecord & {
@@ -258,9 +259,3 @@ export default function MaintenanceDetail({ record, scheduledTrips }: Props) {
         </>
     );
 }
-MaintenanceDetail.layout = {
-    breadcrumbs: [
-        { title: 'Mantenimiento', href: '/admin/fleet/maintenance' },
-        { title: 'Detalle del reporte', href: '#' },
-    ],
-};

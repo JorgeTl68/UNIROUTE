@@ -33,7 +33,7 @@ class MaintenanceController extends Controller
                 ->when($filters['vehicle_id'] ?? null, fn ($query, $id) => $query->where('records.vehicle_id', $id))
                 ->orderByDesc('records.id')->select(['records.*', 'vehicles.code', 'vehicles.plate'])->paginate(10)->withQueryString(),
             'filters' => ['state' => $filters['state'] ?? '', 'vehicle_id' => $filters['vehicle_id'] ?? ''],
-            'vehicles' => Vehicle::orderBy('code')->get(['id', 'code']),
+            'vehicles' => Vehicle::orderBy('code')->get(['id', 'code', 'plate']),
             'stats' => [
                 'in_workshop' => Vehicle::where('status', VehicleStatus::Maintenance)->count(),
                 'open' => DB::table('vehicle_maintenance_records')->whereNull('completed_at')->count(),
@@ -42,17 +42,6 @@ class MaintenanceController extends Controller
             'without_report' => Vehicle::where('status', VehicleStatus::Maintenance)
                 ->whereNotExists(fn ($query) => $query->selectRaw('1')->from('vehicle_maintenance_records')->whereColumn('vehicle_id', 'vehicles.id')->whereNull('completed_at'))
                 ->orderBy('code')->get(['id', 'code']),
-        ]);
-    }
-
-    public function create(Request $request): Response
-    {
-        Gate::authorize('create', Vehicle::class);
-        $input = $request->validate(['vehicle_id' => ['nullable', 'integer', 'exists:vehicles,id']]);
-
-        return Inertia::render('admin/fleet/maintenance/create', [
-            'vehicles' => Vehicle::query()->orderBy('code')->get(['id', 'code', 'plate', 'status']),
-            'selectedVehicle' => $input['vehicle_id'] ?? null,
         ]);
     }
 

@@ -2,13 +2,17 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\TripStatus;
+use App\Enums\UserRole;
 use App\Enums\VehicleStatus;
 use App\Models\TransitRoute;
 use App\Models\Trip;
+use App\Models\User;
 use App\Models\Vehicle;
 use App\Services\Tracking\RoutePath;
 use App\Services\Tracking\RouteSimulator;
 use App\Services\Tracking\SimulatedUnit;
+use App\Services\Tracking\TripLifecycle;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 
@@ -21,7 +25,8 @@ class SimulateFleetCommand extends Command
         {--rutas= : IDs o números de ruta separados por coma; por defecto, todas las activas}
         {--intervalo=5 : Segundos entre actualizaciones de posición}
         {--unidades= : Cuántas unidades simular; por defecto, todas las disponibles}
-        {--iteraciones=0 : Actualizaciones antes de salir; 0 = hasta Ctrl+C}';
+        {--iteraciones=0 : Actualizaciones antes de salir; 0 = hasta Ctrl+C}
+        {--iniciar : Inicia un viaje en cada ruta sin uno en curso y simula solo las unidades en viaje}';
 
     /**
      * @var string
@@ -53,7 +58,12 @@ class SimulateFleetCommand extends Command
             return self::FAILURE;
         }
 
-        $vehicles = $this->resolveVehicles();
+        if ($this->option('iniciar')) {
+            $started = $this->startMissingTrips($routes);
+            $this->info("Viajes iniciados: {$started}.");
+        }
+
+        $vehicles = $this->option('iniciar') ? $this->vehiclesOnTrips($routes) : $this->resolveVehicles();
 
         if ($vehicles->isEmpty()) {
             $this->error('No hay unidades disponibles. Ejecuta php artisan db:seed --class=FleetSeeder.');
@@ -140,6 +150,80 @@ class SimulateFleetCommand extends Command
         }
 
         return $query->get();
+    }
+
+    /**
+     * Inicia un viaje en cada ruta que no tenga uno en curso: toma el viaje
+     * programado de hoy más cercano (o crea uno para ahora) y le asigna una
+     * unidad y un conductor libres.
+     *
+     * @param  Collection<int, TransitRoute>  $routes
+     */
+    private function startMissingTrips(Collection $routes): int
+    {
+        $busy = Trip::query()->inProgress()->get(['vehicle_id', 'driver_id']);
+        $vehicles = Vehicle::query()
+            ->where('status', '!=', VehicleStatus::Maintenance)
+            ->whereNotIn('id', $busy->pluck('vehicle_id')->filter())
+            ->orderBy('id')
+            ->get();
+        $drivers = User::query()
+            ->where('role', UserRole::Driver)
+            ->whereNotIn('id', $busy->pluck('driver_id')->filter())
+            ->orderBy('id')
+            ->get();
+        $lifecycle = app(TripLifecycle::class);
+        $started = 0;
+
+        foreach ($routes as $route) {
+            if (Trip::query()->inProgress()->where('route_id', $route->id)->exists()) {
+                continue;
+            }
+
+            $vehicle = $vehicles->shift();
+
+            if ($vehicle === null) {
+                $this->warn('No quedan unidades libres para iniciar más viajes.');
+
+                break;
+            }
+
+            $trip = Trip::query()
+                ->where('route_id', $route->id)
+                ->where('status', TripStatus::Scheduled)
+                ->whereDate('scheduled_at', today())
+                ->where('scheduled_at', '<=', now()->addMinutes(30))
+                ->orderByDesc('scheduled_at')
+                ->first() ?? new Trip([
+                    'route_id' => $route->id,
+                    'scheduled_at' => now(),
+                    'status' => TripStatus::Scheduled,
+                ]);
+
+            $trip->fill([
+                'vehicle_id' => $vehicle->id,
+                'driver_id' => $drivers->shift()?->id,
+            ])->save();
+
+            $lifecycle->start($trip);
+            $started++;
+        }
+
+        return $started;
+    }
+
+    /**
+     * Unidades con un viaje en curso en las rutas elegidas.
+     *
+     * @param  Collection<int, TransitRoute>  $routes
+     * @return Collection<int, Vehicle>
+     */
+    private function vehiclesOnTrips(Collection $routes): Collection
+    {
+        return Vehicle::query()
+            ->whereIn('id', Trip::query()->inProgress()->whereIn('route_id', $routes->pluck('id'))->select('vehicle_id'))
+            ->orderBy('id')
+            ->get();
     }
 
     /**

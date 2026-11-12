@@ -20,6 +20,16 @@ class RouteSimulator
         foreach ($units as $unit) {
             $position = $unit->advance($intervalSeconds);
 
+            // Suben y bajan pasajeros poco a poco, sin pasar de la capacidad.
+            if ($unit->trip !== null) {
+                $unit->trip->update([
+                    'occupancy' => max(0, min(
+                        $unit->vehicle->capacity,
+                        $unit->trip->occupancy + random_int(-2, 3),
+                    )),
+                ]);
+            }
+
             $this->recorder->record(
                 $unit->vehicle,
                 $position['latitude'],

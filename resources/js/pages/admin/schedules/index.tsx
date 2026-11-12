@@ -588,10 +588,3 @@ export default function ScheduleIndex({
         </div>
     );
 }
-
-ScheduleIndex.layout = {
-    breadcrumbs: [
-        { title: 'Rutas y paradas', href: '/admin/routes' },
-        { title: 'Horarios de salida' },
-    ],
-};

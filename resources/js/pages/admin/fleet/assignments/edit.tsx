@@ -331,9 +331,3 @@ export default function EditAssignment({
         </>
     );
 }
-EditAssignment.layout = {
-    breadcrumbs: [
-        { title: 'Asignaciones', href: '/admin/fleet/assignments' },
-        { title: 'Editar asignación', href: '#' },
-    ],
-};

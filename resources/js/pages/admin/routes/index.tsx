@@ -232,7 +232,3 @@ export default function RoutesIndex({
         </div>
     );
 }
-
-RoutesIndex.layout = {
-    breadcrumbs: [{ title: 'Rutas y paradas', href: '/admin/routes' }],
-};

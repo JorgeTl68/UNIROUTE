@@ -46,26 +46,17 @@ class VehicleController extends Controller
                 'value' => $state->value,
                 'label' => $state->label(),
             ], VehicleStatus::cases()),
+            // Opciones del modal "Registrar unidad".
+            'amenities' => array_map(fn (VehicleAmenity $amenity) => [
+                'value' => $amenity->value,
+                'label' => $amenity->label(),
+            ], VehicleAmenity::cases()),
             'stats' => [
                 'total' => Vehicle::count(),
                 'in_service' => Vehicle::where('status', VehicleStatus::InService)->count(),
                 'standby' => Vehicle::where('status', VehicleStatus::Standby)->count(),
                 'maintenance' => Vehicle::where('status', VehicleStatus::Maintenance)->count(),
             ],
-        ]);
-    }
-
-    public function create(): Response
-    {
-        Gate::authorize('create', Vehicle::class);
-
-        return Inertia::render('admin/fleet/create', [
-            'statuses' => array_map(fn (VehicleStatus $status) => [
-                'value' => $status->value, 'label' => $status->label(),
-            ], VehicleStatus::cases()),
-            'amenities' => array_map(fn (VehicleAmenity $amenity) => [
-                'value' => $amenity->value, 'label' => $amenity->label(),
-            ], VehicleAmenity::cases()),
         ]);
     }
 

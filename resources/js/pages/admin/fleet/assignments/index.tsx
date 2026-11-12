@@ -155,9 +155,3 @@ export default function Assignments({
         </>
     );
 }
-Assignments.layout = {
-    breadcrumbs: [
-        { title: 'Conductores', href: '/admin/fleet/drivers' },
-        { title: 'Asignaciones', href: '/admin/fleet/assignments' },
-    ],
-};

@@ -780,10 +780,3 @@ export default function CreateRoute({
         </>
     );
 }
-
-CreateRoute.layout = {
-    breadcrumbs: [
-        { title: 'Rutas y paradas', href: '/admin/routes' },
-        { title: 'Nueva ruta', href: '/admin/routes/create' },
-    ],
-};

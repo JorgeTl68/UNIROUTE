@@ -105,11 +105,13 @@ las 03:00, en hora de Saltillo (`America/Monterrey`). Para no esperar:
 
 ```sh
 php artisan uniroute:generar-viajes
-php artisan uniroute:simular --intervalo=5
+php artisan uniroute:simular --iniciar --intervalo=5
 ```
 
-El simulador mueve las unidades sobre el trazado de cada ruta y guarda sus
-posiciones; se detiene con Ctrl+C.
+Con `--iniciar`, el simulador arranca un viaje en cada ruta que no tenga uno,
+con una unidad y un conductor libres, y mueve solo esas unidades. Cada posición
+se transmite al mapa con Reverb (`php artisan reverb:start`); si Reverb no está
+corriendo, el mapa se pone al día solo cada 15 segundos. Se detiene con Ctrl+C.
 
 ## Verificación
 

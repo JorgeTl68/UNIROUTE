@@ -21,11 +21,11 @@ class StoreVehicleTest extends TestCase
         ], $overrides);
     }
 
-    public function test_admin_can_open_the_form_and_register_a_vehicle(): void
+    public function test_admin_opens_the_form_from_the_fleet_console_and_registers_a_vehicle(): void
     {
         $this->actingAs(User::factory()->admin()->create())
-            ->get('/admin/fleet/create')
-            ->assertInertia(fn (Assert $page) => $page->component('admin/fleet/create')->has('statuses', 3)->has('amenities', 3));
+            ->get('/admin/fleet')
+            ->assertInertia(fn (Assert $page) => $page->component('admin/fleet/index')->has('statuses', 3)->has('amenities', 3));
         $this->post('/admin/fleet', $this->payload())->assertSessionHasNoErrors()->assertRedirect(route('admin.fleet.index'));
         $vehicle = Vehicle::sole();
         $this->assertSame('BUS-UTC-21', $vehicle->code);
@@ -36,11 +36,9 @@ class StoreVehicleTest extends TestCase
 
     public function test_access_is_denied_to_guests_other_roles_and_unverified_users(): void
     {
-        $this->get('/admin/fleet/create')->assertRedirect(route('login'));
         $this->post('/admin/fleet', $this->payload())->assertRedirect(route('login'));
         foreach ([User::factory()->student()->create(), User::factory()->driver()->create()] as $user) {
-            $this->actingAs($user)->get('/admin/fleet/create')->assertForbidden();
-            $this->post('/admin/fleet', $this->payload())->assertForbidden();
+            $this->actingAs($user)->post('/admin/fleet', $this->payload())->assertForbidden();
         }
         $this->actingAs(User::factory()->admin()->unverified()->create())
             ->post('/admin/fleet', $this->payload())->assertRedirect(route('verification.notice'));

@@ -5,20 +5,20 @@ si cambias una tabla, cambia también el tipo y su API Resource en el mismo PR.
 
 ## Estado de las tablas
 
-| Tabla                                         | Modelo          | Migración creada en |
-| --------------------------------------------- | --------------- | ------------------- |
-| `campuses`                                    | `Campus`        | S1-01 (Jorge)       |
-| `users` (+ `role`, `student_id`, `campus_id`) | `User`          | S1-02 (Jorge)       |
-| `routes`                                      | `TransitRoute`  | S1-01 (Jorge)       |
-| `stops`, `route_stop`                         | `Stop`          | S1-01 (Jorge)       |
-| `vehicles`                                    | `Vehicle`       | S1-01 (Jorge)       |
-| `driver_profiles`                             | `DriverProfile` | S1-01 (Jorge)       |
-| `schedules`                                   | `Schedule`      | S1-01 (Jorge)       |
-| `trips`                                       | `Trip`          | S1-01 (Jorge)       |
-| `vehicle_positions`                           | pendiente       | S1-08 (Santana)     |
-| `incidents`                                   | pendiente       | S4-04 (Enrique)     |
-| `arrival_alarms`, `favorite_routes`           | pendiente       | S4-02 (Kiroz)       |
-| `notifications`                               | estándar        | S4-01 (Santana)     |
+| Tabla                                         | Modelo            | Migración creada en |
+| --------------------------------------------- | ----------------- | ------------------- |
+| `campuses`                                    | `Campus`          | S1-01 (Jorge)       |
+| `users` (+ `role`, `student_id`, `campus_id`) | `User`            | S1-02 (Jorge)       |
+| `routes`                                      | `TransitRoute`    | S1-01 (Jorge)       |
+| `stops`, `route_stop`                         | `Stop`            | S1-01 (Jorge)       |
+| `vehicles`                                    | `Vehicle`         | S1-01 (Jorge)       |
+| `driver_profiles`                             | `DriverProfile`   | S1-01 (Jorge)       |
+| `schedules`                                   | `Schedule`        | S1-01 (Jorge)       |
+| `trips`                                       | `Trip`            | S1-01 (Jorge)       |
+| `vehicle_positions`                           | `VehiclePosition` | S1-08 (Santana)     |
+| `incidents`                                   | `Incident`        | S4-04 (Enrique)     |
+| `arrival_alarms`, `favorite_routes`           | `ArrivalAlarm`    | S4-02 (Kiroz)       |
+| `notifications`                               | estándar          | S4-01 (Santana)     |
 
 - El modelo de la tabla `routes` se llama `TransitRoute` para no confundirlo con
   las rutas web; sus llaves foráneas son `route_id`.
@@ -156,7 +156,7 @@ erDiagram
     INCIDENTS {
         bigint id PK
         string type "traffic, detour, breakdown o emergency"
-        string severity "low, medium o high"
+        string severity "low, medium, high o critical"
         bigint route_id FK "nullable"
         bigint vehicle_id FK "nullable"
         bigint reported_by FK "users"
@@ -216,12 +216,14 @@ más de 7 días (S5-04).
 | `incidents.severity` | `low`              | Baja            |
 |                      | `medium`           | Media           |
 |                      | `high`             | Alta            |
+|                      | `critical`         | Crítica         |
 | `vehicles.amenities` | `air_conditioning` | Climatizado     |
 |                      | `wifi`             | WiFi Alumnos    |
 |                      | `accessible_ramp`  | Rampa Accesible |
 
 "Demorado" no es un estado guardado: se calcula para un viaje `in_progress` cuyo
-retraso sobre su horario es de 5 minutos o más (umbral a confirmar en S2-07).
+retraso sobre su horario es de 5 minutos o más
+(`EtaCalculator::DELAY_THRESHOLD_MINUTES`).
 
 ## Pendiente de confirmar en S0
 
