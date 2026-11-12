@@ -1,5 +1,7 @@
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
+import { Plus } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 
 type RouteSummary = {
@@ -37,9 +39,17 @@ export default function RoutesIndex({
     return (
         <div className="space-y-6 px-4 py-6 sm:px-6 lg:px-8">
             <Head title="Rutas y paradas" />
-            <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-                Rutas y paradas
-            </h1>
+            <div className="flex flex-wrap items-center justify-between gap-4">
+                <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+                    Rutas y paradas
+                </h1>
+                <Button asChild>
+                    <Link href="/admin/routes/create">
+                        <Plus className="size-4" />
+                        Nueva ruta
+                    </Link>
+                </Button>
+            </div>
 
             <section aria-label="Rutas" className="grid gap-4 lg:grid-cols-2">
                 {routes.map((route) => (
