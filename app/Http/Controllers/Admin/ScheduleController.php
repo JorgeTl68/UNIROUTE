@@ -15,6 +15,18 @@ use Inertia\Response;
 
 class ScheduleController extends Controller
 {
+    /**
+     * La pestaña "Horarios de salida" abre los de la primera ruta.
+     */
+    public function first(): RedirectResponse
+    {
+        $route = TransitRoute::query()->orderBy('number')->orderBy('id')->first();
+
+        return $route === null
+            ? to_route('admin.routes.index')
+            : to_route('admin.routes.schedules.index', $route);
+    }
+
     public function index(TransitRoute $transitRoute): Response
     {
         Gate::authorize('viewAny', Schedule::class);
