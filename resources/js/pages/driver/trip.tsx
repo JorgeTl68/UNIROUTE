@@ -24,6 +24,7 @@ import {
     occupancyTone,
 } from '@/components/transit/occupancy-bar';
 import { StatusChip } from '@/components/transit/status-chip';
+import type { ChipTone } from '@/components/transit/status-chip';
 import { TransitMap } from '@/components/transit/transit-map';
 import {
     DropdownMenu,
@@ -125,11 +126,14 @@ function xsrfToken(): string {
     return cookie ? decodeURIComponent(cookie.split('=')[1]) : '';
 }
 
+/** Tiempo transcurrido como MM:SS, o H:MM:SS a partir de una hora. */
 function elapsed(since: string, now: number): string {
-    const seconds = Math.max(0, Math.floor((now - Date.parse(since)) / 1000));
-    const minutes = Math.floor(seconds / 60);
+    const total = Math.max(0, Math.floor((now - Date.parse(since)) / 1000));
+    const hours = Math.floor(total / 3600);
+    const pad = (value: number) => String(value).padStart(2, '0');
+    const clock = `${pad(Math.floor((total % 3600) / 60))}:${pad(total % 60)}`;
 
-    return `${String(minutes).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
+    return hours > 0 ? `${hours}:${clock}` : clock;
 }
 
 /**
@@ -445,66 +449,58 @@ export default function DriverTripPage({ trip, trips }: Props) {
     const delayed = trip?.next_stop?.is_delayed ?? false;
     const gpsLabel = gpsLabels[gps.state];
 
-    const status = !trip
-        ? {
-              label: 'Sin viaje asignado',
-              className: 'bg-secondary text-muted-foreground',
-          }
+    const status: { tone: ChipTone; label: string } = !trip
+        ? { tone: 'neutral', label: 'Sin viaje' }
         : inProgress
-          ? {
-                label: delayed ? 'En ruta · demorado' : 'En ruta',
-                className: delayed
-                    ? 'bg-warning text-primary-foreground'
-                    : 'bg-live text-primary-foreground',
-            }
-          : {
-                label: `Listo para salir · ${clockTime(trip.scheduled_at)}`,
-                className: 'bg-gold text-primary-foreground',
-            };
+          ? delayed
+              ? { tone: 'warning', label: 'Demorado' }
+              : { tone: 'live', label: 'En ruta' }
+          : { tone: 'neutral', label: `Sale ${clockTime(trip.scheduled_at)}` };
 
     return (
         <div className="min-h-screen bg-background text-foreground">
             <Head title="Modo conductor" />
 
-            <header className="sticky top-0 z-[1100] border-b border-border bg-card/95 backdrop-blur">
+            <header className="sticky top-0 z-30 border-b border-border bg-card/95 backdrop-blur">
                 <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4">
                     <div className="flex min-w-0 items-center gap-3">
-                        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+                        <span className="hidden size-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground sm:flex">
                             <BusFront className="size-5" />
                         </span>
                         <div className="min-w-0">
-                            <p className="text-[11px] font-bold tracking-widest text-gold uppercase">
+                            <p className="text-[11px] font-bold tracking-wider whitespace-nowrap text-gold uppercase sm:tracking-widest">
                                 Modo conductor
                             </p>
-                            <p className="truncate font-bold text-white">
+                            <p className="truncate text-sm font-bold text-white sm:text-base">
                                 {auth.user.name}
                             </p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <span
-                            className={cn(
-                                'hidden items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold sm:flex',
-                                gpsLabel.className,
-                            )}
-                        >
-                            <Satellite className="size-3.5" />
-                            {gpsLabel.label}
+                    <div className="flex shrink-0 items-center gap-2">
+                        <span role="status">
+                            <StatusChip
+                                tone={status.tone}
+                                label={status.label}
+                                dot
+                                className="px-3 py-1.5 text-xs"
+                            />
                         </span>
+                        {inProgress && (
+                            <span
+                                className={cn(
+                                    'flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs font-semibold',
+                                    gpsLabel.className,
+                                )}
+                                title={gpsLabel.label}
+                            >
+                                <Satellite className="size-3.5" />
+                                <span className="sr-only sm:not-sr-only">
+                                    {gpsLabel.label}
+                                </span>
+                            </span>
+                        )}
                         <DriverMenu />
                     </div>
-                </div>
-                <div
-                    className={cn(
-                        'flex items-center justify-center gap-2 py-2 text-sm font-extrabold tracking-wider uppercase',
-                        status.className,
-                    )}
-                    role="status"
-                >
-                    {inProgress && (
-                        <span className="size-2 rounded-full bg-current motion-safe:animate-pulse" />
-                    )}
-                    {status.label}
                 </div>
             </header>
 
@@ -619,7 +615,14 @@ export default function DriverTripPage({ trip, trips }: Props) {
                                             </p>
                                             {trip.next_stop && (
                                                 <p className="shrink-0 text-right">
-                                                    <span className="block text-4xl font-extrabold text-gold">
+                                                    <span
+                                                        className={cn(
+                                                            'block text-4xl font-extrabold',
+                                                            delayed
+                                                                ? 'text-warning'
+                                                                : 'text-gold',
+                                                        )}
+                                                    >
                                                         {
                                                             trip.next_stop
                                                                 .eta_minutes
