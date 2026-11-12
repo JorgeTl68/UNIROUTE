@@ -1,5 +1,6 @@
 import { Link, usePage } from '@inertiajs/react';
 import { Siren } from 'lucide-react';
+import { useEffect } from 'react';
 import AppLogo from '@/components/app-logo';
 import { EmergencyDialog } from '@/components/emergency-dialog';
 import {
@@ -11,6 +12,7 @@ import {
     SidebarMenuBadge,
     SidebarMenuButton,
     SidebarMenuItem,
+    useSidebar,
 } from '@/components/ui/sidebar';
 import { isActiveSection, navigationFor } from '@/lib/navigation';
 
@@ -21,6 +23,13 @@ import { isActiveSection, navigationFor } from '@/lib/navigation';
 export function AppSidebar() {
     const { auth, liveUnits, notifications } = usePage().props;
     const { url } = usePage();
+    const { setOpenMobile } = useSidebar();
+
+    // En celular el menú es un cajón; el layout no se vuelve a montar al
+    // navegar con Inertia, así que se cierra cada vez que cambia la página.
+    useEffect(() => {
+        setOpenMobile(false);
+    }, [url, setOpenMobile]);
 
     return (
         <Sidebar collapsible="icon" variant="inset">
