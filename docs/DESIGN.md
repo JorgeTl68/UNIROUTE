@@ -408,10 +408,12 @@ el de Modo conductor).
 - En `app.css`, `:root` lleva el tema claro y `.dark` el oscuro. La preferencia
   se guarda en la cookie `appearance` y `app.blade.php` pone la clase `.dark`
   desde el servidor, así que la página no parpadea al cargar.
-- En el claro, el texto dorado usa `secondary` (`#715b37`), el verde
-  `on-tertiary-container` (`#3f6e00`) y el error `error` (`#ba1a1a`), por
-  contraste (ver [Contraste](#contraste)). El botón principal va en
-  `primary-container` (`#17243a`) con texto blanco.
+- El claro es blanco con detalles azules, dorados y verdes. El botón
+  principal y lo seleccionado van en `primary-container` (`#17243a`) con texto
+  blanco. El dorado (`#8a6a2f`) y el verde (`#4d7c0f`) son versiones más
+  oscuras de los del logo para que el texto se lea sobre blanco (5:1); la línea
+  de la ruta y las paradas ya pasadas siguen en `brand-green` (`#84cc16`). El
+  error va en `error` (`#ba1a1a`).
 - Para títulos y cifras se usa `text-strong` (blanco en oscuro, azul nocturno en
   claro), nunca `text-white`.
 - Sobre los colores de ruta, que son claros en los dos temas, el texto va en
