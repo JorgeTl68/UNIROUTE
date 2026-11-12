@@ -203,7 +203,7 @@ export function VehicleFormDialog({
                                                           ),
                                                 )
                                             }
-                                            className="size-4 accent-[#FDDEB1]"
+                                            className="size-4 accent-primary"
                                         />
                                         {amenity.label}
                                     </label>

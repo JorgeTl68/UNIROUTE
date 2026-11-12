@@ -84,7 +84,7 @@ function TimelineItem({
     vehicleCode: string | null;
 }) {
     const marker: Record<StopState, string> = {
-        passed: 'bg-route text-primary-foreground',
+        passed: 'bg-route text-ink',
         current: 'bg-primary text-primary-foreground ring-4 ring-gold/30',
         next: 'border-2 border-gold bg-card text-gold',
         pending: 'border-2 border-border bg-card text-muted-foreground',
@@ -111,7 +111,7 @@ function TimelineItem({
             {stop.state === 'current' ? (
                 <div className="flex-1 rounded-xl border border-primary/40 bg-primary/10 p-4">
                     <div className="flex flex-wrap items-center gap-2">
-                        <p className="text-lg font-bold text-white">
+                        <p className="text-lg font-bold text-strong">
                             {stop.name}
                         </p>
                         <span className="rounded bg-primary px-2 py-0.5 text-[10px] font-extrabold tracking-wider text-primary-foreground uppercase">
@@ -390,11 +390,11 @@ export default function RouteShow({
             </div>
 
             <section className="relative overflow-hidden rounded-2xl border border-border bg-card p-5 sm:p-6">
-                <BusFront className="pointer-events-none absolute -right-6 -bottom-10 size-56 text-white/[0.03]" />
+                <BusFront className="pointer-events-none absolute -right-6 -bottom-10 size-56 text-foreground/[0.03]" />
                 <div className="relative grid gap-6 xl:grid-cols-[1fr_auto] xl:items-end">
                     <div>
                         <div className="flex flex-wrap items-center gap-2">
-                            <span className="rounded bg-gold px-2 py-0.5 text-[11px] font-extrabold tracking-wider text-primary-foreground uppercase">
+                            <span className="rounded bg-gold px-2 py-0.5 text-[11px] font-extrabold tracking-wider text-on-accent uppercase">
                                 {route.campus.name}
                             </span>
                             <StatusChip
@@ -408,11 +408,11 @@ export default function RouteShow({
                                 className="rounded"
                             />
                             {route.frequency_minutes !== null && (
-                                <span className="rounded bg-white/10 px-2 py-0.5 text-[11px] font-semibold text-muted-foreground">
+                                <span className="rounded bg-foreground/10 px-2 py-0.5 text-[11px] font-semibold text-muted-foreground">
                                     Cada {route.frequency_minutes} min
                                 </span>
                             )}
-                            <span className="rounded bg-white/10 px-2 py-0.5 text-[11px] font-semibold text-muted-foreground">
+                            <span className="rounded bg-foreground/10 px-2 py-0.5 text-[11px] font-semibold text-muted-foreground">
                                 {route.service_starts_at} –{' '}
                                 {route.service_ends_at}
                             </span>
@@ -430,12 +430,12 @@ export default function RouteShow({
                         {metrics.map((metric) => (
                             <div
                                 key={metric.label}
-                                className="rounded-xl bg-white/5 p-3 xl:w-32"
+                                className="rounded-xl bg-foreground/5 p-3 xl:w-32"
                             >
                                 <dt className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">
                                     {metric.label}
                                 </dt>
-                                <dd className="mt-1 text-2xl font-extrabold text-white">
+                                <dd className="mt-1 text-2xl font-extrabold text-strong">
                                     {metric.value}
                                 </dd>
                                 <dd
@@ -511,7 +511,7 @@ export default function RouteShow({
                                 <TriangleAlert className="size-5" />
                             </span>
                             <div className="flex-1">
-                                <p className="text-sm font-semibold text-white">
+                                <p className="text-sm font-semibold text-strong">
                                     {incident.type_label}
                                 </p>
                                 <p className="mt-1 text-sm text-muted-foreground">
@@ -572,7 +572,7 @@ export default function RouteShow({
                                             {lead.vehicle.model}
                                         </h2>
                                     </div>
-                                    <span className="shrink-0 rounded-md bg-white/10 px-2 py-1 text-xs font-semibold text-muted-foreground">
+                                    <span className="shrink-0 rounded-md bg-foreground/10 px-2 py-1 text-xs font-semibold text-muted-foreground">
                                         {lead.vehicle.plate}
                                     </span>
                                 </div>
@@ -725,7 +725,7 @@ export default function RouteShow({
                                         {upcoming_departures.map(
                                             (departure) => (
                                                 <tr key={departure.schedule_id}>
-                                                    <td className="py-2.5 font-bold text-white">
+                                                    <td className="py-2.5 font-bold text-strong">
                                                         {departure.departs_at}
                                                     </td>
                                                     <td className="py-2.5 text-muted-foreground">

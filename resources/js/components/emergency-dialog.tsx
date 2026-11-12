@@ -133,7 +133,7 @@ export function EmergencyDialog({
 
                 <div className="flex flex-col gap-3 rounded-xl border border-destructive/40 bg-destructive/10 p-3 sm:flex-row sm:items-center sm:justify-between">
                     <p className="text-sm text-foreground">
-                        <span className="font-bold text-white">
+                        <span className="font-bold text-strong">
                             Si hay riesgo para alguien, llama al 911.
                         </span>{' '}
                         Después repórtalo aquí.
@@ -164,7 +164,7 @@ export function EmergencyDialog({
                         noValidate
                     >
                         <fieldset>
-                            <legend className="text-sm font-semibold text-white">
+                            <legend className="text-sm font-semibold text-strong">
                                 ¿Qué pasó?
                             </legend>
                             <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">

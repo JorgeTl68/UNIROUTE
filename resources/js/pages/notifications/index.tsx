@@ -37,7 +37,7 @@ function isToday(iso: string): boolean {
 function RouteBadge({ route }: { route: RouteTag }) {
     return (
         <span
-            className="flex size-8 shrink-0 items-center justify-center rounded-md text-xs font-extrabold text-primary-foreground"
+            className="flex size-8 shrink-0 items-center justify-center rounded-md text-xs font-extrabold text-ink"
             style={{ backgroundColor: route.color }}
         >
             {route.number}

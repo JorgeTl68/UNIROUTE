@@ -1,5 +1,6 @@
 import { Link, router } from '@inertiajs/react';
 import { LogOut, Settings } from 'lucide-react';
+import { AppearanceMenuItems } from '@/components/appearance-menu-items';
 import {
     DropdownMenuGroup,
     DropdownMenuItem,
@@ -45,6 +46,8 @@ export function UserMenuContent({ user }: Props) {
                     </Link>
                 </DropdownMenuItem>
             </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <AppearanceMenuItems />
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
                 <Link

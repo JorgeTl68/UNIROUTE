@@ -7,7 +7,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-@theme {
+@theme inline {
     --font-sans:
         'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
         'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
@@ -24,6 +24,9 @@
     --color-warning: var(--advertencia);
     --color-gold: var(--dorado);
     --color-foreground: var(--foreground);
+    --color-strong: var(--texto-principal);
+    --color-ink: var(--tinta);
+    --color-on-accent: var(--sobre-acento);
 
     --color-card: var(--card);
     --color-card-foreground: var(--card-foreground);
@@ -66,8 +69,69 @@
     --color-sidebar-ring: var(--sidebar-ring);
 }
 
-/* UniRoute uses the same institutional palette in both appearance modes. */
-:root,
+/*
+ * Tema claro (DESIGN.md · Superficies y texto) en :root y tema oscuro en .dark.
+ * El oscuro es el predeterminado; cada quien elige en el menú de su cuenta.
+ *
+ * - tinta: texto sobre los colores de ruta, que son claros en los dos temas.
+ * - sobre-acento: texto sobre rellenos dorado, verde o rojo (claros en oscuro,
+ *   oscuros en claro).
+ */
+:root {
+    color-scheme: light;
+    --radius: 0.75rem;
+    --fondo-principal: #f7f9ff;
+    --fondo-paneles: #ffffff;
+    --bordes: #dde3eb;
+    --boton-principal: #17243a;
+    --boton-hover: #020e24;
+    --focus: #b69b72;
+    --verde-tiempo-real: #4d7c0f;
+    --verde-rutas: #84cc16;
+    --texto-principal: #020e24;
+    --texto-formularios: #161c22;
+    --texto-secundario: #44474d;
+    --placeholder: #75777e;
+    --error: #ba1a1a;
+    --advertencia: #b45309;
+    --dorado: #8a6a2f;
+    --tinta: #020e24;
+    --sobre-acento: #ffffff;
+    --mapa-fondo: #e9eef6;
+    --background: #f7f9ff;
+    --foreground: #161c22;
+    --card: #ffffff;
+    --card-foreground: #161c22;
+    --popover: #ffffff;
+    --popover-foreground: #161c22;
+    --primary: #17243a;
+    --primary-foreground: #ffffff;
+    --secondary: #e3e9f0;
+    --secondary-foreground: #161c22;
+    --muted: #eff4fc;
+    --muted-foreground: #44474d;
+    --accent: #eff4fc;
+    --accent-foreground: #17243a;
+    --destructive: #ba1a1a;
+    --destructive-foreground: #ffffff;
+    --border: #dde3eb;
+    --input: #dde3eb;
+    --ring: #b69b72;
+    --chart-1: #84cc16;
+    --chart-2: #715b37;
+    --chart-3: #4d7c0f;
+    --chart-4: #b69b72;
+    --chart-5: #75777e;
+    --sidebar: #ffffff;
+    --sidebar-foreground: #161c22;
+    --sidebar-primary: #17243a;
+    --sidebar-primary-foreground: #ffffff;
+    --sidebar-accent: #eff4fc;
+    --sidebar-accent-foreground: #17243a;
+    --sidebar-border: #dde3eb;
+    --sidebar-ring: #b69b72;
+}
+
 .dark {
     color-scheme: dark;
     --fondo-principal: #020e24;
@@ -85,6 +149,9 @@
     --error: #ffb4ab;
     --advertencia: #fbbf24;
     --dorado: #b69b72;
+    --tinta: #020e24;
+    --sobre-acento: #020e24;
+    --mapa-fondo: #0a1830;
     --background: #020e24;
     --foreground: #ecf1f9;
     --card: #17243a;
@@ -109,7 +176,6 @@
     --chart-3: #a3e635;
     --chart-4: #e0c297;
     --chart-5: #bac7e4;
-    --radius: 0.75rem;
     --sidebar: #17243a;
     --sidebar-foreground: #ecf1f9;
     --sidebar-primary: #fddeb1;
@@ -142,9 +208,6 @@
     textarea::placeholder {
         color: var(--placeholder);
     }
-    select {
-        color-scheme: dark;
-    }
 }
 
 /* Login and registration share the two-panel transit composition. */
@@ -175,19 +238,23 @@
 }
 
 /*
- * Mapa con Leaflet (TransitMap). La capa de OpenStreetMap se oscurece con un
- * filtro para que combine con el tema y resalten la ruta y las unidades.
+ * Mapa con Leaflet (TransitMap). La capa de OpenStreetMap va en gris en el
+ * tema claro (docs/mapas.md) y se oscurece en el oscuro, para que combine con
+ * el tema y resalten la ruta y las unidades.
  */
 .transit-map.leaflet-container {
-    background: #0a1830;
+    background: var(--mapa-fondo);
     font-family: inherit;
 }
-.osm-oscuro {
+.osm-tiles {
+    filter: grayscale(0.85) brightness(1.06) contrast(0.92);
+}
+.dark .osm-tiles {
     filter: invert(1) hue-rotate(195deg) saturate(0.45) brightness(0.85)
         contrast(0.95);
 }
 .transit-map .leaflet-control-attribution {
-    background: rgb(2 14 36 / 0.75);
+    background: color-mix(in srgb, var(--card) 80%, transparent);
     color: var(--texto-secundario);
     font-size: 10px;
 }

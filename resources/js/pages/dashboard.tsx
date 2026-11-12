@@ -123,7 +123,7 @@ function RouteCard({
             >
                 <span className="flex min-w-0 items-start gap-3">
                     <span
-                        className="flex size-8 shrink-0 items-center justify-center rounded-md text-sm font-extrabold text-primary-foreground"
+                        className="flex size-8 shrink-0 items-center justify-center rounded-md text-sm font-extrabold text-ink"
                         style={{ backgroundColor: route.color }}
                     >
                         {route.number}
@@ -159,7 +159,7 @@ function RouteCard({
                         dot={status.tone === 'live'}
                     />
                     {lead?.next_stop ? (
-                        <span className="mt-1 block text-2xl font-extrabold text-white">
+                        <span className="mt-1 block text-2xl font-extrabold text-strong">
                             {lead.next_stop.eta_minutes}{' '}
                             <span className="text-sm font-semibold text-muted-foreground">
                                 min
@@ -167,7 +167,7 @@ function RouteCard({
                         </span>
                     ) : (
                         route.next_departure && (
-                            <span className="mt-1 block text-lg font-extrabold text-white">
+                            <span className="mt-1 block text-lg font-extrabold text-strong">
                                 {route.next_departure}
                             </span>
                         )
@@ -259,13 +259,13 @@ function ArrivalCard({
                     <p className="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
                         Hora de arribo
                     </p>
-                    <p className="text-3xl font-extrabold text-white xl:text-4xl">
+                    <p className="text-3xl font-extrabold text-strong xl:text-4xl">
                         {next ? clockTime(next.arrives_at) : '—'}
                     </p>
                 </div>
                 <div className="h-12 w-px bg-border" />
                 <div className="min-w-0">
-                    <p className="flex items-center gap-2 font-bold text-white xl:text-lg">
+                    <p className="flex items-center gap-2 font-bold text-strong xl:text-lg">
                         <span className="size-2 shrink-0 rounded-full bg-live" />
                         <span className="truncate">
                             Línea {route.number} – {route.name}

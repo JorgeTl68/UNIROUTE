@@ -34,7 +34,7 @@ se actualiza esta tabla con la fecha.
 | 3   | Íconos            | `lucide-react` (ya instalado) con tabla de equivalencias del mockup             | Propuesta             | Material Symbols iguala el mockup, pero carga la fuente completa                               |
 | 4   | Origen del GPS    | Simulador (`php artisan uniroute:simular`) y pantalla de conductor              | Propuesta             | El GPS del celular solo funciona con HTTPS                                                     |
 | 5   | Radios de esquina | 4, 8 y 12 px, como en los mockups HTML                                          | Propuesta             | `app.css` quedó en 8, 10 y 12 px; ver [docs/DESIGN.md](docs/DESIGN.md#esquinas)                |
-| 6   | Tema              | Toda la app en oscuro, con la paleta de login y registro                        | Decidida (2026-11-11) | Antes se proponía solo modo claro; ver [docs/DESIGN.md](docs/DESIGN.md#tema-oscuro)            |
+| 6   | Tema              | Oscuro por omisión, con la paleta de login y registro; claro a elección         | Decidida (2026-11-12) | Cada quien lo cambia en su menú; ver [docs/DESIGN.md](docs/DESIGN.md#temas-claro-y-oscuro)     |
 | 7   | Gráficas          | Recharts                                                                        | Propuesta             | Es la base de los charts de shadcn/ui                                                          |
 | 8   | Idioma del código | Tablas, columnas y código en inglés; textos de la interfaz en español           | Propuesta             | Ver [docs/modelo-de-datos.md](docs/modelo-de-datos.md)                                         |
 
