@@ -20,12 +20,12 @@ class LiveDashboardTest extends TestCase
         $this->get(route('dashboard'))->assertRedirect(route('login'));
     }
 
-    public function test_every_role_sees_the_live_routes_of_their_campus(): void
+    public function test_students_and_admins_see_the_live_routes_of_their_campus(): void
     {
         ['route' => $route, 'trip' => $trip] = $this->liveRoute();
         Incident::factory()->create(['route_id' => $route->id, 'message' => 'Tráfico en el bulevar']);
 
-        foreach ([User::factory()->student(), User::factory()->driver(), User::factory()->admin()] as $factory) {
+        foreach ([User::factory()->student(), User::factory()->admin()] as $factory) {
             $user = $factory->create(['campus_id' => $route->campus_id]);
 
             $this->actingAs($user)
@@ -44,6 +44,13 @@ class LiveDashboardTest extends TestCase
                     ->has('incidents', 1)
                     ->where('incidents.0.message', 'Tráfico en el bulevar'));
         }
+    }
+
+    public function test_drivers_go_straight_to_driver_mode(): void
+    {
+        $this->actingAs(User::factory()->driver()->create())
+            ->get(route('dashboard'))
+            ->assertRedirect(route('driver.trip'));
     }
 
     public function test_the_campus_can_be_chosen_from_the_header(): void

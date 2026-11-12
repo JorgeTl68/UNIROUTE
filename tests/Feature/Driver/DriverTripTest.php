@@ -7,11 +7,12 @@ use App\Models\Trip;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
+use Tests\Concerns\BuildsLiveRoutes;
 use Tests\TestCase;
 
 class DriverTripTest extends TestCase
 {
-    use RefreshDatabase;
+    use BuildsLiveRoutes, RefreshDatabase;
 
     public function test_only_drivers_can_open_the_driver_screen(): void
     {
@@ -34,6 +35,38 @@ class DriverTripTest extends TestCase
                 ->where('trip.id', $next->id)
                 ->where('trip.status', 'scheduled')
                 ->has('trips', 2));
+    }
+
+    public function test_the_trip_in_progress_shows_the_route_map_and_its_stops(): void
+    {
+        ['route' => $route, 'trip' => $trip] = $this->liveRoute();
+
+        $this->actingAs($trip->driver)
+            ->get(route('driver.trip'))
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('trip.id', $trip->id)
+                ->where('trip.status', 'in_progress')
+                ->where('trip.route.encoded_polyline', $route->encoded_polyline)
+                ->where('trip.route.last_stop', 'Final')
+                ->where('trip.next_stop.name', 'Media')
+                ->where('trip.position.heading', 90)
+                ->where('trip.stops.0.state', 'passed')
+                ->where('trip.stops.1.state', 'next')
+                ->where('trip.stops.2.state', 'pending'));
+    }
+
+    public function test_a_trip_that_has_not_started_shows_every_stop_pending(): void
+    {
+        ['trip' => $trip] = $this->liveRoute();
+        $trip->update(['status' => TripStatus::Scheduled, 'started_at' => null, 'scheduled_at' => now()->addMinutes(10)]);
+
+        $this->actingAs($trip->driver)
+            ->get(route('driver.trip'))
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('trip.status', 'scheduled')
+                ->where('trip.next_stop', null)
+                ->where('trip.stops.0.state', 'pending')
+                ->where('trip.stops.2.state', 'pending'));
     }
 
     public function test_the_driver_starts_and_finishes_the_trip(): void

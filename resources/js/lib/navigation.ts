@@ -25,11 +25,21 @@ export type AppNavItem = {
 /** Las secciones de la app (mockup: UR.nav en assets/uniroute.js). */
 export const appNavigation: AppNavItem[] = [
     {
+        label: 'Mi viaje',
+        href: '/driver',
+        icon: BusFront,
+        match: '/driver',
+        short: 'Mi viaje',
+        roles: ['driver'],
+    },
+    {
         label: 'Dashboard en Vivo',
         href: '/dashboard',
         icon: LayoutGrid,
         match: '/dashboard',
         short: 'Mapa',
+        // Secciones del estudiante; el conductor trabaja desde "Mi viaje".
+        roles: ['student', 'admin'],
     },
     {
         label: 'Detalle de Rutas y Paradas',
@@ -37,6 +47,7 @@ export const appNavigation: AppNavItem[] = [
         icon: Route,
         match: '/routes',
         short: 'Rutas',
+        roles: ['student', 'admin'],
     },
     {
         label: 'Horarios e Itinerarios',
@@ -44,6 +55,7 @@ export const appNavigation: AppNavItem[] = [
         icon: Clock3,
         match: '/schedules',
         short: 'Horarios',
+        roles: ['student', 'admin'],
     },
     {
         label: 'Mis Notificaciones y Alertas',
@@ -52,13 +64,6 @@ export const appNavigation: AppNavItem[] = [
         match: '/notifications',
         short: 'Alertas',
         badge: 'notifications',
-    },
-    {
-        label: 'Mi viaje',
-        href: '/driver',
-        icon: BusFront,
-        match: '/driver',
-        roles: ['driver'],
     },
     {
         label: 'Panel de Administración',

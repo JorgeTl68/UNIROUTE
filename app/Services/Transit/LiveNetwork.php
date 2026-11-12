@@ -2,6 +2,7 @@
 
 namespace App\Services\Transit;
 
+use App\Enums\TripStatus;
 use App\Models\Campus;
 use App\Models\Schedule;
 use App\Models\Stop;
@@ -197,6 +198,19 @@ class LiveNetwork
         }
 
         return round($path->distanceAlongFor($position->latitude, $position->longitude) / $path->lengthMeters(), 3);
+    }
+
+    /**
+     * Paradas de un viaje con su estado, para la pantalla del conductor. Antes
+     * de salir, o mientras no hay posición, todas quedan pending.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public function tripTimeline(Trip $trip): array
+    {
+        $etas = $trip->status === TripStatus::InProgress ? $this->etaCalculator->forTrip($trip) : [];
+
+        return $this->stopTimeline($trip->route, $etas === [] ? null : $etas);
     }
 
     /**
