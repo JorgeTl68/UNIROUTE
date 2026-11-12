@@ -1,0 +1,363 @@
+<!doctype html>
+<!--
+  Mockup: Incidencias · UniRoute
+  Para S4-04 (Enrique). Las emergencias que reportan estudiantes y conductores
+  (S4-06) también llegan aquí.
+
+  Notas para implementarlo:
+  - Lista de incidents abiertas primero, ordenadas por severidad: crítica,
+    alta, media, baja. Tipos: tráfico, desvío, falla y emergencia.
+  - "Avisar a estudiantes" manda la notificación a quienes usan la ruta
+    (S4-01); la incidencia abierta más grave sale como banner en la consola de
+    flota.
+  - "Desviar unidades" cambia temporalmente las paradas afectadas.
+  - "Marcar resuelta" llena resolved_at.
+-->
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="color-scheme" content="dark" />
+        <title>UniRoute · Incidencias</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+            rel="stylesheet"
+        />
+        <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+        <script src="assets/uniroute.js"></script>
+        <script src="https://unpkg.com/lucide@0.475.0/dist/umd/lucide.min.js"></script>
+    </head>
+    <body
+        class="bg-background text-foreground"
+        data-pagina="admin"
+        data-rol="admin"
+    >
+        <main class="flex-1 space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+            <div class="flex flex-wrap items-end justify-between gap-4">
+                <div>
+                    <p
+                        class="text-gold text-[11px] font-semibold tracking-widest uppercase"
+                    >
+                        Panel de administración
+                    </p>
+                    <h1
+                        class="mt-1 text-2xl font-bold tracking-tight sm:text-3xl"
+                    >
+                        Incidencias
+                    </h1>
+                    <p class="mt-1 text-sm text-muted-foreground">
+                        Tráfico, desvíos, fallas y emergencias reportadas en
+                        ruta.
+                    </p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <span
+                        class="flex items-center gap-2 rounded-full bg-destructive/15 px-3 py-1.5 text-xs font-semibold text-destructive"
+                        ><span
+                            class="size-1.5 animate-pulse rounded-full bg-destructive"
+                        ></span
+                        >1 crítica</span
+                    >
+                    <span
+                        class="bg-warning/15 text-warning flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold"
+                        >2 abiertas</span
+                    >
+                    <span
+                        class="flex items-center gap-2 rounded-full bg-live/15 px-3 py-1.5 text-xs font-semibold text-live"
+                        >4 resueltas hoy</span
+                    >
+                </div>
+            </div>
+
+            <nav
+                data-ur-tabs-admin="incidencias"
+                aria-label="Secciones del panel"
+            ></nav>
+
+            <div class="grid gap-6 xl:grid-cols-12">
+                <section
+                    class="min-w-0 space-y-3 xl:col-span-8"
+                    aria-label="Incidencias abiertas"
+                >
+                    <article
+                        class="rounded-2xl border border-destructive/50 bg-card p-5"
+                    >
+                        <div
+                            class="flex flex-wrap items-start justify-between gap-3"
+                        >
+                            <div class="flex items-start gap-3">
+                                <span
+                                    class="flex size-11 shrink-0 items-center justify-center rounded-xl bg-destructive text-destructive-foreground"
+                                    ><i data-lucide="siren" class="size-5"></i
+                                ></span>
+                                <div>
+                                    <p
+                                        class="flex flex-wrap items-center gap-2 font-bold text-white"
+                                    >
+                                        Emergencia: falla de la unidad
+                                        <span
+                                            class="rounded bg-destructive/15 px-1.5 py-0.5 text-[10px] font-extrabold tracking-wider text-destructive uppercase"
+                                            >Crítica</span
+                                        >
+                                    </p>
+                                    <p class="text-sm text-muted-foreground">
+                                        Ruta 1 · BUS-UTC-01 · cerca de Fracc.
+                                        Arborea · hace 3 min
+                                    </p>
+                                </div>
+                            </div>
+                            <span class="text-xs text-muted-foreground"
+                                >Reportó: Valeria Cárdenas (estudiante)</span
+                            >
+                        </div>
+                        <p
+                            class="mt-3 rounded-lg bg-background/50 p-3 text-sm text-foreground"
+                        >
+                            "La unidad se detuvo y sale humo del motor. Vamos 28
+                            a bordo."
+                        </p>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <button
+                                type="button"
+                                data-ur-toast="Se mandó BUS-UTC-04 de apoyo"
+                                class="flex items-center gap-2 rounded-md bg-primary px-3 py-2 text-xs font-bold text-primary-foreground hover:bg-primary-hover"
+                            >
+                                <i data-lucide="bus-front" class="size-4"></i
+                                >Mandar unidad de apoyo
+                            </button>
+                            <button
+                                type="button"
+                                class="flex items-center gap-2 rounded-md border border-border bg-secondary px-3 py-2 text-xs font-semibold text-foreground hover:bg-secondary/70"
+                            >
+                                <i data-lucide="phone" class="size-4"></i>Llamar
+                                al conductor
+                            </button>
+                            <button
+                                type="button"
+                                data-ur-toast="Aviso enviado a 214 estudiantes"
+                                class="flex items-center gap-2 rounded-md border border-border bg-secondary px-3 py-2 text-xs font-semibold text-foreground hover:bg-secondary/70"
+                            >
+                                <i data-lucide="megaphone" class="size-4"></i
+                                >Avisar a estudiantes
+                            </button>
+                            <button
+                                type="button"
+                                class="ml-auto flex items-center gap-2 rounded-md px-3 py-2 text-xs font-semibold text-live hover:bg-live/10"
+                            >
+                                <i data-lucide="circle-check" class="size-4"></i
+                                >Marcar resuelta
+                            </button>
+                        </div>
+                    </article>
+
+                    <article
+                        class="rounded-2xl border border-border bg-card p-5"
+                    >
+                        <div
+                            class="flex flex-wrap items-start justify-between gap-3"
+                        >
+                            <div class="flex items-start gap-3">
+                                <span
+                                    class="bg-warning/15 text-warning flex size-11 shrink-0 items-center justify-center rounded-xl"
+                                    ><i
+                                        data-lucide="traffic-cone"
+                                        class="size-5"
+                                    ></i
+                                ></span>
+                                <div>
+                                    <p
+                                        class="flex flex-wrap items-center gap-2 font-bold text-white"
+                                    >
+                                        Tráfico en Blvd. Miguel Ramos Arizpe
+                                        <span
+                                            class="bg-warning/15 text-warning rounded px-1.5 py-0.5 text-[10px] font-extrabold tracking-wider uppercase"
+                                            >Media</span
+                                        >
+                                    </p>
+                                    <p class="text-sm text-muted-foreground">
+                                        Ruta 2 · +6 min de retraso · desde las
+                                        13:42
+                                    </p>
+                                </div>
+                            </div>
+                            <span
+                                class="flex items-center gap-1 text-xs text-live"
+                                ><i data-lucide="check" class="size-3.5"></i
+                                >Estudiantes avisados</span
+                            >
+                        </div>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <button
+                                type="button"
+                                class="flex items-center gap-2 rounded-md border border-border bg-secondary px-3 py-2 text-xs font-semibold text-foreground hover:bg-secondary/70"
+                            >
+                                <i data-lucide="split" class="size-4"></i
+                                >Desviar unidades
+                            </button>
+                            <button
+                                type="button"
+                                class="ml-auto flex items-center gap-2 rounded-md px-3 py-2 text-xs font-semibold text-live hover:bg-live/10"
+                            >
+                                <i data-lucide="circle-check" class="size-4"></i
+                                >Marcar resuelta
+                            </button>
+                        </div>
+                    </article>
+
+                    <article
+                        class="rounded-2xl border border-border bg-card p-5"
+                    >
+                        <div
+                            class="flex flex-wrap items-start justify-between gap-3"
+                        >
+                            <div class="flex items-start gap-3">
+                                <span
+                                    class="bg-warning/15 text-warning flex size-11 shrink-0 items-center justify-center rounded-xl"
+                                    ><i data-lucide="split" class="size-5"></i
+                                ></span>
+                                <div>
+                                    <p
+                                        class="flex flex-wrap items-center gap-2 font-bold text-white"
+                                    >
+                                        Desvío por obras en Manantiales del
+                                        Valle
+                                        <span
+                                            class="rounded bg-secondary px-1.5 py-0.5 text-[10px] font-extrabold tracking-wider text-muted-foreground uppercase"
+                                            >Baja</span
+                                        >
+                                    </p>
+                                    <p class="text-sm text-muted-foreground">
+                                        Ruta 3 · parada movida a Av. Arborea ·
+                                        hasta el 15 nov
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </section>
+
+                <aside class="min-w-0 xl:col-span-4">
+                    <form
+                        class="space-y-4 rounded-2xl border border-border bg-card p-5"
+                    >
+                        <h2 class="text-lg font-bold">Nueva incidencia</h2>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label
+                                    for="i-tipo"
+                                    class="mb-1.5 block text-[13px] font-semibold text-muted-foreground"
+                                    >Tipo</label
+                                >
+                                <div class="relative">
+                                    <select
+                                        id="i-tipo"
+                                        class="w-full appearance-none rounded-md border border-border bg-background px-3 py-2.5 pr-9 text-sm text-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/50"
+                                    >
+                                        <option>Tráfico</option>
+                                        <option>Desvío</option>
+                                        <option>Falla</option>
+                                        <option>Emergencia</option></select
+                                    ><i
+                                        data-lucide="chevron-down"
+                                        class="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-placeholder"
+                                    ></i>
+                                </div>
+                            </div>
+                            <div>
+                                <label
+                                    for="i-sev"
+                                    class="mb-1.5 block text-[13px] font-semibold text-muted-foreground"
+                                    >Severidad</label
+                                >
+                                <div class="relative">
+                                    <select
+                                        id="i-sev"
+                                        class="w-full appearance-none rounded-md border border-border bg-background px-3 py-2.5 pr-9 text-sm text-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/50"
+                                    >
+                                        <option>Media</option>
+                                        <option>Baja</option>
+                                        <option>Alta</option>
+                                        <option>Crítica</option></select
+                                    ><i
+                                        data-lucide="chevron-down"
+                                        class="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-placeholder"
+                                    ></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label
+                                    for="i-ruta"
+                                    class="mb-1.5 block text-[13px] font-semibold text-muted-foreground"
+                                    >Ruta</label
+                                >
+                                <div class="relative">
+                                    <select
+                                        id="i-ruta"
+                                        class="w-full appearance-none rounded-md border border-border bg-background px-3 py-2.5 pr-9 text-sm text-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/50"
+                                    >
+                                        <option>Ruta 2</option>
+                                        <option>Todas</option></select
+                                    ><i
+                                        data-lucide="chevron-down"
+                                        class="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-placeholder"
+                                    ></i>
+                                </div>
+                            </div>
+                            <div>
+                                <label
+                                    for="i-unidad"
+                                    class="mb-1.5 block text-[13px] font-semibold text-muted-foreground"
+                                    >Unidad</label
+                                >
+                                <div class="relative">
+                                    <select
+                                        id="i-unidad"
+                                        class="w-full appearance-none rounded-md border border-border bg-background px-3 py-2.5 pr-9 text-sm text-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/50"
+                                    >
+                                        <option>Ninguna</option>
+                                        <option>BUS-UTC-02</option></select
+                                    ><i
+                                        data-lucide="chevron-down"
+                                        class="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-placeholder"
+                                    ></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label
+                                for="i-mensaje"
+                                class="mb-1.5 block text-[13px] font-semibold text-muted-foreground"
+                                >Mensaje para los estudiantes</label
+                            >
+                            <textarea
+                                id="i-mensaje"
+                                rows="3"
+                                placeholder="Ej. Las salidas pueden llegar 10 min tarde."
+                                class="w-full rounded-md border border-border bg-background px-3 py-2.5 text-sm text-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/50"
+                            ></textarea>
+                        </div>
+                        <label
+                            class="flex items-center gap-2 text-sm text-foreground"
+                            ><input
+                                type="checkbox"
+                                checked
+                                class="size-4 rounded accent-[#fddeb1]"
+                            />Avisar a quienes usan la ruta</label
+                        >
+                        <button
+                            type="button"
+                            data-ur-toast="Incidencia publicada"
+                            class="w-full rounded-md bg-primary py-2.5 text-sm font-bold text-primary-foreground hover:bg-primary-hover"
+                        >
+                            Publicar incidencia
+                        </button>
+                    </form>
+                </aside>
+            </div>
+        </main>
+    </body>
+</html>

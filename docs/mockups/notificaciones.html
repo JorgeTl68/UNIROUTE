@@ -1,0 +1,548 @@
+<!doctype html>
+<!--
+  Mockup: Mis Notificaciones y Alertas · UniRoute
+  Para S3-08 (Andrés: la página y el centro de notificaciones del header).
+  Los avisos los manda S4-01 (Santana) y las alarmas y favoritas son S4-02
+  (Kiroz).
+
+  Notas para implementarlo:
+  - Página resources/js/pages/notifications/index.tsx, ruta
+    notifications.index. Usa la tabla notifications de Laravel (canal
+    database) y llegan en vivo por broadcast.
+  - Tipos: llegada de la unidad (alarma), retraso de ruta, aviso de servicio
+    e incidencia. Cada tipo tiene su ícono y color (ver DESIGN.md).
+  - "Mis alarmas" son arrival_alarms; "Rutas favoritas" es favorite_routes.
+  - Estado vacío: "No tienes notificaciones" con un ícono de campana.
+-->
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="color-scheme" content="dark" />
+        <title>UniRoute · Mis Notificaciones y Alertas</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+            rel="stylesheet"
+        />
+        <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+        <script src="assets/uniroute.js"></script>
+        <script src="https://unpkg.com/lucide@0.475.0/dist/umd/lucide.min.js"></script>
+    </head>
+    <body
+        class="bg-background text-foreground"
+        data-pagina="notificaciones"
+        data-rol="estudiante"
+    >
+        <main class="flex-1 space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+            <div class="flex flex-wrap items-end justify-between gap-4">
+                <div>
+                    <h1 class="text-2xl font-bold tracking-tight sm:text-3xl">
+                        Mis Notificaciones y Alertas
+                    </h1>
+                    <p class="mt-1 text-sm text-muted-foreground">
+                        Llegadas, retrasos y avisos de las rutas que usas.
+                    </p>
+                </div>
+                <button
+                    type="button"
+                    data-ur-toast="Todas marcadas como leídas"
+                    class="flex items-center gap-2 rounded-md border border-border bg-card px-4 py-2 text-sm font-semibold text-foreground hover:bg-secondary"
+                >
+                    <i data-lucide="check-check" class="size-4"></i>Marcar todas
+                    como leídas
+                </button>
+            </div>
+
+            <div class="grid gap-6 xl:grid-cols-12">
+                <section class="min-w-0 space-y-4 xl:col-span-8">
+                    <div
+                        class="ur-scroll -mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0"
+                    >
+                        <div
+                            class="flex w-max gap-1 rounded-xl border border-border bg-card p-1"
+                            role="tablist"
+                            aria-label="Filtrar notificaciones"
+                        >
+                            <button
+                                type="button"
+                                role="tab"
+                                aria-selected="true"
+                                class="flex items-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground"
+                            >
+                                Todas
+                                <span
+                                    class="rounded-full bg-primary-foreground/15 px-1.5 text-[11px]"
+                                    >6</span
+                                >
+                            </button>
+                            <button
+                                type="button"
+                                role="tab"
+                                aria-selected="false"
+                                class="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-muted-foreground hover:text-foreground"
+                            >
+                                Sin leer
+                                <span
+                                    class="rounded-full bg-secondary px-1.5 text-[11px] text-foreground"
+                                    >3</span
+                                >
+                            </button>
+                            <button
+                                type="button"
+                                role="tab"
+                                aria-selected="false"
+                                class="rounded-md px-3 py-2 text-sm text-muted-foreground hover:text-foreground"
+                            >
+                                Llegadas
+                            </button>
+                            <button
+                                type="button"
+                                role="tab"
+                                aria-selected="false"
+                                class="rounded-md px-3 py-2 text-sm text-muted-foreground hover:text-foreground"
+                            >
+                                Retrasos e incidencias
+                            </button>
+                            <button
+                                type="button"
+                                role="tab"
+                                aria-selected="false"
+                                class="rounded-md px-3 py-2 text-sm text-muted-foreground hover:text-foreground"
+                            >
+                                Avisos de servicio
+                            </button>
+                        </div>
+                    </div>
+
+                    <div
+                        class="overflow-hidden rounded-2xl border border-border bg-card"
+                    >
+                        <p
+                            class="border-b border-border px-5 py-3 text-[11px] font-semibold tracking-wider text-muted-foreground uppercase"
+                        >
+                            Hoy
+                        </p>
+                        <ul class="divide-y divide-border">
+                            <li class="flex gap-4 bg-primary/[0.04] px-5 py-4">
+                                <span
+                                    class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-live/15 text-live"
+                                    ><i
+                                        data-lucide="bus-front"
+                                        class="size-5"
+                                    ></i
+                                ></span>
+                                <div class="min-w-0 flex-1">
+                                    <div
+                                        class="flex items-start justify-between gap-3"
+                                    >
+                                        <p
+                                            class="text-sm font-semibold text-white"
+                                        >
+                                            Tu unidad llega en 4 min
+                                        </p>
+                                        <span
+                                            class="flex shrink-0 items-center gap-2 text-[11px] text-muted-foreground"
+                                            >16:41<span
+                                                class="size-2 rounded-full bg-primary"
+                                                aria-label="Sin leer"
+                                            ></span
+                                        ></span>
+                                    </div>
+                                    <p
+                                        class="mt-0.5 text-sm text-muted-foreground"
+                                    >
+                                        BUS-UTC-01 de la Ruta 1 está por llegar
+                                        a Santa Fe.
+                                    </p>
+                                    <a
+                                        href="detalle-ruta.html"
+                                        class="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
+                                        >Ver en el mapa<i
+                                            data-lucide="chevron-right"
+                                            class="size-3.5"
+                                        ></i
+                                    ></a>
+                                </div>
+                            </li>
+                            <li class="flex gap-4 bg-primary/[0.04] px-5 py-4">
+                                <span
+                                    class="bg-warning/15 text-warning flex size-10 shrink-0 items-center justify-center rounded-lg"
+                                    ><i
+                                        data-lucide="clock-alert"
+                                        class="size-5"
+                                    ></i
+                                ></span>
+                                <div class="min-w-0 flex-1">
+                                    <div
+                                        class="flex items-start justify-between gap-3"
+                                    >
+                                        <p
+                                            class="text-sm font-semibold text-white"
+                                        >
+                                            Retraso de 9 min en Ruta 2
+                                        </p>
+                                        <span
+                                            class="flex shrink-0 items-center gap-2 text-[11px] text-muted-foreground"
+                                            >16:29<span
+                                                class="size-2 rounded-full bg-primary"
+                                                aria-label="Sin leer"
+                                            ></span
+                                        ></span>
+                                    </div>
+                                    <p
+                                        class="mt-0.5 text-sm text-muted-foreground"
+                                    >
+                                        Tráfico denso en Blvd. Plan de
+                                        Guadalupe. Las salidas de las 16:50 y
+                                        17:10 pueden llegar tarde.
+                                    </p>
+                                </div>
+                            </li>
+                            <li class="flex gap-4 bg-primary/[0.04] px-5 py-4">
+                                <span
+                                    class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-destructive/15 text-destructive"
+                                    ><i
+                                        data-lucide="triangle-alert"
+                                        class="size-5"
+                                    ></i
+                                ></span>
+                                <div class="min-w-0 flex-1">
+                                    <div
+                                        class="flex items-start justify-between gap-3"
+                                    >
+                                        <p
+                                            class="text-sm font-semibold text-white"
+                                        >
+                                            Desvío en Ruta 3
+                                        </p>
+                                        <span
+                                            class="flex shrink-0 items-center gap-2 text-[11px] text-muted-foreground"
+                                            >13:42<span
+                                                class="size-2 rounded-full bg-primary"
+                                                aria-label="Sin leer"
+                                            ></span
+                                        ></span>
+                                    </div>
+                                    <p
+                                        class="mt-0.5 text-sm text-muted-foreground"
+                                    >
+                                        Por obras en Manantiales del Valle, la
+                                        parada se movió temporalmente a la
+                                        esquina con Av. Arborea.
+                                    </p>
+                                </div>
+                            </li>
+                            <li class="flex gap-4 px-5 py-4">
+                                <span
+                                    class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-live/15 text-live"
+                                    ><i
+                                        data-lucide="bus-front"
+                                        class="size-5"
+                                    ></i
+                                ></span>
+                                <div class="min-w-0 flex-1">
+                                    <div
+                                        class="flex items-start justify-between gap-3"
+                                    >
+                                        <p
+                                            class="text-sm font-semibold text-foreground"
+                                        >
+                                            Tu unidad llegó a Santa Fe
+                                        </p>
+                                        <span
+                                            class="shrink-0 text-[11px] text-muted-foreground"
+                                            >07:52</span
+                                        >
+                                    </div>
+                                    <p
+                                        class="mt-0.5 text-sm text-muted-foreground"
+                                    >
+                                        Ruta 1 · BUS-UTC-04.
+                                    </p>
+                                </div>
+                            </li>
+                        </ul>
+                        <p
+                            class="border-y border-border px-5 py-3 text-[11px] font-semibold tracking-wider text-muted-foreground uppercase"
+                        >
+                            Ayer
+                        </p>
+                        <ul class="divide-y divide-border">
+                            <li class="flex gap-4 px-5 py-4">
+                                <span
+                                    class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary"
+                                    ><i
+                                        data-lucide="megaphone"
+                                        class="size-5"
+                                    ></i
+                                ></span>
+                                <div class="min-w-0 flex-1">
+                                    <div
+                                        class="flex items-start justify-between gap-3"
+                                    >
+                                        <p
+                                            class="text-sm font-semibold text-foreground"
+                                        >
+                                            Horario especial el viernes
+                                        </p>
+                                        <span
+                                            class="shrink-0 text-[11px] text-muted-foreground"
+                                            >18:05</span
+                                        >
+                                    </div>
+                                    <p
+                                        class="mt-0.5 text-sm text-muted-foreground"
+                                    >
+                                        Por el evento de fin de semestre, el
+                                        último viaje de todas las rutas sale a
+                                        las 18:00.
+                                    </p>
+                                </div>
+                            </li>
+                            <li class="flex gap-4 px-5 py-4">
+                                <span
+                                    class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-live/15 text-live"
+                                    ><i
+                                        data-lucide="circle-check"
+                                        class="size-5"
+                                    ></i
+                                ></span>
+                                <div class="min-w-0 flex-1">
+                                    <div
+                                        class="flex items-start justify-between gap-3"
+                                    >
+                                        <p
+                                            class="text-sm font-semibold text-foreground"
+                                        >
+                                            Ruta 2 volvió a la normalidad
+                                        </p>
+                                        <span
+                                            class="shrink-0 text-[11px] text-muted-foreground"
+                                            >09:14</span
+                                        >
+                                    </div>
+                                    <p
+                                        class="mt-0.5 text-sm text-muted-foreground"
+                                    >
+                                        Las unidades ya circulan con su horario.
+                                    </p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </section>
+
+                <aside class="min-w-0 space-y-4 xl:col-span-4">
+                    <div class="rounded-2xl border border-border bg-card p-5">
+                        <div class="flex items-center justify-between gap-3">
+                            <h2 class="text-lg font-bold">
+                                Mis alarmas de llegada
+                            </h2>
+                            <span
+                                class="rounded-full bg-secondary px-2 py-0.5 text-[11px] font-semibold text-muted-foreground"
+                                >2 activas</span
+                            >
+                        </div>
+                        <ul class="mt-4 space-y-2">
+                            <li
+                                class="flex items-center gap-3 rounded-xl bg-background/50 p-3"
+                            >
+                                <span
+                                    class="flex size-9 items-center justify-center rounded-md bg-live text-sm font-extrabold text-primary-foreground"
+                                    >1</span
+                                >
+                                <div class="min-w-0 flex-1">
+                                    <p
+                                        class="text-sm font-semibold text-foreground"
+                                    >
+                                        Santa Fe
+                                    </p>
+                                    <p class="text-xs text-muted-foreground">
+                                        5 min antes · lunes a viernes
+                                    </p>
+                                </div>
+                                <button
+                                    type="button"
+                                    role="switch"
+                                    aria-checked="true"
+                                    aria-label="Alarma Santa Fe"
+                                    class="switch relative h-6 w-11 shrink-0 rounded-full bg-live"
+                                >
+                                    <span
+                                        class="absolute top-1 left-[22px] size-4 rounded-full bg-primary-foreground transition-all"
+                                    ></span>
+                                </button>
+                            </li>
+                            <li
+                                class="flex items-center gap-3 rounded-xl bg-background/50 p-3"
+                            >
+                                <span
+                                    class="flex size-9 items-center justify-center rounded-md bg-placeholder text-sm font-extrabold text-primary-foreground"
+                                    >3</span
+                                >
+                                <div class="min-w-0 flex-1">
+                                    <p
+                                        class="text-sm font-semibold text-foreground"
+                                    >
+                                        Campus Central - Puerta Principal
+                                    </p>
+                                    <p class="text-xs text-muted-foreground">
+                                        10 min antes · solo hoy
+                                    </p>
+                                </div>
+                                <button
+                                    type="button"
+                                    role="switch"
+                                    aria-checked="false"
+                                    aria-label="Alarma Campus Central"
+                                    class="switch relative h-6 w-11 shrink-0 rounded-full bg-secondary"
+                                >
+                                    <span
+                                        class="absolute top-1 left-1 size-4 rounded-full bg-muted-foreground transition-all"
+                                    ></span>
+                                </button>
+                            </li>
+                        </ul>
+                        <a
+                            href="detalle-ruta.html"
+                            class="mt-3 flex w-full items-center justify-center gap-2 rounded-md border border-dashed border-border py-2.5 text-sm font-semibold text-primary hover:bg-secondary/50"
+                        >
+                            <i data-lucide="plus" class="size-4"></i>Nueva
+                            alarma desde una ruta
+                        </a>
+                    </div>
+
+                    <div class="rounded-2xl border border-border bg-card p-5">
+                        <h2 class="text-lg font-bold">Rutas favoritas</h2>
+                        <ul class="mt-4 space-y-2">
+                            <li>
+                                <a
+                                    href="detalle-ruta.html"
+                                    class="flex items-center gap-3 rounded-xl bg-background/50 p-3 hover:bg-secondary/50"
+                                >
+                                    <i
+                                        data-lucide="star"
+                                        class="size-4 fill-current text-primary"
+                                    ></i>
+                                    <span
+                                        class="flex-1 text-sm font-semibold text-foreground"
+                                        >Ruta 1 · Campus Central – Santa
+                                        Fe</span
+                                    >
+                                    <span
+                                        class="text-xs font-semibold text-live"
+                                        >4 min</span
+                                    >
+                                </a>
+                            </li>
+                        </ul>
+                        <p class="mt-3 text-xs text-muted-foreground">
+                            Marca una ruta con la estrella para verla primero en
+                            el dashboard.
+                        </p>
+                    </div>
+
+                    <div class="rounded-2xl border border-border bg-card p-5">
+                        <h2 class="text-lg font-bold">Qué quiero recibir</h2>
+                        <ul class="mt-3 divide-y divide-border">
+                            <li
+                                class="flex items-center justify-between gap-3 py-3"
+                            >
+                                <span
+                                    ><span
+                                        class="block text-sm font-semibold text-foreground"
+                                        >Retrasos de mis rutas</span
+                                    ><span
+                                        class="block text-xs text-muted-foreground"
+                                        >Cuando una favorita se atrasa más de 5
+                                        min</span
+                                    ></span
+                                >
+                                <button
+                                    type="button"
+                                    role="switch"
+                                    aria-checked="true"
+                                    aria-label="Retrasos"
+                                    class="switch relative h-6 w-11 shrink-0 rounded-full bg-live"
+                                >
+                                    <span
+                                        class="absolute top-1 left-[22px] size-4 rounded-full bg-primary-foreground transition-all"
+                                    ></span>
+                                </button>
+                            </li>
+                            <li
+                                class="flex items-center justify-between gap-3 py-3"
+                            >
+                                <span
+                                    ><span
+                                        class="block text-sm font-semibold text-foreground"
+                                        >Avisos de servicio</span
+                                    ><span
+                                        class="block text-xs text-muted-foreground"
+                                        >Cambios de horario y días sin
+                                        servicio</span
+                                    ></span
+                                >
+                                <button
+                                    type="button"
+                                    role="switch"
+                                    aria-checked="true"
+                                    aria-label="Avisos de servicio"
+                                    class="switch relative h-6 w-11 shrink-0 rounded-full bg-live"
+                                >
+                                    <span
+                                        class="absolute top-1 left-[22px] size-4 rounded-full bg-primary-foreground transition-all"
+                                    ></span>
+                                </button>
+                            </li>
+                            <li
+                                class="flex items-center justify-between gap-3 py-3"
+                            >
+                                <span
+                                    ><span
+                                        class="block text-sm font-semibold text-foreground"
+                                        >Correo electrónico</span
+                                    ><span
+                                        class="block text-xs text-muted-foreground"
+                                        >Copia de los avisos importantes</span
+                                    ></span
+                                >
+                                <button
+                                    type="button"
+                                    role="switch"
+                                    aria-checked="false"
+                                    aria-label="Correo electrónico"
+                                    class="switch relative h-6 w-11 shrink-0 rounded-full bg-secondary"
+                                >
+                                    <span
+                                        class="absolute top-1 left-1 size-4 rounded-full bg-muted-foreground transition-all"
+                                    ></span>
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                </aside>
+            </div>
+        </main>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                document.querySelectorAll('.switch').forEach(function (s) {
+                    s.addEventListener('click', function () {
+                        var on = s.getAttribute('aria-checked') !== 'true';
+                        var bola = s.querySelector('span');
+                        s.setAttribute('aria-checked', on ? 'true' : 'false');
+                        s.classList.toggle('bg-live', on);
+                        s.classList.toggle('bg-secondary', !on);
+                        bola.classList.toggle('left-[22px]', on);
+                        bola.classList.toggle('left-1', !on);
+                        bola.classList.toggle('bg-primary-foreground', on);
+                        bola.classList.toggle('bg-muted-foreground', !on);
+                    });
+                });
+            });
+        </script>
+    </body>
+</html>

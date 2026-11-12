@@ -1,0 +1,876 @@
+<!doctype html>
+<!--
+  Mockup: Consola de flota (Panel de administración) · UniRoute
+  Para S2-03 (Adaia). Ya hay una versión en main (PR #7,
+  pages/admin/fleet/index.tsx); este mockup es la referencia para alinearla.
+
+  Notas para implementarlo:
+  - Solo para el rol admin. Las pestañas de arriba son las secciones del panel
+    y se comparten entre todas las páginas de /admin.
+  - KPIs: unidades en servicio / total, viajes de hoy, puntualidad y ocupación
+    promedio. Todo sale de vehicles y trips; nada inventado.
+  - El banner de alerta es la incidencia abierta más grave (S4-04).
+  - Tabla de unidades con filtro por estado y paginación (S1-12).
+  - Fuera de alcance: rendimiento de combustible, clima, encuestas y tráfico
+    externo (no hay de dónde sacar el dato).
+-->
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="color-scheme" content="dark" />
+        <title>UniRoute · Consola de flota</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+            rel="stylesheet"
+        />
+        <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+        <script src="assets/uniroute.js"></script>
+        <script src="https://unpkg.com/lucide@0.475.0/dist/umd/lucide.min.js"></script>
+    </head>
+    <body
+        class="bg-background text-foreground"
+        data-pagina="admin"
+        data-rol="admin"
+    >
+        <main class="flex-1 space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+            <div class="flex flex-wrap items-end justify-between gap-4">
+                <div>
+                    <p
+                        class="text-gold text-[11px] font-semibold tracking-widest uppercase"
+                    >
+                        Panel de administración · Operaciones
+                    </p>
+                    <h1
+                        class="mt-1 text-2xl font-bold tracking-tight sm:text-3xl"
+                    >
+                        Consola de flota
+                    </h1>
+                    <p class="mt-1 max-w-2xl text-sm text-muted-foreground">
+                        Unidades en servicio, ocupación por ruta y asignación de
+                        conductores.
+                    </p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <a
+                        href="admin-unidad-nueva.html"
+                        class="flex items-center gap-2 rounded-md border border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground hover:bg-secondary"
+                        ><i data-lucide="circle-plus" class="size-4"></i
+                        >Registrar unidad</a
+                    >
+                    <a
+                        href="admin-ruta-nueva.html"
+                        class="flex items-center gap-2 rounded-md bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground hover:bg-primary-hover"
+                        ><i data-lucide="route" class="size-4"></i>Crear ruta</a
+                    >
+                </div>
+            </div>
+
+            <!-- KPIs -->
+            <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                <div class="rounded-2xl border border-border bg-card p-5">
+                    <div class="flex items-center justify-between">
+                        <span
+                            class="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase"
+                            >Unidades en servicio</span
+                        ><span
+                            class="flex size-8 items-center justify-center rounded-lg bg-secondary text-foreground"
+                            ><i data-lucide="bus-front" class="size-4"></i
+                        ></span>
+                    </div>
+                    <p class="mt-3 text-4xl font-extrabold text-white">
+                        18<span class="text-xl text-muted-foreground">/20</span>
+                    </p>
+                    <div
+                        class="mt-3 h-1.5 overflow-hidden rounded-full bg-secondary"
+                    >
+                        <div class="h-full w-[90%] rounded-full bg-live"></div>
+                    </div>
+                    <p class="mt-2 text-xs text-muted-foreground">
+                        1 en taller · 1 en reserva
+                    </p>
+                </div>
+                <div class="rounded-2xl border border-border bg-card p-5">
+                    <div class="flex items-center justify-between">
+                        <span
+                            class="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase"
+                            >Viajes de hoy</span
+                        ><span
+                            class="flex size-8 items-center justify-center rounded-lg bg-secondary text-foreground"
+                            ><i data-lucide="route" class="size-4"></i
+                        ></span>
+                    </div>
+                    <p class="mt-3 text-4xl font-extrabold text-white">
+                        64<span class="text-xl text-muted-foreground">/72</span>
+                    </p>
+                    <div
+                        class="mt-3 h-1.5 overflow-hidden rounded-full bg-secondary"
+                    >
+                        <div class="bg-gold h-full w-[89%] rounded-full"></div>
+                    </div>
+                    <p class="mt-2 text-xs text-muted-foreground">
+                        8 programados para la tarde
+                    </p>
+                </div>
+                <div class="rounded-2xl border border-border bg-card p-5">
+                    <div class="flex items-center justify-between">
+                        <span
+                            class="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase"
+                            >Puntualidad</span
+                        ><span
+                            class="flex size-8 items-center justify-center rounded-lg bg-secondary text-foreground"
+                            ><i data-lucide="timer" class="size-4"></i
+                        ></span>
+                    </div>
+                    <p
+                        class="mt-3 flex items-baseline gap-2 text-4xl font-extrabold text-white"
+                    >
+                        94.2<span class="text-xl">%</span
+                        ><span
+                            class="rounded-full bg-live/15 px-2 py-0.5 text-[11px] font-bold text-live"
+                            >+1.3</span
+                        >
+                    </p>
+                    <p class="mt-5 text-xs text-muted-foreground">
+                        Llegadas con ±2 min del horario
+                    </p>
+                </div>
+                <div class="rounded-2xl border border-border bg-card p-5">
+                    <div class="flex items-center justify-between">
+                        <span
+                            class="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase"
+                            >Ocupación promedio</span
+                        ><span
+                            class="flex size-8 items-center justify-center rounded-lg bg-secondary text-foreground"
+                            ><i data-lucide="users" class="size-4"></i
+                        ></span>
+                    </div>
+                    <p class="mt-3 text-4xl font-extrabold text-white">
+                        68<span class="text-xl">%</span>
+                    </p>
+                    <div
+                        class="mt-3 h-1.5 overflow-hidden rounded-full bg-secondary"
+                    >
+                        <div class="bg-gold h-full w-[68%] rounded-full"></div>
+                    </div>
+                    <p class="mt-2 text-xs text-muted-foreground">
+                        Pico a las 07:00 (88 %)
+                    </p>
+                </div>
+            </div>
+
+            <!-- Alerta operativa -->
+            <div
+                class="border-warning/40 bg-warning/10 flex flex-col gap-4 rounded-2xl border p-4 sm:flex-row sm:items-center sm:justify-between"
+            >
+                <div class="flex items-start gap-3">
+                    <span
+                        class="bg-warning/20 text-warning flex size-10 shrink-0 items-center justify-center rounded-lg"
+                        ><i data-lucide="triangle-alert" class="size-5"></i
+                    ></span>
+                    <div>
+                        <p
+                            class="flex flex-wrap items-center gap-2 text-sm font-bold text-white"
+                        >
+                            Alerta operativa en Ruta 2
+                            <span
+                                class="rounded bg-secondary px-1.5 py-0.5 text-[11px] font-semibold text-muted-foreground"
+                                >13:42</span
+                            >
+                        </p>
+                        <p class="text-sm text-muted-foreground">
+                            Tráfico moderado en Blvd. Miguel Ramos Arizpe: +6
+                            min de retraso estimado. Los estudiantes ya fueron
+                            avisados.
+                        </p>
+                    </div>
+                </div>
+                <div class="flex shrink-0 gap-2">
+                    <a
+                        href="admin-incidencias.html"
+                        class="rounded-md border border-border bg-card px-3 py-2 text-xs font-semibold text-foreground hover:bg-secondary"
+                        >Desviar unidades</a
+                    >
+                    <a
+                        href="dashboard.html"
+                        class="rounded-md bg-primary px-3 py-2 text-xs font-bold text-primary-foreground hover:bg-primary-hover"
+                        >Ver mapa</a
+                    >
+                </div>
+            </div>
+
+            <nav
+                data-ur-tabs-admin="flota"
+                aria-label="Secciones del panel"
+            ></nav>
+
+            <div class="grid gap-6 2xl:grid-cols-12">
+                <!-- Tabla de unidades -->
+                <section
+                    class="min-w-0 overflow-hidden rounded-2xl border border-border bg-card 2xl:col-span-8"
+                >
+                    <div
+                        class="flex flex-wrap items-center justify-between gap-3 border-b border-border p-5"
+                    >
+                        <div>
+                            <h2 class="text-lg font-bold">
+                                Unidades activas en servicio
+                            </h2>
+                            <p class="text-xs text-muted-foreground">
+                                Posición y ocupación en vivo
+                            </p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span
+                                class="hidden items-center gap-1.5 rounded-full bg-live/15 px-2.5 py-1 text-[11px] font-semibold text-live sm:flex"
+                                ><span
+                                    class="size-1.5 rounded-full bg-live"
+                                ></span
+                                >Actualizado hace 4 s</span
+                            >
+                            <div class="relative">
+                                <select
+                                    class="appearance-none rounded-md border border-border bg-background py-2 pr-8 pl-3 text-xs font-semibold text-foreground outline-none focus:border-ring"
+                                    aria-label="Filtrar por estado"
+                                >
+                                    <option>Todos los estados</option>
+                                    <option>En ruta</option>
+                                    <option>En espera</option>
+                                    <option>Mantenimiento</option>
+                                </select>
+                                <i
+                                    data-lucide="chevron-down"
+                                    class="pointer-events-none absolute top-1/2 right-2 size-4 -translate-y-1/2 text-placeholder"
+                                ></i>
+                            </div>
+                            <button
+                                type="button"
+                                data-ur-toast="Descargando CSV"
+                                class="flex size-9 items-center justify-center rounded-md border border-border bg-background text-foreground hover:bg-secondary"
+                                aria-label="Exportar"
+                            >
+                                <i data-lucide="download" class="size-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="relative overflow-x-auto">
+                        <table class="w-full min-w-[720px] text-left text-sm">
+                            <thead
+                                class="text-[11px] tracking-wider text-muted-foreground uppercase"
+                            >
+                                <tr class="border-b border-border">
+                                    <th class="px-5 py-3 font-semibold">
+                                        Unidad
+                                    </th>
+                                    <th class="px-5 py-3 font-semibold">
+                                        Ruta
+                                    </th>
+                                    <th class="px-5 py-3 font-semibold">
+                                        Conductor
+                                    </th>
+                                    <th class="px-5 py-3 font-semibold">
+                                        Estado
+                                    </th>
+                                    <th class="px-5 py-3 font-semibold">
+                                        Ocupación
+                                    </th>
+                                    <th class="px-5 py-3">
+                                        <span class="sr-only">Acciones</span>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-border">
+                                <tr class="hover:bg-secondary/30">
+                                    <td class="px-5 py-3.5">
+                                        <p
+                                            class="font-semibold whitespace-nowrap text-white"
+                                        >
+                                            BUS-UTC-01
+                                        </p>
+                                        <p
+                                            class="text-xs text-muted-foreground"
+                                        >
+                                            Mercedes Sprinter
+                                        </p>
+                                    </td>
+                                    <td class="px-5 py-3.5">
+                                        <span class="flex items-center gap-2"
+                                            ><span
+                                                class="flex size-6 items-center justify-center rounded bg-live text-[11px] font-extrabold text-primary-foreground"
+                                                >1</span
+                                            ><span class="text-foreground"
+                                                >Santa Fe</span
+                                            ></span
+                                        >
+                                    </td>
+                                    <td class="px-5 py-3.5">
+                                        <span class="flex items-center gap-2"
+                                            ><span
+                                                class="flex size-7 items-center justify-center rounded-full bg-secondary text-[11px] font-bold"
+                                                >MG</span
+                                            >Manuel González</span
+                                        >
+                                    </td>
+                                    <td class="px-5 py-3.5">
+                                        <span
+                                            class="inline-flex items-center gap-1.5 rounded-full bg-live/15 px-2 py-0.5 text-[11px] font-bold text-live"
+                                            ><span
+                                                class="size-1.5 rounded-full bg-live"
+                                            ></span
+                                            >En ruta</span
+                                        >
+                                    </td>
+                                    <td class="px-5 py-3.5">
+                                        <div
+                                            class="flex items-center justify-between text-xs"
+                                        >
+                                            <span
+                                                class="font-semibold text-foreground"
+                                                >70 %</span
+                                            ><span class="text-muted-foreground"
+                                                >28/40</span
+                                            >
+                                        </div>
+                                        <div
+                                            class="mt-1 h-1.5 w-32 overflow-hidden rounded-full bg-secondary"
+                                        >
+                                            <div
+                                                class="bg-gold h-full w-[70%] rounded-full"
+                                            ></div>
+                                        </div>
+                                    </td>
+                                    <td class="px-5 py-3.5 text-right">
+                                        <button
+                                            type="button"
+                                            class="flex size-8 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary"
+                                            aria-label="Acciones de BUS-UTC-01"
+                                        >
+                                            <i
+                                                data-lucide="ellipsis-vertical"
+                                                class="size-4"
+                                            ></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-secondary/30">
+                                    <td class="px-5 py-3.5">
+                                        <p
+                                            class="font-semibold whitespace-nowrap text-white"
+                                        >
+                                            BUS-UTC-02
+                                        </p>
+                                        <p
+                                            class="text-xs text-muted-foreground"
+                                        >
+                                            Volvo Access
+                                        </p>
+                                    </td>
+                                    <td class="px-5 py-3.5">
+                                        <span class="flex items-center gap-2"
+                                            ><span
+                                                class="flex size-6 items-center justify-center rounded bg-primary-hover text-[11px] font-extrabold text-primary-foreground"
+                                                >2</span
+                                            ><span class="text-foreground"
+                                                >Ramos Arizpe</span
+                                            ></span
+                                        >
+                                        <p class="text-warning mt-0.5 text-xs">
+                                            +6 min de retraso
+                                        </p>
+                                    </td>
+                                    <td class="px-5 py-3.5">
+                                        <span class="flex items-center gap-2"
+                                            ><span
+                                                class="flex size-7 items-center justify-center rounded-full bg-secondary text-[11px] font-bold"
+                                                >LR</span
+                                            >Laura Rivas</span
+                                        >
+                                    </td>
+                                    <td class="px-5 py-3.5">
+                                        <span
+                                            class="bg-warning/15 text-warning inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] font-bold"
+                                            ><span
+                                                class="bg-warning size-1.5 rounded-full"
+                                            ></span
+                                            >Demorado</span
+                                        >
+                                    </td>
+                                    <td class="px-5 py-3.5">
+                                        <div
+                                            class="flex items-center justify-between text-xs"
+                                        >
+                                            <span
+                                                class="font-semibold text-destructive"
+                                                >95 %</span
+                                            ><span class="text-muted-foreground"
+                                                >38/40</span
+                                            >
+                                        </div>
+                                        <div
+                                            class="mt-1 h-1.5 w-32 overflow-hidden rounded-full bg-secondary"
+                                        >
+                                            <div
+                                                class="h-full w-[95%] rounded-full bg-destructive"
+                                            ></div>
+                                        </div>
+                                    </td>
+                                    <td class="px-5 py-3.5 text-right">
+                                        <button
+                                            type="button"
+                                            class="flex size-8 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary"
+                                            aria-label="Acciones de BUS-UTC-02"
+                                        >
+                                            <i
+                                                data-lucide="ellipsis-vertical"
+                                                class="size-4"
+                                            ></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-secondary/30">
+                                    <td class="px-5 py-3.5">
+                                        <p
+                                            class="font-semibold whitespace-nowrap text-white"
+                                        >
+                                            BUS-UTC-03
+                                        </p>
+                                        <p
+                                            class="text-xs text-muted-foreground"
+                                        >
+                                            Marcopolo Boxer
+                                        </p>
+                                    </td>
+                                    <td class="px-5 py-3.5">
+                                        <span class="flex items-center gap-2"
+                                            ><span
+                                                class="flex size-6 items-center justify-center rounded bg-placeholder text-[11px] font-extrabold text-primary-foreground"
+                                                >3</span
+                                            ><span class="text-foreground"
+                                                >Fracc. Arborea</span
+                                            ></span
+                                        >
+                                    </td>
+                                    <td class="px-5 py-3.5">
+                                        <span class="flex items-center gap-2"
+                                            ><span
+                                                class="flex size-7 items-center justify-center rounded-full bg-secondary text-[11px] font-bold"
+                                                >JC</span
+                                            >Javier Castillo</span
+                                        >
+                                    </td>
+                                    <td class="px-5 py-3.5">
+                                        <span
+                                            class="inline-flex items-center gap-1.5 rounded-full bg-live/15 px-2 py-0.5 text-[11px] font-bold text-live"
+                                            ><span
+                                                class="size-1.5 rounded-full bg-live"
+                                            ></span
+                                            >En ruta</span
+                                        >
+                                    </td>
+                                    <td class="px-5 py-3.5">
+                                        <div
+                                            class="flex items-center justify-between text-xs"
+                                        >
+                                            <span
+                                                class="font-semibold text-foreground"
+                                                >45 %</span
+                                            ><span class="text-muted-foreground"
+                                                >18/40</span
+                                            >
+                                        </div>
+                                        <div
+                                            class="mt-1 h-1.5 w-32 overflow-hidden rounded-full bg-secondary"
+                                        >
+                                            <div
+                                                class="h-full w-[45%] rounded-full bg-live"
+                                            ></div>
+                                        </div>
+                                    </td>
+                                    <td class="px-5 py-3.5 text-right">
+                                        <button
+                                            type="button"
+                                            class="flex size-8 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary"
+                                            aria-label="Acciones de BUS-UTC-03"
+                                        >
+                                            <i
+                                                data-lucide="ellipsis-vertical"
+                                                class="size-4"
+                                            ></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-secondary/30">
+                                    <td class="px-5 py-3.5">
+                                        <p
+                                            class="font-semibold whitespace-nowrap text-white"
+                                        >
+                                            BUS-UTC-04
+                                        </p>
+                                        <p
+                                            class="text-xs text-muted-foreground"
+                                        >
+                                            Marcopolo Boxer
+                                        </p>
+                                    </td>
+                                    <td class="px-5 py-3.5">
+                                        <span class="flex items-center gap-2"
+                                            ><span
+                                                class="bg-gold flex size-6 items-center justify-center rounded text-[11px] font-extrabold text-primary-foreground"
+                                                >4</span
+                                            ><span class="text-foreground"
+                                                >Saltillo 2000</span
+                                            ></span
+                                        >
+                                    </td>
+                                    <td class="px-5 py-3.5">
+                                        <span class="flex items-center gap-2"
+                                            ><span
+                                                class="flex size-7 items-center justify-center rounded-full bg-secondary text-[11px] font-bold"
+                                                >EP</span
+                                            >Esteban Peralta</span
+                                        >
+                                    </td>
+                                    <td class="px-5 py-3.5">
+                                        <span
+                                            class="inline-flex items-center gap-1.5 rounded-full bg-secondary px-2 py-0.5 text-[11px] font-bold text-muted-foreground"
+                                            ><span
+                                                class="size-1.5 rounded-full bg-muted-foreground"
+                                            ></span
+                                            >En espera</span
+                                        >
+                                    </td>
+                                    <td class="px-5 py-3.5">
+                                        <div
+                                            class="flex items-center justify-between text-xs"
+                                        >
+                                            <span
+                                                class="font-semibold text-foreground"
+                                                >0 %</span
+                                            ><span class="text-muted-foreground"
+                                                >0/45</span
+                                            >
+                                        </div>
+                                        <div
+                                            class="mt-1 h-1.5 w-32 rounded-full bg-secondary"
+                                        ></div>
+                                    </td>
+                                    <td class="px-5 py-3.5 text-right">
+                                        <button
+                                            type="button"
+                                            class="flex size-8 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary"
+                                            aria-label="Acciones de BUS-UTC-04"
+                                        >
+                                            <i
+                                                data-lucide="ellipsis-vertical"
+                                                class="size-4"
+                                            ></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-secondary/30">
+                                    <td class="px-5 py-3.5">
+                                        <p
+                                            class="font-semibold whitespace-nowrap text-white"
+                                        >
+                                            BUS-UTC-06
+                                        </p>
+                                        <p
+                                            class="text-xs text-muted-foreground"
+                                        >
+                                            Volvo Access
+                                        </p>
+                                    </td>
+                                    <td class="px-5 py-3.5">
+                                        <span class="text-muted-foreground"
+                                            >Sin asignar</span
+                                        >
+                                        <p
+                                            class="mt-0.5 text-xs text-destructive"
+                                        >
+                                            Taller: servicio de 10 000 km
+                                        </p>
+                                    </td>
+                                    <td
+                                        class="px-5 py-3.5 text-placeholder italic"
+                                    >
+                                        No asignado
+                                    </td>
+                                    <td class="px-5 py-3.5">
+                                        <span
+                                            class="inline-flex items-center gap-1.5 rounded-full bg-destructive/15 px-2 py-0.5 text-[11px] font-bold text-destructive"
+                                            ><span
+                                                class="size-1.5 rounded-full bg-destructive"
+                                            ></span
+                                            >Mantenimiento</span
+                                        >
+                                    </td>
+                                    <td
+                                        class="px-5 py-3.5 text-xs text-muted-foreground"
+                                    >
+                                        Fuera de servicio
+                                    </td>
+                                    <td class="px-5 py-3.5 text-right">
+                                        <button
+                                            type="button"
+                                            class="flex size-8 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary"
+                                            aria-label="Acciones de BUS-UTC-06"
+                                        >
+                                            <i
+                                                data-lucide="ellipsis-vertical"
+                                                class="size-4"
+                                            ></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div
+                        class="flex flex-wrap items-center justify-between gap-3 border-t border-border px-5 py-3"
+                    >
+                        <span class="text-xs text-muted-foreground"
+                            >Mostrando 5 de 20 unidades</span
+                        >
+                        <nav class="flex gap-1" aria-label="Páginas">
+                            <button
+                                type="button"
+                                class="flex size-8 items-center justify-center rounded-md border border-border text-muted-foreground"
+                                aria-label="Anterior"
+                                disabled
+                            >
+                                <i
+                                    data-lucide="chevron-left"
+                                    class="size-4"
+                                ></i>
+                            </button>
+                            <button
+                                type="button"
+                                class="size-8 rounded-md bg-primary text-xs font-bold text-primary-foreground"
+                                aria-current="page"
+                            >
+                                1
+                            </button>
+                            <button
+                                type="button"
+                                class="size-8 rounded-md border border-border text-xs font-semibold text-foreground hover:bg-secondary"
+                            >
+                                2
+                            </button>
+                            <button
+                                type="button"
+                                class="size-8 rounded-md border border-border text-xs font-semibold text-foreground hover:bg-secondary"
+                            >
+                                3
+                            </button>
+                            <button
+                                type="button"
+                                class="flex size-8 items-center justify-center rounded-md border border-border text-foreground hover:bg-secondary"
+                                aria-label="Siguiente"
+                            >
+                                <i
+                                    data-lucide="chevron-right"
+                                    class="size-4"
+                                ></i>
+                            </button>
+                        </nav>
+                    </div>
+                </section>
+
+                <aside
+                    class="grid min-w-0 content-start gap-4 md:grid-cols-2 2xl:col-span-4 2xl:grid-cols-1"
+                >
+                    <div class="rounded-2xl border border-border bg-card p-5">
+                        <div class="flex items-start justify-between gap-3">
+                            <div>
+                                <h2 class="text-lg font-bold">
+                                    Picos de aforo por horario
+                                </h2>
+                                <p class="text-xs text-muted-foreground">
+                                    Pasajeros por hora, hoy
+                                </p>
+                            </div>
+                            <a
+                                href="admin-aforo.html"
+                                class="text-xs font-semibold text-primary hover:underline"
+                                >Ver reporte</a
+                            >
+                        </div>
+                        <div
+                            class="mt-5 flex h-36 items-end gap-2"
+                            role="img"
+                            aria-label="Gráfica de pasajeros por hora: el pico es a las 07:00 con 180"
+                        >
+                            <div
+                                class="flex flex-1 flex-col items-center gap-1"
+                            >
+                                <div
+                                    class="w-full rounded-t bg-secondary"
+                                    style="height: 30%"
+                                ></div>
+                                <span class="text-[10px] text-muted-foreground"
+                                    >06</span
+                                >
+                            </div>
+                            <div
+                                class="flex flex-1 flex-col items-center gap-1"
+                            >
+                                <span class="text-[10px] font-bold text-primary"
+                                    >180</span
+                                >
+                                <div
+                                    class="w-full rounded-t bg-primary"
+                                    style="height: 88%"
+                                ></div>
+                                <span
+                                    class="text-[10px] font-semibold text-foreground"
+                                    >07</span
+                                >
+                            </div>
+                            <div
+                                class="flex flex-1 flex-col items-center gap-1"
+                            >
+                                <div
+                                    class="w-full rounded-t bg-secondary"
+                                    style="height: 45%"
+                                ></div>
+                                <span class="text-[10px] text-muted-foreground"
+                                    >10</span
+                                >
+                            </div>
+                            <div
+                                class="flex flex-1 flex-col items-center gap-1"
+                            >
+                                <div
+                                    class="bg-gold w-full rounded-t"
+                                    style="height: 68%"
+                                ></div>
+                                <span class="text-[10px] text-muted-foreground"
+                                    >13</span
+                                >
+                            </div>
+                            <div
+                                class="flex flex-1 flex-col items-center gap-1"
+                            >
+                                <div
+                                    class="w-full rounded-t bg-secondary"
+                                    style="height: 40%"
+                                ></div>
+                                <span class="text-[10px] text-muted-foreground"
+                                    >15</span
+                                >
+                            </div>
+                            <div
+                                class="flex flex-1 flex-col items-center gap-1"
+                            >
+                                <div
+                                    class="bg-gold w-full rounded-t"
+                                    style="height: 75%"
+                                ></div>
+                                <span class="text-[10px] text-muted-foreground"
+                                    >18</span
+                                >
+                            </div>
+                            <div
+                                class="flex flex-1 flex-col items-center gap-1"
+                            >
+                                <div
+                                    class="w-full rounded-t bg-secondary"
+                                    style="height: 22%"
+                                ></div>
+                                <span class="text-[10px] text-muted-foreground"
+                                    >21</span
+                                >
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rounded-2xl border border-border bg-card p-5">
+                        <div class="flex items-start justify-between gap-3">
+                            <div>
+                                <h2 class="text-lg font-bold">
+                                    Despacho y relevos
+                                </h2>
+                                <p class="text-xs text-muted-foreground">
+                                    Próximos cambios de turno
+                                </p>
+                            </div>
+                            <a
+                                href="admin-conductores.html"
+                                class="text-xs font-semibold text-primary hover:underline"
+                                >Gestionar</a
+                            >
+                        </div>
+                        <ul class="mt-4 space-y-2">
+                            <li
+                                class="flex items-center gap-3 rounded-xl bg-background/50 p-3"
+                            >
+                                <span
+                                    class="flex size-9 items-center justify-center rounded-full bg-secondary text-xs font-bold"
+                                    >RH</span
+                                >
+                                <span class="min-w-0 flex-1"
+                                    ><span
+                                        class="block text-sm font-semibold text-foreground"
+                                        >Roberto Hernández</span
+                                    ><span
+                                        class="block text-xs text-muted-foreground"
+                                        >Ruta 1 · 14:30</span
+                                    ></span
+                                >
+                                <span
+                                    class="rounded-full bg-live/15 px-2 py-0.5 text-[11px] font-bold text-live"
+                                    >Listo</span
+                                >
+                            </li>
+                            <li
+                                class="flex items-center gap-3 rounded-xl bg-background/50 p-3"
+                            >
+                                <span
+                                    class="flex size-9 items-center justify-center rounded-full bg-secondary text-xs font-bold"
+                                    >SV</span
+                                >
+                                <span class="min-w-0 flex-1"
+                                    ><span
+                                        class="block text-sm font-semibold text-foreground"
+                                        >Sofía Villarreal</span
+                                    ><span
+                                        class="block text-xs text-muted-foreground"
+                                        >Ruta 3 · 15:00</span
+                                    ></span
+                                >
+                                <span
+                                    class="rounded-full bg-secondary px-2 py-0.5 text-[11px] font-bold text-muted-foreground"
+                                    >Descanso</span
+                                >
+                            </li>
+                            <li
+                                class="flex items-center gap-3 rounded-xl bg-background/50 p-3"
+                            >
+                                <span
+                                    class="flex size-9 items-center justify-center rounded-full bg-secondary text-xs font-bold"
+                                    >AM</span
+                                >
+                                <span class="min-w-0 flex-1"
+                                    ><span
+                                        class="block text-sm font-semibold text-foreground"
+                                        >Arturo Morales</span
+                                    ><span
+                                        class="block text-xs text-muted-foreground"
+                                        >Suplente · sin ruta</span
+                                    ></span
+                                >
+                                <a
+                                    href="admin-conductores.html"
+                                    class="rounded-md bg-primary px-2.5 py-1 text-xs font-bold text-primary-foreground"
+                                    >Asignar</a
+                                >
+                            </li>
+                        </ul>
+                    </div>
+                </aside>
+            </div>
+        </main>
+    </body>
+</html>
