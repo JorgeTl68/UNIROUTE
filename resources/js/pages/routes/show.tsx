@@ -22,6 +22,7 @@ import { EmergencyDialog } from '@/components/emergency-dialog';
 import { ArrivalAlarmDialog } from '@/components/transit/arrival-alarm-dialog';
 import { occupancyPercent } from '@/components/transit/occupancy-bar';
 import { StatusChip } from '@/components/transit/status-chip';
+import { StreetViewLink } from '@/components/transit/street-view-link';
 import { TransitMap } from '@/components/transit/transit-map';
 import { UpdatedAgo } from '@/components/transit/updated-ago';
 import { useLivePositions } from '@/hooks/use-live-positions';
@@ -122,6 +123,12 @@ function TimelineItem({
                             {vehicleCode} está recogiendo pasajeros.
                         </p>
                     )}
+                    <StreetViewLink
+                        name={stop.name}
+                        latitude={stop.latitude}
+                        longitude={stop.longitude}
+                        className="mt-2"
+                    />
                 </div>
             ) : (
                 <div
@@ -169,6 +176,12 @@ function TimelineItem({
                             .filter(Boolean)
                             .join(' · ')}
                     </p>
+                    <StreetViewLink
+                        name={stop.name}
+                        latitude={stop.latitude}
+                        longitude={stop.longitude}
+                        className="mt-1.5"
+                    />
                 </div>
             )}
         </li>
