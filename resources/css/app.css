@@ -19,6 +19,8 @@
     --color-background: var(--background);
     --color-primary-hover: var(--boton-hover);
     --color-live: var(--verde-tiempo-real);
+    --color-brand-gold: var(--brand-gold);
+    --color-brand-green: var(--brand-green);
     --color-route: var(--verde-rutas);
     --color-placeholder: var(--placeholder);
     --color-warning: var(--advertencia);
@@ -70,6 +72,8 @@
 :root,
 .dark {
     color-scheme: dark;
+    --brand-gold: #b69b72;
+    --brand-green: #84cc16;
     --fondo-principal: #020e24;
     --fondo-paneles: #17243a;
     --bordes: #2f3e57;
