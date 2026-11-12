@@ -1,5 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
-import { Plus } from 'lucide-react';
+import { CalendarClock, Plus } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -116,6 +116,18 @@ export default function RoutesIndex({
                                     </div>
                                 ))}
                             </dl>
+                            <Button
+                                asChild
+                                variant="outline"
+                                className="mt-4 w-full"
+                            >
+                                <Link
+                                    href={`/admin/routes/${route.id}/schedules`}
+                                >
+                                    <CalendarClock className="size-4" />
+                                    Horarios
+                                </Link>
+                            </Button>
                         </CardContent>
                     </Card>
                 ))}
