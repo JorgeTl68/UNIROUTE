@@ -41,6 +41,15 @@ export function AppSidebar() {
                       href: '/admin/fleet',
                       icon: LayoutGrid,
                   },
+                  ...(auth.user.email_verified_at
+                      ? [
+                            {
+                                title: 'Rutas y paradas',
+                                href: '/admin/routes',
+                                icon: Route,
+                            },
+                        ]
+                      : []),
               ]
             : mainNavItems;
     return (
