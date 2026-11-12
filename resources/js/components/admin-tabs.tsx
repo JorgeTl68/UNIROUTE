@@ -17,7 +17,6 @@ const tabs = [
         icon: BusFront,
         active: (path: string) =>
             path === '/admin/fleet' ||
-            path === '/admin/fleet/create' ||
             path.startsWith('/admin/fleet/assignments'),
     },
     {

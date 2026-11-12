@@ -11,6 +11,8 @@ import {
     TriangleAlert,
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { ConfirmDialog } from '@/components/confirm-dialog';
+import { EmergencyDialog } from '@/components/emergency-dialog';
 import {
     occupancyPercent,
     occupancyTone,
@@ -443,31 +445,34 @@ export default function DriverTripPage({ trip, trips }: Props) {
                         <>
                             <OccupancyControl key={trip.id} trip={trip} />
                             <section className="mt-4 grid grid-cols-2 gap-3">
-                                <Link
-                                    href="/emergency/create"
-                                    className="flex items-center justify-center gap-2 rounded-xl border border-border bg-card py-4 text-sm font-semibold text-foreground"
+                                <EmergencyDialog>
+                                    <button
+                                        type="button"
+                                        className="flex items-center justify-center gap-2 rounded-xl border border-border bg-card py-4 text-sm font-semibold text-foreground"
+                                    >
+                                        <TriangleAlert className="size-5 text-warning" />
+                                        Reportar incidencia
+                                    </button>
+                                </EmergencyDialog>
+                                <ConfirmDialog
+                                    title="¿Terminar el viaje?"
+                                    description="Se dejará de enviar tu ubicación y el viaje quedará como completado."
+                                    confirmLabel="Terminar viaje"
+                                    destructive
+                                    onConfirm={() =>
+                                        router.post(
+                                            `/driver/trips/${trip.id}/finish`,
+                                        )
+                                    }
                                 >
-                                    <TriangleAlert className="size-5 text-warning" />
-                                    Reportar incidencia
-                                </Link>
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        if (
-                                            window.confirm(
-                                                '¿Terminar el viaje? Se dejará de enviar tu ubicación.',
-                                            )
-                                        ) {
-                                            router.post(
-                                                `/driver/trips/${trip.id}/finish`,
-                                            );
-                                        }
-                                    }}
-                                    className="flex items-center justify-center gap-2 rounded-xl border border-destructive/50 bg-destructive/10 py-4 text-sm font-bold text-destructive"
-                                >
-                                    <Square className="size-5 fill-current" />
-                                    Terminar viaje
-                                </button>
+                                    <button
+                                        type="button"
+                                        className="flex items-center justify-center gap-2 rounded-xl border border-destructive/50 bg-destructive/10 py-4 text-sm font-bold text-destructive"
+                                    >
+                                        <Square className="size-5 fill-current" />
+                                        Terminar viaje
+                                    </button>
+                                </ConfirmDialog>
                             </section>
                         </>
                     )}

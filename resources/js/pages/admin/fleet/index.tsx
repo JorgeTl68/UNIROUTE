@@ -20,7 +20,13 @@ import {
     Wrench,
 } from 'lucide-react';
 import type { Paginated } from '@/types/pagination';
-import type { Trip, Vehicle, VehicleStatus } from '@/types/transit';
+import { VehicleFormDialog } from '@/components/admin/vehicle-form-dialog';
+import type {
+    Trip,
+    Vehicle,
+    VehicleAmenity,
+    VehicleStatus,
+} from '@/types/transit';
 
 type FleetTrip = Trip & {
     route: { name: string; number: number } | null;
@@ -32,6 +38,7 @@ type Props = {
     vehicles: Paginated<FleetVehicle>;
     filters: { status: VehicleStatus | null; search: string | null };
     statuses: { value: VehicleStatus; label: string }[];
+    amenities: { value: VehicleAmenity; label: string }[];
     stats: {
         total: number;
         in_service: number;
@@ -61,6 +68,7 @@ export default function Fleet({
     vehicles,
     filters,
     statuses,
+    amenities,
     stats,
     operations,
 }: Props) {
@@ -305,13 +313,18 @@ export default function Fleet({
                             </p>
                         </div>
                         <div className="flex shrink-0 flex-wrap gap-2 xl:flex-col">
-                            <Link
-                                href="/admin/fleet/create"
-                                className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-xs font-semibold text-primary-foreground hover:bg-primary-hover"
+                            <VehicleFormDialog
+                                statuses={statuses}
+                                amenities={amenities}
                             >
-                                <Plus className="size-4" />
-                                Registrar Unidad
-                            </Link>
+                                <button
+                                    type="button"
+                                    className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-xs font-semibold text-primary-foreground hover:bg-primary-hover"
+                                >
+                                    <Plus className="size-4" />
+                                    Registrar Unidad
+                                </button>
+                            </VehicleFormDialog>
                             <button
                                 type="button"
                                 onClick={() => chooseTab('drivers')}

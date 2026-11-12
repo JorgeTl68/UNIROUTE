@@ -6,59 +6,27 @@ use App\Enums\IncidentSeverity;
 use App\Enums\IncidentType;
 use App\Events\IncidentReported;
 use App\Http\Requests\StoreEmergencyRequest;
-use App\Http\Resources\IncidentResource;
 use App\Models\Campus;
 use App\Models\Incident;
-use App\Models\TransitRoute;
-use App\Models\Trip;
 use App\Notifications\TransitNotification;
 use App\Services\Notifications\NotificationDispatcher;
 use App\Services\Realtime\SafeBroadcaster;
-use App\Services\Transit\CurrentCampus;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Inertia\Response;
 
 /**
- * Reportar Emergencia (S4-06): la puede usar cualquier rol. Se guarda como
- * incidencia crítica, avisa al instante a administración y aparece en la
+ * Reportar Emergencia (S4-06), desde el modal de "Soporte en Ruta". Se guarda
+ * como incidencia crítica, avisa al instante a administración y aparece en la
  * lista de Incidencias del panel.
  */
 class EmergencyController extends Controller
 {
-    public function create(Request $request, CurrentCampus $currentCampus): Response
-    {
-        $campus = $currentCampus->resolve($request);
-        $driverTrip = $this->driverTrip($request);
-
-        return Inertia::render('emergency/create', [
-            'routes' => $campus === null ? [] : TransitRoute::query()
-                ->active()
-                ->forCampus($campus)
-                ->orderBy('number')
-                ->get(['id', 'number', 'name', 'color']),
-            'selected_route_id' => $driverTrip->route_id ?? ($request->integer('route') ?: null),
-            'categories' => collect(StoreEmergencyRequest::CATEGORIES)
-                ->map(fn (string $label, string $value): array => ['value' => $value, 'label' => $label])
-                ->values(),
-            'reports' => IncidentResource::collection(
-                Incident::query()
-                    ->where('reported_by', $request->user()->id)
-                    ->with('route')
-                    ->latest()
-                    ->limit(5)
-                    ->get(),
-            ),
-        ]);
-    }
-
     public function store(
         StoreEmergencyRequest $request,
         NotificationDispatcher $dispatcher,
         SafeBroadcaster $broadcaster,
     ): RedirectResponse {
-        $driverTrip = $this->driverTrip($request);
+        $driverTrip = $request->user()->currentTrip();
         $category = StoreEmergencyRequest::CATEGORIES[$request->validated('category')];
         $incident = Incident::create([
             ...$request->safe()->except('category'),
@@ -93,16 +61,6 @@ class EmergencyController extends Controller
             'message' => 'Recibimos tu reporte. El área de transporte ya fue avisada.',
         ]);
 
-        return to_route('dashboard');
-    }
-
-    /**
-     * El viaje en curso del conductor, para llenar la ruta y la unidad solas.
-     */
-    private function driverTrip(Request $request): ?Trip
-    {
-        return $request->user()->isDriver()
-            ? $request->user()->drivenTrips()->inProgress()->first()
-            : null;
+        return back();
     }
 }

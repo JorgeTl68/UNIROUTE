@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreDriverRequest;
-use App\Models\Campus;
 use App\Models\DriverProfile;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
@@ -34,15 +33,6 @@ class DriverController extends Controller
                 'total' => User::where('role', UserRole::Driver)->count(),
                 'on_trip' => User::where('role', UserRole::Driver)->whereHas('drivenTrips', fn ($query) => $query->inProgress())->count(),
             ],
-        ]);
-    }
-
-    public function create(): Response
-    {
-        Gate::authorize('create', DriverProfile::class);
-
-        return Inertia::render('admin/fleet/drivers/create', [
-            'campuses' => Campus::query()->orderBy('name')->get(['id', 'name']),
         ]);
     }
 

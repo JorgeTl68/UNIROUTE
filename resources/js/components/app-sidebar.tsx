@@ -1,6 +1,7 @@
 import { Link, usePage } from '@inertiajs/react';
 import { Siren } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
+import { EmergencyDialog } from '@/components/emergency-dialog';
 import {
     Sidebar,
     SidebarContent,
@@ -96,13 +97,15 @@ export function AppSidebar() {
                         Incidencias en tiempo real y ayuda directa del área de
                         transporte.
                     </p>
-                    <Link
-                        href="/emergency/create"
-                        className="mt-3 flex w-full items-center justify-center gap-2 rounded-md border border-destructive/40 bg-destructive/10 py-2 text-xs font-semibold text-destructive hover:bg-destructive/20"
-                    >
-                        <Siren className="size-4" />
-                        Reportar emergencia
-                    </Link>
+                    <EmergencyDialog>
+                        <button
+                            type="button"
+                            className="mt-3 flex w-full items-center justify-center gap-2 rounded-md border border-destructive/40 bg-destructive/10 py-2 text-xs font-semibold text-destructive hover:bg-destructive/20"
+                        >
+                            <Siren className="size-4" />
+                            Reportar emergencia
+                        </button>
+                    </EmergencyDialog>
                 </div>
                 <p className="px-1 text-[11px] text-placeholder">
                     UniRoute v1.0

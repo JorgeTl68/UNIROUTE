@@ -3,11 +3,14 @@
 namespace App\Http\Middleware;
 
 use App\Http\Controllers\NotificationController;
+use App\Http\Requests\StoreEmergencyRequest;
 use App\Models\Campus;
+use App\Models\TransitRoute;
 use App\Models\Trip;
 use App\Services\Transit\CurrentCampus;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\DatabaseNotification;
+use Inertia\Inertia;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -65,6 +68,24 @@ class HandleInertiaRequests extends Middleware
                     ->map(fn (DatabaseNotification $notification): array => NotificationController::present($notification))
                     ->all(),
             ],
+            // Datos del modal "Reportar emergencia": se piden al abrirlo.
+            'emergency' => Inertia::optional(function () use ($request): array {
+                $campus = app(CurrentCampus::class)->resolve($request);
+
+                return [
+                    'routes' => $campus === null ? [] : TransitRoute::query()
+                        ->active()
+                        ->forCampus($campus)
+                        ->orderBy('number')
+                        ->get(['id', 'number', 'name'])
+                        ->all(),
+                    'categories' => collect(StoreEmergencyRequest::CATEGORIES)
+                        ->map(fn (string $label, string $value): array => ['value' => $value, 'label' => $label])
+                        ->values()
+                        ->all(),
+                    'driver_route_id' => $request->user()?->currentTrip()?->route_id,
+                ];
+            }),
         ];
     }
 }

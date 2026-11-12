@@ -1,6 +1,7 @@
 ﻿import { Head, Link, router } from '@inertiajs/react';
 import { Plus, Search, UsersRound } from 'lucide-react';
 import { useState } from 'react';
+import { DriverFormDialog } from '@/components/admin/driver-form-dialog';
 import type { Paginated } from '@/types/pagination';
 import type { DriverProfile } from '@/types/transit';
 
@@ -51,13 +52,15 @@ export default function Drivers({ drivers, filters, stats }: Props) {
                         >
                             Asignaciones y relevos
                         </Link>
-                        <Link
-                            href="/admin/fleet/drivers/create"
-                            className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary-hover"
-                        >
-                            <Plus className="size-4" />
-                            Registrar conductor
-                        </Link>
+                        <DriverFormDialog>
+                            <button
+                                type="button"
+                                className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary-hover"
+                            >
+                                <Plus className="size-4" />
+                                Registrar conductor
+                            </button>
+                        </DriverFormDialog>
                     </div>
                 </header>
                 <section className="overflow-hidden rounded-xl border border-border bg-card">

@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { useMemo } from 'react';
 import { toast } from 'sonner';
+import { EmergencyDialog } from '@/components/emergency-dialog';
 import { ArrivalAlarmDialog } from '@/components/transit/arrival-alarm-dialog';
 import { occupancyPercent } from '@/components/transit/occupancy-bar';
 import { StatusChip } from '@/components/transit/status-chip';
@@ -621,13 +622,15 @@ export default function RouteShow({
                             </ArrivalAlarmDialog>
                         )}
                         <div className="mt-2 grid grid-cols-2 gap-2">
-                            <Link
-                                href={`/emergency/create?route=${route.id}`}
-                                className="flex items-center justify-center gap-2 rounded-md border border-border bg-secondary py-2.5 text-xs font-semibold text-foreground hover:bg-secondary/70"
-                            >
-                                <TriangleAlert className="size-4" />
-                                Reportar incidencia
-                            </Link>
+                            <EmergencyDialog routeId={route.id}>
+                                <button
+                                    type="button"
+                                    className="flex items-center justify-center gap-2 rounded-md border border-border bg-secondary py-2.5 text-xs font-semibold text-foreground hover:bg-secondary/70"
+                                >
+                                    <TriangleAlert className="size-4" />
+                                    Reportar incidencia
+                                </button>
+                            </EmergencyDialog>
                             <Link
                                 href="/schedules"
                                 className="flex items-center justify-center gap-2 rounded-md border border-border bg-secondary py-2.5 text-xs font-semibold text-foreground hover:bg-secondary/70"

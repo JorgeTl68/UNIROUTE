@@ -40,7 +40,6 @@ class DriverManagementTest extends TestCase
         $this->get('/admin/fleet/drivers')->assertRedirect(route('login'));
         foreach ([User::factory()->student()->create(), User::factory()->driver()->create()] as $user) {
             $this->actingAs($user)->get('/admin/fleet/drivers')->assertForbidden();
-            $this->get('/admin/fleet/drivers/create')->assertForbidden();
             $this->post('/admin/fleet/drivers', $this->payload())->assertForbidden();
         }
         $this->assertDatabaseCount('driver_profiles', 0);
@@ -62,7 +61,8 @@ class DriverManagementTest extends TestCase
         User::factory()->student()->create();
         $this->actingAs(User::factory()->admin()->create())->get('/admin/fleet/drivers?search=MATCH')
             ->assertInertia(fn (Assert $page) => $page->component('admin/fleet/drivers/index')->has('drivers.data', 1)->where('drivers.data.0.id', $driver->id)->missing('drivers.data.0.password'));
+        // El modal de alta toma los campus de la prop compartida.
         Campus::factory()->create();
-        $this->get('/admin/fleet/drivers/create')->assertOk();
+        $this->get('/admin/fleet/drivers')->assertInertia(fn (Assert $page) => $page->has('campuses', 1));
     }
 }

@@ -1,5 +1,9 @@
 ﻿import { Head, Link, router } from '@inertiajs/react';
 import { ClipboardList, Plus, Wrench } from 'lucide-react';
+import {
+    MaintenanceFormDialog,
+    severityLabels,
+} from '@/components/admin/maintenance-form-dialog';
 import type { Paginated } from '@/types/pagination';
 export type MaintenanceRecord = {
     id: number;
@@ -14,11 +18,6 @@ export type MaintenanceRecord = {
     completed_at: string | null;
     created_at: string;
 };
-export const severityLabels = {
-    minor: 'Menor',
-    major: 'Alta',
-    critical: 'Crítica',
-};
 export const recordDate = (value: string) =>
     new Date(
         value.includes('T') ? value : value.replace(' ', 'T') + 'Z',
@@ -30,7 +29,7 @@ export const recordDate = (value: string) =>
 type Props = {
     records: Paginated<MaintenanceRecord>;
     filters: { state: string; vehicle_id: string | number };
-    vehicles: { id: number; code: string }[];
+    vehicles: { id: number; code: string; plate: string }[];
     stats: { in_workshop: number; open: number; closed: number };
     without_report: { id: number; code: string }[];
 };
@@ -67,13 +66,15 @@ export default function Maintenance({
                             reparaciones.
                         </p>
                     </div>
-                    <Link
-                        href="/admin/fleet/maintenance/create"
-                        className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary-hover"
-                    >
-                        <Plus className="size-4" />
-                        Reportar falla
-                    </Link>
+                    <MaintenanceFormDialog vehicles={vehicles}>
+                        <button
+                            type="button"
+                            className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary-hover"
+                        >
+                            <Plus className="size-4" />
+                            Reportar falla
+                        </button>
+                    </MaintenanceFormDialog>
                 </header>
                 <section
                     aria-label="Resumen de mantenimiento"
@@ -115,13 +116,18 @@ export default function Maintenance({
                         </p>
                         <div className="mt-3 flex flex-wrap gap-2">
                             {without_report.map((vehicle) => (
-                                <Link
+                                <MaintenanceFormDialog
                                     key={vehicle.id}
-                                    href={`/admin/fleet/maintenance/create?vehicle_id=${vehicle.id}`}
-                                    className="rounded-lg border border-border bg-card px-3 py-2 text-xs text-primary"
+                                    vehicles={vehicles}
+                                    vehicleId={vehicle.id}
                                 >
-                                    {vehicle.code} · Abrir reporte
-                                </Link>
+                                    <button
+                                        type="button"
+                                        className="rounded-lg border border-border bg-card px-3 py-2 text-xs text-primary"
+                                    >
+                                        {vehicle.code} · Abrir reporte
+                                    </button>
+                                </MaintenanceFormDialog>
                             ))}
                         </div>
                     </section>

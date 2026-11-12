@@ -65,7 +65,6 @@ class MaintenanceTest extends TestCase
         $this->post('/admin/fleet/maintenance', $this->payload($vehicle))->assertRedirect(route('login'));
         foreach ([User::factory()->student()->create(), User::factory()->driver()->create()] as $user) {
             $this->actingAs($user)->get('/admin/fleet/maintenance')->assertForbidden();
-            $this->get('/admin/fleet/maintenance/create')->assertForbidden();
             $this->post('/admin/fleet/maintenance', $this->payload($vehicle))->assertForbidden();
             $this->patch('/admin/fleet/maintenance/1/complete', ['resolution' => 'Intento sin permisos.'])->assertForbidden();
         }

@@ -18,18 +18,30 @@ class EmergencyReportTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_any_role_can_open_the_form(): void
+    public function test_the_modal_data_is_only_sent_when_the_modal_asks_for_it(): void
     {
         $route = TransitRoute::factory()->create();
 
         $this->actingAs(User::factory()->student()->create(['campus_id' => $route->campus_id]))
-            ->get(route('emergency.create', ['route' => $route->id]))
-            ->assertOk()
+            ->get(route('dashboard'))
             ->assertInertia(fn (Assert $page) => $page
-                ->component('emergency/create')
-                ->where('selected_route_id', $route->id)
-                ->has('routes', 1)
-                ->has('categories', 5));
+                ->missing('emergency')
+                ->reloadOnly('emergency', fn (Assert $reload) => $reload
+                    ->has('emergency.routes', 1)
+                    ->where('emergency.routes.0.id', $route->id)
+                    ->has('emergency.categories', 5)
+                    ->where('emergency.driver_route_id', null)));
+    }
+
+    public function test_the_modal_preselects_the_route_of_the_driver_trip(): void
+    {
+        $trip = Trip::factory()->inProgress()->create();
+
+        $this->actingAs($trip->driver)
+            ->get(route('driver.trip'))
+            ->assertInertia(fn (Assert $page) => $page
+                ->reloadOnly('emergency', fn (Assert $reload) => $reload
+                    ->where('emergency.driver_route_id', $trip->route_id)));
     }
 
     public function test_a_student_report_becomes_a_critical_incident_and_alerts_admins(): void
@@ -47,7 +59,7 @@ class EmergencyReportTest extends TestCase
                 'latitude' => 25.42,
                 'longitude' => -100.99,
             ])
-            ->assertRedirect(route('dashboard'));
+            ->assertRedirect();
 
         $incident = Incident::sole();
         $this->assertSame(IncidentType::Emergency, $incident->type);

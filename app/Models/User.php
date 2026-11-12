@@ -96,6 +96,14 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
     }
 
     /**
+     * Viaje que el conductor está haciendo ahora, si hay uno.
+     */
+    public function currentTrip(): ?Trip
+    {
+        return $this->isDriver() ? $this->drivenTrips()->inProgress()->first() : null;
+    }
+
+    /**
      * Rutas que el estudiante marcó con la estrella.
      *
      * @return BelongsToMany<TransitRoute, $this>
