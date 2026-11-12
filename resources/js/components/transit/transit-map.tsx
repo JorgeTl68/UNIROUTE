@@ -214,7 +214,7 @@ export function TransitMap({
                     key={layer}
                     url={layers[layer].url}
                     attribution={layers[layer].attribution}
-                    className={layer === 'map' ? 'osm-oscuro' : undefined}
+                    className={layer === 'map' ? 'osm-tiles' : undefined}
                 />
 
                 {routes

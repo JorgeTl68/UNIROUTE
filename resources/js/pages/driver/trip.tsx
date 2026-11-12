@@ -17,6 +17,7 @@ import {
     TriangleAlert,
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { AppearanceMenuItems } from '@/components/appearance-menu-items';
 import { ConfirmDialog } from '@/components/confirm-dialog';
 import { EmergencyDialog } from '@/components/emergency-dialog';
 import {
@@ -266,7 +267,7 @@ function OccupancyControl({ trip }: { trip: DriverTrip }) {
                     <Minus className="size-8" />
                 </button>
                 <p className="text-center" aria-live="polite">
-                    <span className="block text-6xl font-extrabold text-white">
+                    <span className="block text-6xl font-extrabold text-strong">
                         {count}
                     </span>
                     <span className="text-sm text-muted-foreground">
@@ -297,9 +298,9 @@ function OccupancyControl({ trip }: { trip: DriverTrip }) {
 }
 
 const stopMarkers: Record<StopState, string> = {
-    passed: 'bg-route text-primary-foreground',
-    current: 'bg-gold text-primary-foreground ring-4 ring-gold/30',
-    next: 'bg-gold text-primary-foreground ring-4 ring-gold/30',
+    passed: 'bg-route text-ink',
+    current: 'bg-gold text-on-accent ring-4 ring-gold/30',
+    next: 'bg-gold text-on-accent ring-4 ring-gold/30',
     pending: 'border-2 border-border bg-card text-muted-foreground',
 };
 
@@ -343,7 +344,7 @@ function StopsList({ stops }: { stops: TimelineStop[] }) {
                                 className={cn(
                                     'min-w-0 flex-1 truncate text-sm',
                                     ahead
-                                        ? 'font-bold text-white'
+                                        ? 'font-bold text-strong'
                                         : stop.state === 'passed'
                                           ? 'text-muted-foreground line-through decoration-muted-foreground/40'
                                           : 'text-foreground',
@@ -393,6 +394,8 @@ function DriverMenu() {
                         Perfil y ajustes
                     </Link>
                 </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <AppearanceMenuItems />
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                     <Link
@@ -471,7 +474,7 @@ export default function DriverTripPage({ trip, trips }: Props) {
                             <p className="text-[11px] font-bold tracking-wider whitespace-nowrap text-gold uppercase sm:tracking-widest">
                                 Modo conductor
                             </p>
-                            <p className="truncate text-sm font-bold text-white sm:text-base">
+                            <p className="truncate text-sm font-bold text-strong sm:text-base">
                                 {auth.user.name}
                             </p>
                         </div>
@@ -508,7 +511,7 @@ export default function DriverTripPage({ trip, trips }: Props) {
                 <main className="mx-auto max-w-md px-4 py-10">
                     <section className="flex flex-col items-center gap-3 rounded-2xl border border-border bg-card px-6 py-12 text-center">
                         <CalendarX2 className="size-10 text-muted-foreground" />
-                        <p className="text-lg font-bold text-white">
+                        <p className="text-lg font-bold text-strong">
                             No tienes viajes pendientes hoy
                         </p>
                         <p className="text-sm text-muted-foreground">
@@ -586,7 +589,7 @@ export default function DriverTripPage({ trip, trips }: Props) {
                                     )}
                                 </div>
                                 <span
-                                    className="flex size-12 shrink-0 items-center justify-center rounded-xl text-lg font-extrabold text-primary-foreground"
+                                    className="flex size-12 shrink-0 items-center justify-center rounded-xl text-lg font-extrabold text-ink"
                                     style={{
                                         backgroundColor: trip.route.color,
                                     }}
@@ -608,7 +611,7 @@ export default function DriverTripPage({ trip, trips }: Props) {
                                             Siguiente parada
                                         </p>
                                         <div className="mt-1 flex items-end justify-between gap-3">
-                                            <p className="min-w-0 text-2xl leading-tight font-extrabold text-white">
+                                            <p className="min-w-0 text-2xl leading-tight font-extrabold text-strong">
                                                 {trip.next_stop?.name ??
                                                     trip.route.last_stop ??
                                                     '—'}
@@ -640,7 +643,7 @@ export default function DriverTripPage({ trip, trips }: Props) {
                                             <p className="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
                                                 Tiempo de viaje
                                             </p>
-                                            <p className="mt-1 text-lg font-bold text-white tabular-nums">
+                                            <p className="mt-1 text-lg font-bold text-strong tabular-nums">
                                                 {trip.started_at
                                                     ? elapsed(
                                                           trip.started_at,
@@ -653,7 +656,7 @@ export default function DriverTripPage({ trip, trips }: Props) {
                                             <p className="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
                                                 Ubicación enviada
                                             </p>
-                                            <p className="mt-1 text-lg font-bold text-white tabular-nums">
+                                            <p className="mt-1 text-lg font-bold text-strong tabular-nums">
                                                 {gps.lastSent
                                                     ? `hace ${Math.max(0, Math.round((now - gps.lastSent) / 1000))} s`
                                                     : '—'}
@@ -760,7 +763,7 @@ export default function DriverTripPage({ trip, trips }: Props) {
                                                             'font-bold',
                                                             done
                                                                 ? 'text-placeholder line-through'
-                                                                : 'text-white',
+                                                                : 'text-strong',
                                                         )}
                                                     >
                                                         {clockTime(

@@ -8,6 +8,7 @@ import {
     Route,
 } from 'lucide-react';
 import { dashboard, login, register } from '@/routes';
+import AppLogo from '@/components/app-logo';
 
 export default function Welcome() {
     const { auth } = usePage().props;
@@ -22,8 +23,7 @@ export default function Welcome() {
                 <header className="border-b border-border/60">
                     <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-5 sm:px-6">
                         <Link href="/" aria-label="Inicio de UniRoute">
-                            <img
-                                src="/branding/logo-horizontal-compacto-oscuro.svg"
+                            <AppLogo
                                 alt="UniRoute"
                                 className="h-11 max-w-[170px] object-contain"
                             />
@@ -153,7 +153,7 @@ export default function Welcome() {
 
                         <section
                             aria-label="Ilustración de una ruta universitaria"
-                            className="relative overflow-hidden rounded-2xl border border-border bg-card"
+                            className="dark relative overflow-hidden rounded-2xl border border-border bg-card text-foreground"
                         >
                             <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between p-4">
                                 <span className="rounded-full border border-border bg-background/90 px-3 py-1.5 text-xs font-medium">

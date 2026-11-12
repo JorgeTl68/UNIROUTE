@@ -143,7 +143,7 @@ export default function ScheduleIndex({
                 </Link>
                 <div className="mt-3 flex items-start gap-3">
                     <span
-                        className="grid size-11 shrink-0 place-items-center rounded-lg text-base font-extrabold text-primary-foreground"
+                        className="grid size-11 shrink-0 place-items-center rounded-lg text-base font-extrabold text-ink"
                         style={{ backgroundColor: route.color }}
                     >
                         {route.number}

@@ -44,9 +44,9 @@ type Props = {
 const fieldClass =
     'rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/50';
 
-/** Colores de DESIGN.md: barras en secondary y la hora pico en primary. */
-const barColor = '#e0c297';
-const peakColor = '#fddeb1';
+/** Colores del tema (app.css): barras en chart-4 y la hora pico en chart-2. */
+const barColor = 'var(--chart-4)';
+const peakColor = 'var(--chart-2)';
 
 export default function OccupancyReport({
     filters,
@@ -176,7 +176,7 @@ export default function OccupancyReport({
                         </dt>
                         <dd
                             className={cn(
-                                'mt-1 text-3xl font-extrabold text-white',
+                                'mt-1 text-3xl font-extrabold text-strong',
                                 kpi.accent,
                             )}
                         >
@@ -200,28 +200,31 @@ export default function OccupancyReport({
                             <BarChart data={hourly}>
                                 <CartesianGrid
                                     vertical={false}
-                                    stroke="#2f3e57"
+                                    stroke="var(--border)"
                                 />
                                 <XAxis
                                     dataKey="hour"
-                                    stroke="#bac7e4"
+                                    stroke="var(--muted-foreground)"
                                     fontSize={12}
                                     tickLine={false}
                                 />
                                 <YAxis
-                                    stroke="#bac7e4"
+                                    stroke="var(--muted-foreground)"
                                     fontSize={12}
                                     tickLine={false}
                                     domain={[0, 100]}
                                     unit=" %"
                                 />
                                 <Tooltip
-                                    cursor={{ fill: '#2f3e5766' }}
+                                    cursor={{
+                                        fill: 'var(--secondary)',
+                                        opacity: 0.4,
+                                    }}
                                     contentStyle={{
-                                        background: '#17243a',
-                                        border: '1px solid #2f3e57',
+                                        background: 'var(--popover)',
+                                        border: '1px solid var(--border)',
                                         borderRadius: 12,
-                                        color: '#ecf1f9',
+                                        color: 'var(--popover-foreground)',
                                     }}
                                     formatter={(value) => [
                                         `${String(value)} %`,
@@ -278,7 +281,7 @@ export default function OccupancyReport({
                                         <td className="px-5 py-2.5 whitespace-nowrap text-muted-foreground">
                                             {row.date}
                                         </td>
-                                        <td className="px-5 py-2.5 font-bold text-white">
+                                        <td className="px-5 py-2.5 font-bold text-strong">
                                             {clockTime(row.scheduled_at)}
                                         </td>
                                         <td className="px-5 py-2.5 whitespace-nowrap text-foreground">
@@ -294,7 +297,7 @@ export default function OccupancyReport({
                                             </span>{' '}
                                             <span
                                                 className={cn(
-                                                    'ml-1 inline-block rounded-full px-2 py-0.5 text-[11px] font-bold text-primary-foreground',
+                                                    'ml-1 inline-block rounded-full px-2 py-0.5 text-[11px] font-bold text-on-accent',
                                                     occupancyTone(row.percent),
                                                 )}
                                             >

@@ -111,7 +111,7 @@ export default function Schedules({
                             <p className="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
                                 Próxima salida
                             </p>
-                            <p className="text-sm font-semibold text-white">
+                            <p className="text-sm font-semibold text-strong">
                                 Ruta {nextDeparture.route.number} ·{' '}
                                 <span className="text-primary">
                                     {nextDeparture.time}
@@ -192,7 +192,7 @@ export default function Schedules({
                             >
                                 <div className="flex items-start gap-3">
                                     <span
-                                        className="flex size-9 shrink-0 items-center justify-center rounded-md text-sm font-extrabold text-primary-foreground"
+                                        className="flex size-9 shrink-0 items-center justify-center rounded-md text-sm font-extrabold text-ink"
                                         style={{ backgroundColor: route.color }}
                                     >
                                         {route.number}
@@ -300,7 +300,7 @@ export default function Schedules({
                                         </h2>
                                     </div>
                                     <span
-                                        className="flex size-9 shrink-0 items-center justify-center rounded-md text-sm font-extrabold text-primary-foreground"
+                                        className="flex size-9 shrink-0 items-center justify-center rounded-md text-sm font-extrabold text-ink"
                                         style={{
                                             backgroundColor:
                                                 selectedRoute.color,
@@ -335,7 +335,7 @@ export default function Schedules({
                                                     className={cn(
                                                         'text-sm',
                                                         index === 0
-                                                            ? 'font-bold text-white'
+                                                            ? 'font-bold text-strong'
                                                             : 'font-semibold text-muted-foreground',
                                                     )}
                                                 >

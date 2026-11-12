@@ -42,8 +42,8 @@ Cómo están hechos:
   Datos grandes (hora de llegada, minutos) y textos cortos.
 - Azul nocturno como base, dorado champán como acento de marca y verde
   señalización para lo que está en vivo o ya pasó.
-- Toda la app va con fondo oscuro, con la paleta de login y registro (ver
-  [Tema oscuro](#tema-oscuro)).
+- La app va en oscuro, con la paleta de login y registro, y cada quien puede
+  cambiarla a claro (ver [Temas claro y oscuro](#temas-claro-y-oscuro)).
 
 ## Color
 
@@ -83,8 +83,8 @@ va encima de `X`. Los mockups nuevos usan los nombres de `app.css` (ver
 
 ### Superficies y texto (tema claro)
 
-Vienen del DESIGN.md original y del demo del mapa. Como la app va en oscuro, no
-se usan en pantallas nuevas; quedan como referencia.
+Vienen del DESIGN.md original y del demo del mapa. Son la base del tema claro
+(ver [Temas claro y oscuro](#temas-claro-y-oscuro)).
 
 | Token                      | Hex       | Uso                                                 |
 | -------------------------- | --------- | --------------------------------------------------- |
@@ -398,14 +398,29 @@ Con Leaflet falta oscurecer la capa de OpenStreetMap (ver
 - Sobre el mapa: Mapa / Satélite y capas arriba a la derecha, zoom y "mi
   ubicación" abajo, y desde 1280 px la tarjeta de llegada abajo a la izquierda.
 
-## Tema oscuro
+## Temas claro y oscuro
 
-Toda la app va en oscuro con la paleta de login y registro (decisión 6 del
-README, decidida el 2026-11-11). En `app.css`, `:root` y `.dark` son iguales y
-llevan `color-scheme: dark`, así que no hay un modo claro que activar.
+El oscuro, con la paleta de login y registro, es el predeterminado (decisión 6
+del README, 2026-11-11). Desde el 2026-11-12 también hay tema claro: cada quien
+elige **Oscuro**, **Claro** o **Como el sistema** en el menú de su cuenta (y en
+el de Modo conductor).
 
-Lo único que sigue en claro es el demo del mapa; falta pasarlo a oscuro (ver
-[Pendientes de decidir](#pendientes-de-decidir)).
+- En `app.css`, `:root` lleva el tema claro y `.dark` el oscuro. La preferencia
+  se guarda en la cookie `appearance` y `app.blade.php` pone la clase `.dark`
+  desde el servidor, así que la página no parpadea al cargar.
+- En el claro, el texto dorado usa `secondary` (`#715b37`), el verde
+  `on-tertiary-container` (`#3f6e00`) y el error `error` (`#ba1a1a`), por
+  contraste (ver [Contraste](#contraste)). El botón principal va en
+  `primary-container` (`#17243a`) con texto blanco.
+- Para títulos y cifras se usa `text-strong` (blanco en oscuro, azul nocturno en
+  claro), nunca `text-white`.
+- Sobre los colores de ruta, que son claros en los dos temas, el texto va en
+  `text-ink` (`#020e24`). Sobre rellenos dorado, verde o rojo va en
+  `text-on-accent`: azul nocturno en oscuro y blanco en claro.
+- El mapa usa la capa de OpenStreetMap en gris en claro y oscurecida en oscuro
+  (clase `osm-tiles`).
+- El panel de marca del login y la ilustración de bienvenida se quedan en
+  oscuro en los dos temas: llevan la clase `dark`.
 
 ## Movimiento
 

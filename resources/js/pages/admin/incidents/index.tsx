@@ -108,7 +108,7 @@ function IncidentCard({ incident }: { incident: Incident }) {
                         <Icon className="size-5" />
                     </span>
                     <div>
-                        <p className="flex flex-wrap items-center gap-2 font-bold text-white">
+                        <p className="flex flex-wrap items-center gap-2 font-bold text-strong">
                             {incident.type_label}
                             <span
                                 className={cn(

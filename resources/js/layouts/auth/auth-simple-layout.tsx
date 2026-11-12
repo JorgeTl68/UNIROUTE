@@ -1,6 +1,7 @@
 import { Link } from '@inertiajs/react';
 import { home } from '@/routes';
 import type { AuthLayoutProps } from '@/types';
+import AppLogo from '@/components/app-logo';
 
 export default function AuthSimpleLayout({
     children,
@@ -16,8 +17,7 @@ export default function AuthSimpleLayout({
                             href={home()}
                             className="flex flex-col items-center gap-2 font-medium"
                         >
-                            <img
-                                src="/branding/logo-horizontal-compacto-oscuro.svg"
+                            <AppLogo
                                 alt="UniRoute"
                                 className="mb-1 h-12 max-w-[220px]"
                             />

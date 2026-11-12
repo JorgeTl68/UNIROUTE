@@ -840,7 +840,7 @@ export default function Fleet({
                         >
                             {tab !== 'reports' && histogram}
                             {tab !== 'drivers' && departures}
-                            <section className="relative overflow-hidden rounded-xl border border-border bg-[#020E24] p-6">
+                            <section className="relative overflow-hidden rounded-xl border border-border bg-background p-6">
                                 <p className="text-[10px] font-semibold tracking-wider text-primary uppercase">
                                     Condición de tráfico · Saltillo
                                 </p>
