@@ -23,7 +23,7 @@ class StoreTransitRouteRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:65535'],
             'color' => ['required', 'string', 'regex:/^#[0-9a-fA-F]{6}$/'],
-            'frequency_minutes' => ['required', 'integer', 'min:1', 'max:65535'],
+            'frequency_minutes' => ['nullable', 'integer', 'min:1', 'max:65535'],
             'service_starts_at' => ['required', 'date_format:H:i'],
             'service_ends_at' => ['required', 'date_format:H:i', 'after:service_starts_at'],
             'stops' => ['required', 'array', 'min:2', 'max:65535'],

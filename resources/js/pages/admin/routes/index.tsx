@@ -17,7 +17,7 @@ type TransitRoute = RouteSummary & {
     stops_count: number;
     schedules_count: number;
     duration_minutes: number | null;
-    frequency_minutes: number;
+    frequency_minutes: number | null;
     service_starts_at: string;
     service_ends_at: string;
 };
@@ -96,7 +96,9 @@ export default function RoutesIndex({
                                     ],
                                     [
                                         'Frecuencia',
-                                        `${route.frequency_minutes} min`,
+                                        route.frequency_minutes === null
+                                            ? 'Por turno'
+                                            : `${route.frequency_minutes} min`,
                                     ],
                                     [
                                         'Servicio',

@@ -21,7 +21,7 @@ type TransitRoute = {
     name: string;
     color: string;
     campus: string;
-    frequency_minutes: number;
+    frequency_minutes: number | null;
     service_starts_at: string;
     service_ends_at: string;
 };
@@ -71,7 +71,7 @@ export default function ScheduleIndex({
         weekdays: [1, 2, 3, 4, 5],
         starts_at: route.service_starts_at,
         ends_at: route.service_ends_at,
-        interval_minutes: String(route.frequency_minutes),
+        interval_minutes: String(route.frequency_minutes ?? ''),
     });
     const [editingId, setEditingId] = useState<number | null>(null);
     const preview = useMemo(() => {

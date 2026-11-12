@@ -394,9 +394,11 @@ export default function RouteShow({
                                 dot
                                 className="rounded"
                             />
-                            <span className="rounded bg-white/10 px-2 py-0.5 text-[11px] font-semibold text-muted-foreground">
-                                Cada {route.frequency_minutes} min
-                            </span>
+                            {route.frequency_minutes !== null && (
+                                <span className="rounded bg-white/10 px-2 py-0.5 text-[11px] font-semibold text-muted-foreground">
+                                    Cada {route.frequency_minutes} min
+                                </span>
+                            )}
                             <span className="rounded bg-white/10 px-2 py-0.5 text-[11px] font-semibold text-muted-foreground">
                                 {route.service_starts_at} –{' '}
                                 {route.service_ends_at}

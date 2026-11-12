@@ -52,7 +52,7 @@ export function AppSidebarHeader() {
         <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-3 border-b border-border bg-background/85 px-4 backdrop-blur sm:px-6 lg:px-8">
             <SidebarTrigger className="-ml-1 shrink-0" />
 
-            {currentCampus && campuses.length > 0 && (
+            {currentCampus && campuses.length > 1 && (
                 <DropdownMenu>
                     <DropdownMenuTrigger className="hidden shrink-0 items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-sm font-medium text-foreground hover:bg-secondary md:flex">
                         <Building2 className="size-4 text-gold" />

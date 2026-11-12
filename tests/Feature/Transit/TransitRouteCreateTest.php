@@ -182,6 +182,18 @@ class TransitRouteCreateTest extends TestCase
         Http::assertSentCount(1);
     }
 
+    public function test_a_route_that_leaves_once_per_shift_has_no_frequency(): void
+    {
+        $this->actingAs(User::factory()->admin()->create());
+        $token = $this->traceAndGetToken();
+
+        $this->post('/admin/routes', $this->payload($token, ['frequency_minutes' => '']))
+            ->assertSessionHasNoErrors()
+            ->assertRedirect(route('admin.routes.index'));
+
+        $this->assertNull(TransitRoute::sole()->frequency_minutes);
+    }
+
     public function test_stale_preview_is_rejected_when_the_stop_order_changes(): void
     {
         $this->actingAs(User::factory()->admin()->create());
