@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 
 /**
@@ -23,6 +24,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon $scheduled_at
  * @property Carbon|null $started_at
  * @property Carbon|null $ended_at
+ * @property Carbon|null $delay_notified_at
  * @property TripStatus $status
  * @property int $occupancy
  * @property Carbon|null $created_at
@@ -36,6 +38,7 @@ use Illuminate\Support\Carbon;
     'scheduled_at',
     'started_at',
     'ended_at',
+    'delay_notified_at',
     'status',
     'occupancy',
 ])]
@@ -55,6 +58,7 @@ class Trip extends Model
             'scheduled_at' => 'datetime',
             'started_at' => 'datetime',
             'ended_at' => 'datetime',
+            'delay_notified_at' => 'datetime',
             'status' => TripStatus::class,
             'occupancy' => 'integer',
         ];
@@ -90,6 +94,16 @@ class Trip extends Model
     public function driver(): BelongsTo
     {
         return $this->belongsTo(User::class, 'driver_id');
+    }
+
+    /**
+     * Última posición reportada durante este viaje.
+     *
+     * @return HasOne<VehiclePosition, $this>
+     */
+    public function latestPosition(): HasOne
+    {
+        return $this->hasOne(VehiclePosition::class)->latestOfMany('recorded_at');
     }
 
     /**

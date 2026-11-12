@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -25,6 +26,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property UserRole $role
  * @property string|null $student_id
  * @property int|null $campus_id
+ * @property int $alarm_minutes_before
  * @property Carbon|null $email_verified_at
  * @property string $password
  * @property string|null $two_factor_secret
@@ -34,7 +36,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['name', 'email', 'password', 'student_id', 'campus_id'])]
+#[Fillable(['name', 'email', 'password', 'student_id', 'campus_id', 'alarm_minutes_before'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
 {
@@ -63,6 +65,7 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
             'role' => UserRole::class,
+            'alarm_minutes_before' => 'integer',
         ];
     }
 
@@ -90,6 +93,24 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
     public function drivenTrips(): HasMany
     {
         return $this->hasMany(Trip::class, 'driver_id');
+    }
+
+    /**
+     * Rutas que el estudiante marcó con la estrella.
+     *
+     * @return BelongsToMany<TransitRoute, $this>
+     */
+    public function favoriteRoutes(): BelongsToMany
+    {
+        return $this->belongsToMany(TransitRoute::class, 'favorite_routes', 'user_id', 'route_id');
+    }
+
+    /**
+     * @return HasMany<ArrivalAlarm, $this>
+     */
+    public function arrivalAlarms(): HasMany
+    {
+        return $this->hasMany(ArrivalAlarm::class);
     }
 
     public function hasRole(UserRole ...$roles): bool

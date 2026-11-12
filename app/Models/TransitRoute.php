@@ -85,6 +85,24 @@ class TransitRoute extends Model
     }
 
     /**
+     * Estudiantes que tienen la ruta en favoritas.
+     *
+     * @return BelongsToMany<User, $this>
+     */
+    public function favoritedBy(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'favorite_routes', 'route_id', 'user_id');
+    }
+
+    /**
+     * @return HasMany<Incident, $this>
+     */
+    public function incidents(): HasMany
+    {
+        return $this->hasMany(Incident::class, 'route_id');
+    }
+
+    /**
      * @return HasMany<Schedule, $this>
      */
     public function schedules(): HasMany

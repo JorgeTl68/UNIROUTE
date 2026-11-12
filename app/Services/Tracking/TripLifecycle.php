@@ -5,10 +5,9 @@ namespace App\Services\Tracking;
 use App\Enums\TripStatus;
 use App\Events\TripStatusChanged;
 use App\Models\Trip;
+use App\Services\Realtime\SafeBroadcaster;
 use Carbon\CarbonInterface;
 use DomainException;
-use Illuminate\Broadcasting\BroadcastException;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Cambios de estado de un viaje: iniciar y terminar.
@@ -18,6 +17,8 @@ use Illuminate\Support\Facades\Log;
  */
 class TripLifecycle
 {
+    public function __construct(private readonly SafeBroadcaster $broadcaster) {}
+
     public function start(Trip $trip, ?CarbonInterface $at = null): Trip
     {
         if ($trip->status !== TripStatus::Scheduled) {
@@ -31,7 +32,7 @@ class TripLifecycle
         ]);
 
         $trip = $trip->refresh();
-        $this->broadcastStatus($trip, $trip->started_at ?? $at);
+        $this->broadcaster->dispatch(TripStatusChanged::fromTrip($trip, $trip->started_at ?? $at));
 
         return $trip;
     }
@@ -48,20 +49,8 @@ class TripLifecycle
         ]);
 
         $trip = $trip->refresh();
-        $this->broadcastStatus($trip, $trip->ended_at ?? $at);
+        $this->broadcaster->dispatch(TripStatusChanged::fromTrip($trip, $trip->ended_at ?? $at));
 
         return $trip;
-    }
-
-    private function broadcastStatus(Trip $trip, ?CarbonInterface $changedAt): void
-    {
-        try {
-            event(TripStatusChanged::fromTrip($trip, $changedAt));
-        } catch (BroadcastException $exception) {
-            Log::warning('No se pudo transmitir el cambio de estado del viaje.', [
-                'trip_id' => $trip->id,
-                'error' => $exception->getMessage(),
-            ]);
-        }
     }
 }

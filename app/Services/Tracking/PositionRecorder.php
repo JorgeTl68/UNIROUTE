@@ -2,9 +2,12 @@
 
 namespace App\Services\Tracking;
 
+use App\Events\VehiclePositionUpdated;
 use App\Models\Trip;
 use App\Models\Vehicle;
 use App\Models\VehiclePosition;
+use App\Services\Notifications\TripAlerts;
+use App\Services\Realtime\SafeBroadcaster;
 use Carbon\CarbonInterface;
 use InvalidArgumentException;
 
@@ -16,6 +19,11 @@ use InvalidArgumentException;
  */
 class PositionRecorder
 {
+    public function __construct(
+        private readonly TripAlerts $alerts,
+        private readonly SafeBroadcaster $broadcaster,
+    ) {}
+
     /**
      * Guarda una posición y devuelve el registro creado.
      *
@@ -41,7 +49,7 @@ class PositionRecorder
             throw new InvalidArgumentException('El viaje indicado no pertenece a la unidad.');
         }
 
-        return VehiclePosition::create([
+        $position = VehiclePosition::create([
             'vehicle_id' => $vehicle->id,
             'trip_id' => $trip?->id,
             'latitude' => round($latitude, 7),
@@ -50,6 +58,14 @@ class PositionRecorder
             'heading' => $heading === null ? null : $this->normalizeHeading($heading),
             'recorded_at' => $recordedAt ?? now(),
         ]);
+
+        // Sin viaje no hay ruta que actualizar ni avisos que mandar.
+        if ($trip !== null) {
+            $this->alerts->check($trip);
+            $this->broadcaster->dispatch(new VehiclePositionUpdated($position, $trip));
+        }
+
+        return $position;
     }
 
     /**
