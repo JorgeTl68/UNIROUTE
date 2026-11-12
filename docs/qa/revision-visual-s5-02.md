@@ -1,4 +1,3 @@
-
 # S5-02 — Revisión de calidad visual de UniRoute
 
 ## Objetivo
@@ -18,18 +17,18 @@ UniRoute en escritorio, tableta y dispositivos móviles.
 
 ## Pruebas realizadas
 
-| ID | Elemento | Resolución | Resultado |
-|---|---|---|---|
-| QA-01 | Logotipo y colores institucionales | Escritorio | Correcto |
-| QA-02 | Navegación lateral | Escritorio | Correcto |
-| QA-03 | Mapa y tarjetas de rutas | Escritorio | Correcto |
-| QA-04 | Mapa y paradas | 375 px | Correcto |
-| QA-05 | Barra inferior de navegación | 375 px | Correcto |
-| QA-06 | Desplazamiento horizontal de filtros | 375 px | Correcto |
-| QA-07 | Acceso al detalle de rutas | 375 px | Correcto |
-| QA-08 | Sidebar contraído | 768 px | Correcto |
-| QA-09 | Selector de campus | 768 px | Correcto |
-| QA-10 | Desplegable de notificaciones | 768 px | Correcto |
+| ID    | Elemento                             | Resolución | Resultado |
+| ----- | ------------------------------------ | ---------- | --------- |
+| QA-01 | Logotipo y colores institucionales   | Escritorio | Correcto  |
+| QA-02 | Navegación lateral                   | Escritorio | Correcto  |
+| QA-03 | Mapa y tarjetas de rutas             | Escritorio | Correcto  |
+| QA-04 | Mapa y paradas                       | 375 px     | Correcto  |
+| QA-05 | Barra inferior de navegación         | 375 px     | Correcto  |
+| QA-06 | Desplazamiento horizontal de filtros | 375 px     | Correcto  |
+| QA-07 | Acceso al detalle de rutas           | 375 px     | Correcto  |
+| QA-08 | Sidebar contraído                    | 768 px     | Correcto  |
+| QA-09 | Selector de campus                   | 768 px     | Correcto  |
+| QA-10 | Desplegable de notificaciones        | 768 px     | Correcto  |
 
 ## Observaciones
 
