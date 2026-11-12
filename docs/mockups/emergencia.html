@@ -1,0 +1,394 @@
+<!doctype html>
+<!--
+  Mockup: Reportar Emergencia · UniRoute
+  Para S4-06 (Jorge). Se abre desde "Soporte en Ruta" del sidebar y desde el
+  detalle de la ruta.
+
+  Notas para implementarlo:
+  - Página resources/js/pages/emergency/create.tsx, ruta emergency.create; la
+    pueden usar todos los roles.
+  - Guarda una incidencia (incidents) de tipo emergencia con la ruta, la unidad,
+    la ubicación y el mensaje, y avisa al instante a los administradores
+    (notificación por broadcast, S4-01). En el panel aparece en Incidencias.
+  - La ruta y la unidad vienen elegidas si el estudiante está en un viaje.
+  - La ubicación usa el GPS del navegador (solo con HTTPS); si no hay permiso,
+    se elige la parada más cercana.
+  - El aviso del 911 siempre se ve arriba: la app no sustituye a emergencias.
+-->
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="color-scheme" content="dark" />
+        <title>UniRoute · Reportar emergencia</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+            rel="stylesheet"
+        />
+        <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+        <script src="assets/uniroute.js"></script>
+        <script src="https://unpkg.com/lucide@0.475.0/dist/umd/lucide.min.js"></script>
+    </head>
+    <body
+        class="bg-background text-foreground"
+        data-pagina="emergencia"
+        data-rol="estudiante"
+    >
+        <main class="flex-1 space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+            <div>
+                <p
+                    class="flex items-center gap-2 text-[11px] font-semibold tracking-widest text-destructive uppercase"
+                >
+                    <i data-lucide="siren" class="size-4"></i>Soporte en Ruta
+                </p>
+                <h1 class="mt-1 text-2xl font-bold tracking-tight sm:text-3xl">
+                    Reportar emergencia
+                </h1>
+                <p class="mt-1 text-sm text-muted-foreground">
+                    El área de transporte recibe tu reporte al momento y te
+                    contesta aquí mismo.
+                </p>
+            </div>
+
+            <div
+                class="flex flex-col gap-4 rounded-2xl border border-destructive/40 bg-destructive/10 p-4 sm:flex-row sm:items-center sm:justify-between"
+            >
+                <div class="flex items-start gap-3">
+                    <span
+                        class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-destructive text-destructive-foreground"
+                        ><i data-lucide="phone-call" class="size-5"></i
+                    ></span>
+                    <div>
+                        <p class="text-sm font-bold text-white">
+                            Si hay riesgo para tu vida o la de alguien más,
+                            llama al 911
+                        </p>
+                        <p class="text-sm text-muted-foreground">
+                            Después repórtalo aquí para que transporte lo
+                            atienda.
+                        </p>
+                    </div>
+                </div>
+                <a
+                    href="tel:911"
+                    class="flex shrink-0 items-center justify-center gap-2 rounded-md bg-destructive px-5 py-2.5 text-sm font-bold text-destructive-foreground"
+                >
+                    <i data-lucide="phone" class="size-4"></i>Llamar al 911
+                </a>
+            </div>
+
+            <div class="grid gap-6 xl:grid-cols-12">
+                <form
+                    class="min-w-0 space-y-5 rounded-2xl border border-border bg-card p-5 sm:p-6 xl:col-span-8"
+                    novalidate
+                >
+                    <fieldset>
+                        <legend class="text-sm font-semibold text-white">
+                            ¿Qué pasó?
+                        </legend>
+                        <div class="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
+                            <label class="cursor-pointer"
+                                ><input
+                                    type="radio"
+                                    name="tipo"
+                                    class="peer sr-only"
+                                    checked
+                                /><span
+                                    class="flex h-full flex-col gap-2 rounded-xl border border-border bg-background/50 p-3 text-sm font-semibold text-foreground peer-checked:border-destructive peer-checked:bg-destructive/10"
+                                    ><i
+                                        data-lucide="car-front"
+                                        class="size-5 text-destructive"
+                                    ></i
+                                    >Accidente</span
+                                ></label
+                            >
+                            <label class="cursor-pointer"
+                                ><input
+                                    type="radio"
+                                    name="tipo"
+                                    class="peer sr-only"
+                                /><span
+                                    class="flex h-full flex-col gap-2 rounded-xl border border-border bg-background/50 p-3 text-sm font-semibold text-foreground peer-checked:border-destructive peer-checked:bg-destructive/10"
+                                    ><i
+                                        data-lucide="wrench"
+                                        class="text-warning size-5"
+                                    ></i
+                                    >Falla de la unidad</span
+                                ></label
+                            >
+                            <label class="cursor-pointer"
+                                ><input
+                                    type="radio"
+                                    name="tipo"
+                                    class="peer sr-only"
+                                /><span
+                                    class="flex h-full flex-col gap-2 rounded-xl border border-border bg-background/50 p-3 text-sm font-semibold text-foreground peer-checked:border-destructive peer-checked:bg-destructive/10"
+                                    ><i
+                                        data-lucide="shield-alert"
+                                        class="size-5 text-destructive"
+                                    ></i
+                                    >Seguridad o acoso</span
+                                ></label
+                            >
+                            <label class="cursor-pointer"
+                                ><input
+                                    type="radio"
+                                    name="tipo"
+                                    class="peer sr-only"
+                                /><span
+                                    class="flex h-full flex-col gap-2 rounded-xl border border-border bg-background/50 p-3 text-sm font-semibold text-foreground peer-checked:border-destructive peer-checked:bg-destructive/10"
+                                    ><i
+                                        data-lucide="heart-pulse"
+                                        class="size-5 text-destructive"
+                                    ></i
+                                    >Salud</span
+                                ></label
+                            >
+                            <label class="cursor-pointer"
+                                ><input
+                                    type="radio"
+                                    name="tipo"
+                                    class="peer sr-only"
+                                /><span
+                                    class="flex h-full flex-col gap-2 rounded-xl border border-border bg-background/50 p-3 text-sm font-semibold text-foreground peer-checked:border-destructive peer-checked:bg-destructive/10"
+                                    ><i
+                                        data-lucide="user-x"
+                                        class="text-warning size-5"
+                                    ></i
+                                    >La unidad no pasó</span
+                                ></label
+                            >
+                            <label class="cursor-pointer"
+                                ><input
+                                    type="radio"
+                                    name="tipo"
+                                    class="peer sr-only"
+                                /><span
+                                    class="flex h-full flex-col gap-2 rounded-xl border border-border bg-background/50 p-3 text-sm font-semibold text-foreground peer-checked:border-destructive peer-checked:bg-destructive/10"
+                                    ><i
+                                        data-lucide="circle-help"
+                                        class="size-5 text-muted-foreground"
+                                    ></i
+                                    >Otro</span
+                                ></label
+                            >
+                        </div>
+                    </fieldset>
+
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        <div>
+                            <label
+                                for="ruta"
+                                class="mb-1.5 block text-[13px] font-semibold text-muted-foreground"
+                                >Ruta</label
+                            >
+                            <div class="relative">
+                                <select
+                                    id="ruta"
+                                    class="w-full appearance-none rounded-md border border-border bg-background px-3 py-2.5 pr-9 text-sm text-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/50"
+                                >
+                                    <option>
+                                        Ruta 1 · Campus Central – Santa Fe
+                                    </option>
+                                    <option>
+                                        Ruta 2 · Ramos Arizpe – Campus Central
+                                    </option>
+                                    <option>No estoy en una ruta</option>
+                                </select>
+                                <i
+                                    data-lucide="chevron-down"
+                                    class="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-placeholder"
+                                ></i>
+                            </div>
+                        </div>
+                        <div>
+                            <label
+                                for="unidad"
+                                class="mb-1.5 block text-[13px] font-semibold text-muted-foreground"
+                                >Unidad</label
+                            >
+                            <div class="relative">
+                                <select
+                                    id="unidad"
+                                    class="w-full appearance-none rounded-md border border-border bg-background px-3 py-2.5 pr-9 text-sm text-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/50"
+                                >
+                                    <option>
+                                        BUS-UTC-01 · tu viaje actual
+                                    </option>
+                                    <option>No sé</option>
+                                </select>
+                                <i
+                                    data-lucide="chevron-down"
+                                    class="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-placeholder"
+                                ></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div
+                            class="mb-1.5 flex items-center justify-between gap-3"
+                        >
+                            <span
+                                class="text-[13px] font-semibold text-muted-foreground"
+                                >Ubicación</span
+                            >
+                            <span
+                                class="flex items-center gap-1.5 text-xs text-live"
+                                ><i
+                                    data-lucide="locate-fixed"
+                                    class="size-3.5"
+                                ></i
+                                >Usando tu ubicación</span
+                            >
+                        </div>
+                        <div
+                            class="relative h-48 overflow-hidden rounded-xl border border-border"
+                            data-ur-mapa='{"recorrido":-1,"usuario":[700,470],"etiquetas":true,"encuadre":[520,320,360,260]}'
+                        >
+                            <span
+                                class="absolute top-3 left-3 rounded-full bg-card/95 px-3 py-1 text-xs font-semibold text-foreground shadow"
+                                >Cerca de Fraccionamiento Arborea</span
+                            >
+                        </div>
+                    </div>
+
+                    <div>
+                        <label
+                            for="detalle"
+                            class="mb-1.5 block text-[13px] font-semibold text-muted-foreground"
+                            >Cuéntanos qué pasa</label
+                        >
+                        <textarea
+                            id="detalle"
+                            rows="4"
+                            placeholder="Por ejemplo: la unidad se detuvo y sale humo del motor."
+                            class="w-full rounded-md border border-border bg-background px-3 py-2.5 text-sm text-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/50"
+                        ></textarea>
+                    </div>
+
+                    <label
+                        class="flex cursor-pointer items-start gap-3 rounded-xl bg-background/50 p-3"
+                    >
+                        <input
+                            type="checkbox"
+                            checked
+                            class="mt-0.5 size-4 rounded accent-[#fddeb1]"
+                        />
+                        <span class="text-sm text-foreground"
+                            >Compartir mi nombre y matrícula con el área de
+                            transporte<span
+                                class="block text-xs text-muted-foreground"
+                                >Así te pueden contactar. Si lo desmarcas, el
+                                reporte llega sin tus datos.</span
+                            ></span
+                        >
+                    </label>
+
+                    <div
+                        class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end"
+                    >
+                        <a
+                            href="dashboard.html"
+                            class="rounded-md border border-border bg-secondary px-5 py-2.5 text-center text-sm font-semibold text-foreground"
+                            >Cancelar</a
+                        >
+                        <button
+                            type="button"
+                            data-ur-toast="Reporte enviado. Transporte ya lo está viendo."
+                            class="flex items-center justify-center gap-2 rounded-md bg-destructive px-5 py-2.5 text-sm font-bold text-destructive-foreground"
+                        >
+                            <i data-lucide="send" class="size-4"></i>Enviar
+                            reporte
+                        </button>
+                    </div>
+                </form>
+
+                <aside class="min-w-0 space-y-4 xl:col-span-4">
+                    <div class="rounded-2xl border border-border bg-card p-5">
+                        <h2 class="text-lg font-bold">Qué pasa después</h2>
+                        <ol class="mt-4 space-y-4 text-sm">
+                            <li class="flex gap-3">
+                                <span
+                                    class="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground"
+                                    >1</span
+                                ><span class="text-muted-foreground"
+                                    ><span class="font-semibold text-foreground"
+                                        >Transporte recibe tu reporte</span
+                                    >
+                                    al momento, con la ruta, la unidad y tu
+                                    ubicación.</span
+                                >
+                            </li>
+                            <li class="flex gap-3">
+                                <span
+                                    class="flex size-7 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-bold text-foreground"
+                                    >2</span
+                                ><span class="text-muted-foreground"
+                                    ><span class="font-semibold text-foreground"
+                                        >Lo atienden</span
+                                    >
+                                    y avisan al conductor o mandan otra
+                                    unidad.</span
+                                >
+                            </li>
+                            <li class="flex gap-3">
+                                <span
+                                    class="flex size-7 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-bold text-foreground"
+                                    >3</span
+                                ><span class="text-muted-foreground"
+                                    ><span class="font-semibold text-foreground"
+                                        >Te avisamos</span
+                                    >
+                                    en Mis Notificaciones cuando cambie el
+                                    estado.</span
+                                >
+                            </li>
+                        </ol>
+                    </div>
+                    <div class="rounded-2xl border border-border bg-card p-5">
+                        <h2 class="text-lg font-bold">Mis reportes</h2>
+                        <ul class="mt-3 divide-y divide-border">
+                            <li
+                                class="flex items-center justify-between gap-3 py-3"
+                            >
+                                <span
+                                    ><span
+                                        class="block text-sm font-semibold text-foreground"
+                                        >La unidad no pasó</span
+                                    ><span
+                                        class="block text-xs text-muted-foreground"
+                                        >Ruta 2 · 8 nov, 07:10</span
+                                    ></span
+                                >
+                                <span
+                                    class="rounded-full bg-live/15 px-2 py-0.5 text-[11px] font-bold text-live"
+                                    >Resuelto</span
+                                >
+                            </li>
+                            <li
+                                class="flex items-center justify-between gap-3 py-3"
+                            >
+                                <span
+                                    ><span
+                                        class="block text-sm font-semibold text-foreground"
+                                        >Falla de la unidad</span
+                                    ><span
+                                        class="block text-xs text-muted-foreground"
+                                        >Ruta 1 · 3 nov, 16:40</span
+                                    ></span
+                                >
+                                <span
+                                    class="rounded-full bg-live/15 px-2 py-0.5 text-[11px] font-bold text-live"
+                                    >Resuelto</span
+                                >
+                            </li>
+                        </ul>
+                    </div>
+                </aside>
+            </div>
+        </main>
+    </body>
+</html>

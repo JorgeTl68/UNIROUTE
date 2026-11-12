@@ -113,7 +113,10 @@ se generan con `php artisan wayfinder:generate --with-form` o al compilar.
 - [docs/mapas.md](docs/mapas.md): Leaflet, capas de OpenStreetMap y cómo trazar
   rutas por las calles con OSRM.
 - [docs/DESIGN.md](docs/DESIGN.md): colores, tipografía, componentes y
-  marcadores del mapa, sacados de los mockups.
+  marcadores del mapa, adaptados al tema oscuro. El original de Stitch está en
+  [docs/stitch/DESIGN.md](docs/stitch/DESIGN.md).
+- [docs/mockups/](docs/mockups/index.html): un mockup por pantalla, con la tarea
+  y la persona de cada uno.
 - [docs/marca.md](docs/marca.md): logos de UniRoute, cuándo usar cada uno y su
   paleta.
 - `resources/js/types/transit.ts`: tipos compartidos del dominio de transporte.

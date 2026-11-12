@@ -1,0 +1,446 @@
+<!doctype html>
+<!--
+  Mockup: Perfil y Ajustes · UniRoute
+  Para S2-08 (Andrés).
+
+  Notas para implementarlo:
+  - Reemplaza las páginas del starter settings/profile y settings/security; la
+    pestaña Apariencia se quita porque la app es solo oscura.
+  - Perfil: name y email (Fortify). Matrícula y campus son student_id y
+    campus_id (S2-11); la matrícula no se puede cambiar desde aquí.
+  - Seguridad: cambiar contraseña, passkeys (passkey-verify.tsx) y verificación
+    en dos pasos, como ya trae el starter.
+  - Preferencias: minutos de aviso por defecto para "Avisarme al llegar".
+  - Eliminar cuenta va al final, con su diálogo de confirmación del starter.
+-->
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="color-scheme" content="dark" />
+        <title>UniRoute · Perfil y Ajustes</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+            rel="stylesheet"
+        />
+        <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+        <script src="assets/uniroute.js"></script>
+        <script src="https://unpkg.com/lucide@0.475.0/dist/umd/lucide.min.js"></script>
+    </head>
+    <body
+        class="bg-background text-foreground"
+        data-pagina="perfil"
+        data-rol="estudiante"
+    >
+        <main class="flex-1 px-4 py-6 sm:px-6 lg:px-8">
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight sm:text-3xl">
+                    Perfil y Ajustes
+                </h1>
+                <p class="mt-1 text-sm text-muted-foreground">
+                    Tus datos, la seguridad de tu cuenta y cómo quieres que te
+                    avisemos.
+                </p>
+            </div>
+
+            <div class="mt-6 grid gap-6 lg:grid-cols-[220px_1fr]">
+                <nav
+                    class="ur-scroll -mx-4 overflow-x-auto px-4 lg:mx-0 lg:overflow-visible lg:px-0"
+                    aria-label="Secciones de ajustes"
+                >
+                    <ul
+                        class="flex w-max gap-1 lg:sticky lg:top-24 lg:w-auto lg:flex-col"
+                    >
+                        <li>
+                            <a
+                                href="#perfil"
+                                class="flex items-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground"
+                                aria-current="true"
+                                ><i data-lucide="user" class="size-4"></i
+                                >Perfil</a
+                            >
+                        </li>
+                        <li>
+                            <a
+                                href="#seguridad"
+                                class="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-secondary hover:text-foreground"
+                                ><i data-lucide="lock" class="size-4"></i
+                                >Contraseña y seguridad</a
+                            >
+                        </li>
+                        <li>
+                            <a
+                                href="#preferencias"
+                                class="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-secondary hover:text-foreground"
+                                ><i
+                                    data-lucide="sliders-horizontal"
+                                    class="size-4"
+                                ></i
+                                >Preferencias</a
+                            >
+                        </li>
+                        <li>
+                            <a
+                                href="#cuenta"
+                                class="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-secondary hover:text-foreground"
+                                ><i data-lucide="user-x" class="size-4"></i
+                                >Eliminar cuenta</a
+                            >
+                        </li>
+                    </ul>
+                </nav>
+
+                <div class="max-w-3xl space-y-6">
+                    <!-- Perfil -->
+                    <section
+                        id="perfil"
+                        class="scroll-mt-24 rounded-2xl border border-border bg-card p-5 sm:p-6"
+                    >
+                        <div class="flex flex-wrap items-center gap-4">
+                            <span
+                                class="flex size-16 items-center justify-center rounded-full bg-primary text-xl font-bold text-primary-foreground"
+                                >VC</span
+                            >
+                            <div>
+                                <h2 class="text-lg font-bold">
+                                    Valeria Cárdenas
+                                </h2>
+                                <p class="text-sm text-muted-foreground">
+                                    Estudiante · Campus Central Saltillo
+                                </p>
+                            </div>
+                        </div>
+                        <form class="mt-6 grid gap-4 sm:grid-cols-2">
+                            <div class="sm:col-span-2">
+                                <label
+                                    for="nombre"
+                                    class="mb-1.5 block text-[13px] font-semibold text-muted-foreground"
+                                    >Nombre completo</label
+                                >
+                                <input
+                                    id="nombre"
+                                    value="Valeria Cárdenas"
+                                    class="w-full rounded-md border border-border bg-background px-3 py-2.5 text-sm text-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/50"
+                                />
+                            </div>
+                            <div class="sm:col-span-2">
+                                <label
+                                    for="correo"
+                                    class="mb-1.5 block text-[13px] font-semibold text-muted-foreground"
+                                    >Correo electrónico</label
+                                >
+                                <input
+                                    id="correo"
+                                    type="email"
+                                    value="valeria@ejemplo.com"
+                                    class="w-full rounded-md border border-border bg-background px-3 py-2.5 text-sm text-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/50"
+                                />
+                                <p
+                                    class="mt-1.5 flex items-center gap-1 text-xs text-live"
+                                >
+                                    <i
+                                        data-lucide="circle-check"
+                                        class="size-3.5"
+                                    ></i
+                                    >Correo verificado
+                                </p>
+                            </div>
+                            <div>
+                                <label
+                                    for="matricula"
+                                    class="mb-1.5 block text-[13px] font-semibold text-muted-foreground"
+                                    >Matrícula</label
+                                >
+                                <input
+                                    id="matricula"
+                                    value="2023-0418"
+                                    disabled
+                                    class="w-full cursor-not-allowed rounded-md border border-border bg-background/40 px-3 py-2.5 text-sm text-muted-foreground"
+                                />
+                                <p class="mt-1.5 text-xs text-placeholder">
+                                    Para cambiarla, acude a servicios escolares.
+                                </p>
+                            </div>
+                            <div>
+                                <label
+                                    for="campus"
+                                    class="mb-1.5 block text-[13px] font-semibold text-muted-foreground"
+                                    >Campus</label
+                                >
+                                <div class="relative">
+                                    <select
+                                        id="campus"
+                                        class="w-full appearance-none rounded-md border border-border bg-background px-3 py-2.5 pr-9 text-sm text-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/50"
+                                    >
+                                        <option>Campus Central Saltillo</option>
+                                        <option>Campus Ramos Arizpe</option>
+                                    </select>
+                                    <i
+                                        data-lucide="chevron-down"
+                                        class="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-placeholder"
+                                    ></i>
+                                </div>
+                            </div>
+                            <div class="flex justify-end sm:col-span-2">
+                                <button
+                                    type="button"
+                                    data-ur-toast="Perfil guardado"
+                                    class="rounded-md bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground hover:bg-primary-hover"
+                                >
+                                    Guardar cambios
+                                </button>
+                            </div>
+                        </form>
+                    </section>
+
+                    <!-- Seguridad -->
+                    <section
+                        id="seguridad"
+                        class="scroll-mt-24 rounded-2xl border border-border bg-card p-5 sm:p-6"
+                    >
+                        <h2 class="text-lg font-bold">
+                            Contraseña y seguridad
+                        </h2>
+                        <form class="mt-4 grid gap-4 sm:grid-cols-2">
+                            <div class="sm:col-span-2">
+                                <label
+                                    for="actual"
+                                    class="mb-1.5 block text-[13px] font-semibold text-muted-foreground"
+                                    >Contraseña actual</label
+                                >
+                                <input
+                                    id="actual"
+                                    type="password"
+                                    placeholder="Tu contraseña actual"
+                                    class="w-full rounded-md border border-border bg-background px-3 py-2.5 text-sm text-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/50"
+                                />
+                            </div>
+                            <div>
+                                <label
+                                    for="nueva"
+                                    class="mb-1.5 block text-[13px] font-semibold text-muted-foreground"
+                                    >Nueva contraseña</label
+                                >
+                                <input
+                                    id="nueva"
+                                    type="password"
+                                    placeholder="Mínimo 8 caracteres"
+                                    aria-invalid="true"
+                                    aria-describedby="nueva-error"
+                                    class="w-full rounded-md border border-destructive bg-background px-3 py-2.5 text-sm text-foreground outline-none focus:ring-2 focus:ring-destructive/40"
+                                />
+                                <p
+                                    id="nueva-error"
+                                    class="mt-1.5 flex items-center gap-1 text-xs text-destructive"
+                                >
+                                    <i
+                                        data-lucide="circle-alert"
+                                        class="size-3.5"
+                                    ></i
+                                    >Debe tener al menos 8 caracteres.
+                                </p>
+                            </div>
+                            <div>
+                                <label
+                                    for="confirmar"
+                                    class="mb-1.5 block text-[13px] font-semibold text-muted-foreground"
+                                    >Confirmar contraseña</label
+                                >
+                                <input
+                                    id="confirmar"
+                                    type="password"
+                                    placeholder="Repite la nueva contraseña"
+                                    class="w-full rounded-md border border-border bg-background px-3 py-2.5 text-sm text-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/50"
+                                />
+                            </div>
+                            <div class="flex justify-end sm:col-span-2">
+                                <button
+                                    type="button"
+                                    class="rounded-md bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground hover:bg-primary-hover"
+                                >
+                                    Actualizar contraseña
+                                </button>
+                            </div>
+                        </form>
+
+                        <div class="mt-6 space-y-3 border-t border-border pt-6">
+                            <div
+                                class="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-background/50 p-4"
+                            >
+                                <div class="flex items-center gap-3">
+                                    <span
+                                        class="flex size-10 items-center justify-center rounded-lg bg-primary/15 text-primary"
+                                        ><i
+                                            data-lucide="key-round"
+                                            class="size-5"
+                                        ></i
+                                    ></span>
+                                    <div>
+                                        <p
+                                            class="text-sm font-semibold text-foreground"
+                                        >
+                                            Passkeys
+                                        </p>
+                                        <p
+                                            class="text-xs text-muted-foreground"
+                                        >
+                                            1 registrada · Celular de Valeria
+                                        </p>
+                                    </div>
+                                </div>
+                                <button
+                                    type="button"
+                                    class="rounded-md border border-border bg-secondary px-3 py-2 text-xs font-semibold text-foreground hover:bg-secondary/70"
+                                >
+                                    Agregar passkey
+                                </button>
+                            </div>
+                            <div
+                                class="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-background/50 p-4"
+                            >
+                                <div class="flex items-center gap-3">
+                                    <span
+                                        class="flex size-10 items-center justify-center rounded-lg bg-secondary text-muted-foreground"
+                                        ><i
+                                            data-lucide="shield-check"
+                                            class="size-5"
+                                        ></i
+                                    ></span>
+                                    <div>
+                                        <p
+                                            class="text-sm font-semibold text-foreground"
+                                        >
+                                            Verificación en dos pasos
+                                        </p>
+                                        <p
+                                            class="text-xs text-muted-foreground"
+                                        >
+                                            Desactivada
+                                        </p>
+                                    </div>
+                                </div>
+                                <button
+                                    type="button"
+                                    class="rounded-md border border-border bg-secondary px-3 py-2 text-xs font-semibold text-foreground hover:bg-secondary/70"
+                                >
+                                    Activar
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Preferencias -->
+                    <section
+                        id="preferencias"
+                        class="scroll-mt-24 rounded-2xl border border-border bg-card p-5 sm:p-6"
+                    >
+                        <h2 class="text-lg font-bold">Preferencias</h2>
+                        <div class="mt-4 grid gap-4 sm:grid-cols-2">
+                            <div>
+                                <label
+                                    for="ruta-habitual"
+                                    class="mb-1.5 block text-[13px] font-semibold text-muted-foreground"
+                                    >Ruta habitual</label
+                                >
+                                <div class="relative">
+                                    <select
+                                        id="ruta-habitual"
+                                        class="w-full appearance-none rounded-md border border-border bg-background px-3 py-2.5 pr-9 text-sm text-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/50"
+                                    >
+                                        <option>
+                                            Ruta 1 · Campus Central – Santa Fe
+                                        </option>
+                                        <option>
+                                            Ruta 2 · Ramos Arizpe – Campus
+                                            Central
+                                        </option>
+                                        <option>
+                                            Ruta 3 · Fracc. Arborea – UTC
+                                            Central
+                                        </option>
+                                        <option>
+                                            Ruta 4 · Saltillo 2000 – Campus
+                                            Central
+                                        </option>
+                                    </select>
+                                    <i
+                                        data-lucide="chevron-down"
+                                        class="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-placeholder"
+                                    ></i>
+                                </div>
+                            </div>
+                            <fieldset>
+                                <legend
+                                    class="mb-1.5 block text-[13px] font-semibold text-muted-foreground"
+                                >
+                                    Avisarme por defecto
+                                </legend>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <label class="cursor-pointer"
+                                        ><input
+                                            type="radio"
+                                            name="aviso"
+                                            class="peer sr-only"
+                                        /><span
+                                            class="block rounded-md border border-border bg-background py-2.5 text-center text-sm font-semibold text-muted-foreground peer-checked:border-primary peer-checked:bg-primary/15 peer-checked:text-primary"
+                                            >2 min</span
+                                        ></label
+                                    >
+                                    <label class="cursor-pointer"
+                                        ><input
+                                            type="radio"
+                                            name="aviso"
+                                            class="peer sr-only"
+                                            checked
+                                        /><span
+                                            class="block rounded-md border border-border bg-background py-2.5 text-center text-sm font-semibold text-muted-foreground peer-checked:border-primary peer-checked:bg-primary/15 peer-checked:text-primary"
+                                            >5 min</span
+                                        ></label
+                                    >
+                                    <label class="cursor-pointer"
+                                        ><input
+                                            type="radio"
+                                            name="aviso"
+                                            class="peer sr-only"
+                                        /><span
+                                            class="block rounded-md border border-border bg-background py-2.5 text-center text-sm font-semibold text-muted-foreground peer-checked:border-primary peer-checked:bg-primary/15 peer-checked:text-primary"
+                                            >10 min</span
+                                        ></label
+                                    >
+                                </div>
+                            </fieldset>
+                        </div>
+                        <p class="mt-4 text-xs text-muted-foreground">
+                            Qué avisos recibes se elige en
+                            <a
+                                href="notificaciones.html"
+                                class="font-semibold text-primary hover:underline"
+                                >Mis Notificaciones y Alertas</a
+                            >.
+                        </p>
+                    </section>
+
+                    <!-- Eliminar cuenta -->
+                    <section
+                        id="cuenta"
+                        class="scroll-mt-24 rounded-2xl border border-destructive/30 bg-destructive/5 p-5 sm:p-6"
+                    >
+                        <h2 class="text-lg font-bold">Eliminar cuenta</h2>
+                        <p class="mt-1 text-sm text-muted-foreground">
+                            Se borran tu cuenta, tus alarmas y tus rutas
+                            favoritas. No se puede deshacer.
+                        </p>
+                        <button
+                            type="button"
+                            class="mt-4 rounded-md border border-destructive/50 bg-destructive/10 px-4 py-2.5 text-sm font-semibold text-destructive hover:bg-destructive/20"
+                        >
+                            Eliminar mi cuenta
+                        </button>
+                    </section>
+                </div>
+            </div>
+        </main>
+    </body>
+</html>

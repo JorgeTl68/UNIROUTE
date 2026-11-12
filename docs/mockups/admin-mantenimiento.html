@@ -1,0 +1,324 @@
+<!doctype html>
+<!--
+  Mockup: Mantenimiento · UniRoute
+  Para S4-03 (Adaia). Ya hay una versión en main (PR #7,
+  pages/admin/fleet/maintenance).
+
+  Notas para implementarlo:
+  - Registros de vehicle_maintenance_records: unidad, tipo de falla, fecha de
+    entrada, salida estimada y estado.
+  - Mientras una unidad está en taller su estado es "Mantenimiento" y no se
+    puede asignar. "Reincorporar" la regresa a "En espera".
+  - "Reportar falla" abre maintenance/create.
+-->
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="color-scheme" content="dark" />
+        <title>UniRoute · Mantenimiento</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+            rel="stylesheet"
+        />
+        <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+        <script src="assets/uniroute.js"></script>
+        <script src="https://unpkg.com/lucide@0.475.0/dist/umd/lucide.min.js"></script>
+    </head>
+    <body
+        class="bg-background text-foreground"
+        data-pagina="admin"
+        data-rol="admin"
+    >
+        <main class="flex-1 space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+            <div class="flex flex-wrap items-end justify-between gap-4">
+                <div>
+                    <p
+                        class="text-gold text-[11px] font-semibold tracking-widest uppercase"
+                    >
+                        Panel de administración
+                    </p>
+                    <h1
+                        class="mt-1 text-2xl font-bold tracking-tight sm:text-3xl"
+                    >
+                        Mantenimiento
+                    </h1>
+                    <p class="mt-1 text-sm text-muted-foreground">
+                        Unidades en taller, fallas reportadas y servicios
+                        preventivos.
+                    </p>
+                </div>
+                <button
+                    type="button"
+                    class="flex items-center gap-2 rounded-md bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground hover:bg-primary-hover"
+                >
+                    <i data-lucide="wrench" class="size-4"></i>Reportar falla
+                </button>
+            </div>
+
+            <nav
+                data-ur-tabs-admin="mantenimiento"
+                aria-label="Secciones del panel"
+            ></nav>
+
+            <div class="grid gap-4 sm:grid-cols-3">
+                <div class="rounded-2xl border border-border bg-card p-5">
+                    <p
+                        class="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase"
+                    >
+                        En taller
+                    </p>
+                    <p class="mt-2 text-3xl font-extrabold text-destructive">
+                        2
+                    </p>
+                    <p class="text-xs text-muted-foreground">de 20 unidades</p>
+                </div>
+                <div class="rounded-2xl border border-border bg-card p-5">
+                    <p
+                        class="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase"
+                    >
+                        Fallas abiertas
+                    </p>
+                    <p class="text-warning mt-2 text-3xl font-extrabold">3</p>
+                    <p class="text-xs text-muted-foreground">1 reportada hoy</p>
+                </div>
+                <div class="rounded-2xl border border-border bg-card p-5">
+                    <p
+                        class="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase"
+                    >
+                        Reincorporadas
+                    </p>
+                    <p class="mt-2 text-3xl font-extrabold text-live">5</p>
+                    <p class="text-xs text-muted-foreground">en noviembre</p>
+                </div>
+            </div>
+
+            <div class="grid gap-6 xl:grid-cols-12">
+                <section
+                    class="min-w-0 space-y-3 xl:col-span-8"
+                    aria-label="Registros de mantenimiento"
+                >
+                    <article
+                        class="rounded-2xl border border-border bg-card p-5"
+                    >
+                        <div
+                            class="flex flex-wrap items-start justify-between gap-3"
+                        >
+                            <div class="flex items-start gap-3">
+                                <span
+                                    class="flex size-11 items-center justify-center rounded-xl bg-destructive/15 text-destructive"
+                                    ><i
+                                        data-lucide="bus-front"
+                                        class="size-5"
+                                    ></i
+                                ></span>
+                                <div>
+                                    <p
+                                        class="flex flex-wrap items-center gap-2 font-bold text-white"
+                                    >
+                                        BUS-UTC-06
+                                        <span
+                                            class="rounded-full bg-destructive/15 px-2 py-0.5 text-[11px] font-bold text-destructive"
+                                            >En taller</span
+                                        >
+                                    </p>
+                                    <p class="text-sm text-muted-foreground">
+                                        Servicio de 10 000 km · Volvo Access
+                                    </p>
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                class="rounded-md border border-border px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-secondary"
+                            >
+                                Ver detalle
+                            </button>
+                        </div>
+                        <dl
+                            class="mt-4 grid grid-cols-2 gap-3 text-sm sm:grid-cols-3"
+                        >
+                            <div class="rounded-lg bg-background/50 p-3">
+                                <dt class="text-xs text-muted-foreground">
+                                    Entró
+                                </dt>
+                                <dd class="font-semibold text-foreground">
+                                    10 nov, 08:00
+                                </dd>
+                            </div>
+                            <div class="rounded-lg bg-background/50 p-3">
+                                <dt class="text-xs text-muted-foreground">
+                                    Sale
+                                </dt>
+                                <dd class="font-semibold text-foreground">
+                                    12 nov (estimado)
+                                </dd>
+                            </div>
+                            <div class="rounded-lg bg-background/50 p-3">
+                                <dt class="text-xs text-muted-foreground">
+                                    Taller
+                                </dt>
+                                <dd class="font-semibold text-foreground">
+                                    Interno UTC
+                                </dd>
+                            </div>
+                        </dl>
+                    </article>
+                    <article
+                        class="rounded-2xl border border-border bg-card p-5"
+                    >
+                        <div
+                            class="flex flex-wrap items-start justify-between gap-3"
+                        >
+                            <div class="flex items-start gap-3">
+                                <span
+                                    class="bg-warning/15 text-warning flex size-11 items-center justify-center rounded-xl"
+                                    ><i
+                                        data-lucide="bus-front"
+                                        class="size-5"
+                                    ></i
+                                ></span>
+                                <div>
+                                    <p
+                                        class="flex flex-wrap items-center gap-2 font-bold text-white"
+                                    >
+                                        BUS-UTC-05
+                                        <span
+                                            class="bg-warning/15 text-warning rounded-full px-2 py-0.5 text-[11px] font-bold"
+                                            >Esperando refacción</span
+                                        >
+                                    </p>
+                                    <p class="text-sm text-muted-foreground">
+                                        Falla en el aire acondicionado ·
+                                        Mercedes Sprinter
+                                    </p>
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                class="rounded-md border border-border px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-secondary"
+                            >
+                                Ver detalle
+                            </button>
+                        </div>
+                        <p
+                            class="mt-3 rounded-lg bg-background/50 p-3 text-sm text-muted-foreground"
+                        >
+                            "No enfría desde el lunes; los estudiantes se
+                            quejaron en el viaje de las 13:00." — Laura Rivas,
+                            conductora
+                        </p>
+                    </article>
+                    <article
+                        class="rounded-2xl border border-border bg-card p-5"
+                    >
+                        <div
+                            class="flex flex-wrap items-start justify-between gap-3"
+                        >
+                            <div class="flex items-start gap-3">
+                                <span
+                                    class="flex size-11 items-center justify-center rounded-xl bg-live/15 text-live"
+                                    ><i
+                                        data-lucide="bus-front"
+                                        class="size-5"
+                                    ></i
+                                ></span>
+                                <div>
+                                    <p
+                                        class="flex flex-wrap items-center gap-2 font-bold text-white"
+                                    >
+                                        BUS-UTC-03
+                                        <span
+                                            class="rounded-full bg-live/15 px-2 py-0.5 text-[11px] font-bold text-live"
+                                            >Lista</span
+                                        >
+                                    </p>
+                                    <p class="text-sm text-muted-foreground">
+                                        Cambio de balatas · terminado hoy 11:20
+                                    </p>
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                data-ur-toast="BUS-UTC-03 reincorporada"
+                                class="flex items-center gap-2 rounded-md bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground hover:bg-primary-hover"
+                            >
+                                <i data-lucide="circle-check" class="size-4"></i
+                                >Reincorporar
+                            </button>
+                        </div>
+                    </article>
+                </section>
+
+                <aside class="min-w-0 xl:col-span-4">
+                    <div class="rounded-2xl border border-border bg-card p-5">
+                        <h2 class="text-lg font-bold">
+                            Próximos servicios preventivos
+                        </h2>
+                        <ul class="mt-4 space-y-3">
+                            <li>
+                                <div
+                                    class="flex items-center justify-between text-sm"
+                                >
+                                    <span class="font-semibold text-foreground"
+                                        >BUS-UTC-01</span
+                                    ><span class="text-warning text-xs"
+                                        >en 600 km</span
+                                    >
+                                </div>
+                                <div
+                                    class="mt-1.5 h-1.5 overflow-hidden rounded-full bg-secondary"
+                                >
+                                    <div
+                                        class="bg-warning h-full w-[94%] rounded-full"
+                                    ></div>
+                                </div>
+                            </li>
+                            <li>
+                                <div
+                                    class="flex items-center justify-between text-sm"
+                                >
+                                    <span class="font-semibold text-foreground"
+                                        >BUS-UTC-02</span
+                                    ><span class="text-xs text-muted-foreground"
+                                        >en 2 400 km</span
+                                    >
+                                </div>
+                                <div
+                                    class="mt-1.5 h-1.5 overflow-hidden rounded-full bg-secondary"
+                                >
+                                    <div
+                                        class="bg-gold h-full w-[76%] rounded-full"
+                                    ></div>
+                                </div>
+                            </li>
+                            <li>
+                                <div
+                                    class="flex items-center justify-between text-sm"
+                                >
+                                    <span class="font-semibold text-foreground"
+                                        >BUS-UTC-04</span
+                                    ><span class="text-xs text-muted-foreground"
+                                        >en 7 100 km</span
+                                    >
+                                </div>
+                                <div
+                                    class="mt-1.5 h-1.5 overflow-hidden rounded-full bg-secondary"
+                                >
+                                    <div
+                                        class="h-full w-[29%] rounded-full bg-live"
+                                    ></div>
+                                </div>
+                            </li>
+                        </ul>
+                        <p class="mt-4 text-xs text-muted-foreground">
+                            Cada 10 000 km. El kilometraje sale de las
+                            posiciones registradas.
+                        </p>
+                    </div>
+                </aside>
+            </div>
+        </main>
+    </body>
+</html>

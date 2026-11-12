@@ -1,23 +1,40 @@
 # Diseño de UniRoute
 
-> Este archivo se reconstruyó el 2026-11-11 a partir de los mockups, porque el
-> DESIGN.md original que salió con ellos nunca se subió al repositorio. Los
-> valores salen de la configuración de Tailwind de cada mockup. Lo que el
-> original decía distinto y se sabe está en
-> [Pendientes de decidir](#pendientes-de-decidir).
+> El DESIGN.md original es el que exportó Stitch junto con los primeros
+> mockups: está en [stitch/DESIGN.md](stitch/DESIGN.md), en inglés y en tema
+> claro. Este documento lo adapta a lo que decidió el equipo (toda la app en
+> oscuro y los nombres de `app.css`) y a los mockups de
+> [docs/mockups](mockups/index.html).
 
-| Mockup                                                     | Pantalla        | Tema   | Para                            |
-| ---------------------------------------------------------- | --------------- | ------ | ------------------------------- |
-| [docs/mockups/login.html](mockups/login.html)              | Iniciar sesión  | Oscuro | S2-08 (Andrés)                  |
-| [docs/mockups/registro.html](mockups/registro.html)        | Crear cuenta    | Oscuro | S2-08 (Andrés) y S2-11          |
-| Demo de la Ruta 1 Santa Elena (todavía no está en el repo) | Ruta en el mapa | Claro  | Mapa y Dashboard en Vivo (Sosa) |
+## Mockups
 
-Los tokens del tema claro y la sección [Mapa](#mapa) salen de ese demo, que se
-subirá aparte.
+Hay un mockup por pantalla. [docs/mockups/index.html](mockups/index.html) los
+lista con la tarea y la persona de cada uno.
 
-Los mockups cargan Tailwind por CDN solo para poder abrirse solos en el
-navegador. En la app los colores salen de `resources/css/app.css` (S1-04); no se
-copia su configuración.
+- **Estudiante:** Dashboard en Vivo, Detalle de ruta, Horarios, Notificaciones,
+  Perfil y Reportar emergencia.
+- **Inicio y acceso:** página de inicio, login, registro y recuperar contraseña
+  (con verificar correo, confirmar contraseña y código de dos pasos).
+- **Conductor:** pantalla para el celular.
+- **Administración:** consola de flota, registrar unidad, conductores,
+  mantenimiento, rutas y paradas, crear ruta, horarios de salida, incidencias y
+  reportes de aforo.
+
+Cómo están hechos:
+
+- Todos en oscuro. La base compartida está en `mockups/assets/uniroute.js`:
+  configura Tailwind con los nombres de `app.css`, así que las clases se copian
+  tal cual, y dibuja el layout y un mapa ilustrado. Ese archivo no se copia a la
+  app.
+- Íconos de lucide con el mismo nombre que en `lucide-react` (`bus-front` →
+  `BusFront`).
+- Los datos son de ejemplo, tomados de los seeders. Cada archivo trae al inicio
+  sus notas para implementarlo.
+- Login y registro se hicieron antes y usan los nombres de Material 3 y
+  Material Symbols; la equivalencia está en
+  [Tokens en app.css](#tokens-en-appcss) e [Íconos](#íconos).
+- Para verlos: desde la carpeta del proyecto, `python -m http.server 8765` y
+  abrir `http://localhost:8765/docs/mockups/`.
 
 ## Idea general
 
@@ -26,12 +43,14 @@ copia su configuración.
 - Azul nocturno como base, dorado champán como acento de marca y verde
   señalización para lo que está en vivo o ya pasó.
 - Toda la app va con fondo oscuro, con la paleta de login y registro (ver
-  [Tema oscuro](#tema-oscuro)). Solo el demo del mapa sigue en claro.
+  [Tema oscuro](#tema-oscuro)).
 
 ## Color
 
-Los nombres siguen el esquema de Material 3 que traen los mockups. `on-X` es el
-color del texto que va encima de `X`.
+Los nombres de esta sección siguen el esquema de Material 3 del DESIGN.md
+original y de los mockups de login y registro. `on-X` es el color del texto que
+va encima de `X`. Los mockups nuevos usan los nombres de `app.css` (ver
+[Tokens en app.css](#tokens-en-appcss)).
 
 ### Azules (base)
 
@@ -64,8 +83,8 @@ color del texto que va encima de `X`.
 
 ### Superficies y texto (tema claro)
 
-Vienen del demo del mapa. Como la app va en oscuro, no se usan en pantallas
-nuevas; quedan como referencia hasta que el mapa se pase a oscuro.
+Vienen del DESIGN.md original y del demo del mapa. Como la app va en oscuro, no
+se usan en pantallas nuevas; quedan como referencia.
 
 | Token                      | Hex       | Uso                                                 |
 | -------------------------- | --------- | --------------------------------------------------- |
@@ -183,10 +202,11 @@ Dentro de un panel claro las tarjetas no llevan sombra: se separan con el fondo
 
 ## Íconos
 
-Los mockups usan Material Symbols Outlined: 18 px en campos y botones, 20 a
-24 px en los cuadros de ícono y 16 px en los mensajes de error. La propuesta del
-README (decisión 3) es `lucide-react`; estas son las equivalencias, todas
-existen en la versión instalada:
+Los mockups nuevos ya usan lucide, con el nombre del ícono en kebab-case
+(`bus-front` es `BusFront`). Login y registro usan Material Symbols Outlined:
+18 px en campos y botones, 20 a 24 px en los cuadros de ícono y 16 px en los
+mensajes de error. Estas son sus equivalencias en `lucide-react`, todas existen
+en la versión instalada:
 
 | Material Symbols                | `lucide-react`   | Dónde                                     |
 | ------------------------------- | ---------------- | ----------------------------------------- |
@@ -214,6 +234,11 @@ El autobús del marcador de la unidad va relleno; con lucide se logra con
 `fill="currentColor"`.
 
 ## Componentes
+
+Las clases de Botones, Campos y Tarjetas son las de login, registro y el demo
+del mapa (nombres de Material 3). Los mockups nuevos usan su equivalente de
+`app.css`; por ejemplo, el botón principal es
+`bg-primary text-primary-foreground hover:bg-primary-hover`.
 
 ### Botones
 
@@ -270,6 +295,24 @@ Los formularios de administración usan estos mismos campos.
 py-3 shadow-xl shadow-black/40`, abajo al centro, con ícono verde de 18 px.
 Lleva `role="status"` y `aria-live="polite"`.
 
+### Estados y ocupación
+
+Los chips de estado (StatusChip, S1-06) son
+`rounded-full px-2 py-0.5 text-[11px] font-bold`, a veces con un punto de 6 px:
+
+| Estado                          | Clases                               |
+| ------------------------------- | ------------------------------------ |
+| En vivo, A tiempo, En ruta      | `bg-live/15 text-live`               |
+| Demorado, Sin asignar           | `bg-warning/15 text-warning`         |
+| Mantenimiento, Crítica          | `bg-destructive/15 text-destructive` |
+| Programado, En espera, Descanso | `bg-secondary text-muted-foreground` |
+
+Sobre `bg-card` todos pasan de 6.5:1 de contraste.
+
+La barra de ocupación (OccupancyBar) es `h-1.5 rounded-full bg-secondary` y su
+relleno cambia de color: `bg-live` con menos de 50 %, `bg-gold` de 50 a 84 % y
+`bg-destructive` desde 85 % (viaje saturado).
+
 ## Mapa
 
 La capa es OpenStreetMap (ver [mapas.md](mapas.md)) con un filtro para que se vea
@@ -301,7 +344,38 @@ color de la parada, tarjeta en `surface-container-low` (la siguiente en
 `secondary-fixed/50`) y una línea de estado: "Ya pasó" en
 `on-tertiary-container` o "Siguiente parada" en `secondary`.
 
+### En oscuro
+
+Así lo dibujan los mockups nuevos (`UR.mapa` en `mockups/assets/uniroute.js`):
+
+| Elemento         | Diseño                                                                         |
+| ---------------- | ------------------------------------------------------------------------------ |
+| Fondo y calles   | `#0a1830` con calles `#15253f` y avenidas `#1b2c4a` y `#22355a`                |
+| Línea de la ruta | `route` (`#a3e635`) de 6 px sobre un halo `#3f6e00` de 13 px al 55 %           |
+| Tramo recorrido  | La misma línea, oscurecida con `#020e24` al 55 %                               |
+| Paradas          | Pendiente en `card` con borde claro; ya pasada en `route`; siguiente en `gold` |
+| Unidad           | Cuadro con esquinas de 9 px en `primary`, borde `background` y anillo verde    |
+| Otras rutas      | Su color de ruta al 45 %, más delgadas                                         |
+| Usuario          | Punto `foreground` con halo                                                    |
+
+Con Leaflet falta oscurecer la capa de OpenStreetMap (ver
+[Pendientes de decidir](#pendientes-de-decidir)).
+
 ## Pantallas
+
+### Layout de la app
+
+- Sidebar fija de 288 px (`w-72`, `bg-card`) desde `lg`; en celular se abre
+  como cajón con el botón del header. Arriba va el logo y el estado de la red;
+  luego las 6 secciones, con la activa en `bg-primary` (Panel de Administración
+  solo para admin); abajo, "Soporte en Ruta" con el botón de emergencia.
+- Header de 64 px pegado arriba: campus, búsqueda (`Ctrl K`), unidades en
+  servicio, campana con el centro de notificaciones (S3-08) y usuario.
+- En celular (menos de 768 px), los estudiantes tienen una barra inferior con
+  Mapa, Rutas, Horarios, Alertas y Perfil (S4-07).
+- Las páginas de administración comparten una barra de pestañas: Unidades,
+  Conductores, Mantenimiento, Rutas y paradas, Horarios de salida, Incidencias
+  y Reportes de aforo.
 
 ### Login y registro
 
@@ -316,13 +390,13 @@ color de la parada, tarjeta en `surface-container-low` (la siguiente en
   implementarla están en el comentario al inicio de
   [login.html](mockups/login.html).
 
-### Mapa de la ruta (estudiante)
+### Dashboard en Vivo
 
-- Escritorio: panel blanco de 390 px a la izquierda y el mapa en el resto.
-- Celular: el mapa arriba (58 % de la altura de la pantalla) y el panel debajo.
-- Sobre el mapa: el selector de capas arriba a la derecha y la tarjeta de
-  "Próxima parada" abajo, con el nombre de la parada, los minutos que faltan y
-  la barra de avance de la ruta.
+- Escritorio: lista de rutas de 400 px a la izquierda y el mapa en el resto.
+- Celular: el mapa arriba (55 % de la altura de la pantalla) y la lista debajo
+  como hoja deslizable, con la llegada de tu unidad primero.
+- Sobre el mapa: Mapa / Satélite y capas arriba a la derecha, zoom y "mi
+  ubicación" abajo, y desde 1280 px la tarjeta de llegada abajo a la izquierda.
 
 ## Tema oscuro
 
@@ -347,21 +421,21 @@ Lo único que sigue en claro es el demo del mapa; falta pasarlo a oscuro (ver
 El PR #7 pasó la paleta oscura de los mockups a `app.css` con nombres en
 español:
 
-| Variable de `app.css` | Token del mockup       | Hex       |
-| --------------------- | ---------------------- | --------- |
-| `--fondo-principal`   | `primary`              | `#020e24` |
-| `--fondo-paneles`     | `primary-container`    | `#17243a` |
-| `--bordes`            | `night-border`         | `#2f3e57` |
-| `--boton-principal`   | `secondary-fixed`      | `#fddeb1` |
-| `--boton-hover`       | `secondary-fixed-dim`  | `#e0c297` |
-| `--focus`             | `focus-ring`           | `#b69b72` |
-| `--verde-tiempo-real` | `tertiary-fixed-dim`   | `#91db2a` |
-| `--verde-rutas`       | Ninguno (nuevo)        | `#a3e635` |
-| `--texto-principal`   | `on-primary`           | `#ffffff` |
-| `--texto-formularios` | `inverse-on-surface`   | `#ecf1f9` |
-| `--texto-secundario`  | `primary-fixed-dim`    | `#bac7e4` |
-| `--placeholder`       | `on-primary-container` | `#7e8ba6` |
-| `--error`             | `error-soft`           | `#ffb4ab` |
+| Variable de `app.css` | Token del mockup        | Hex       |
+| --------------------- | ----------------------- | --------- |
+| `--fondo-principal`   | `primary`               | `#020e24` |
+| `--fondo-paneles`     | `primary-container`     | `#17243a` |
+| `--bordes`            | `night-border`          | `#2f3e57` |
+| `--boton-principal`   | `secondary-fixed`       | `#fddeb1` |
+| `--boton-hover`       | `secondary-fixed-dim`   | `#e0c297` |
+| `--focus`             | `focus-ring`            | `#b69b72` |
+| `--verde-tiempo-real` | `tertiary-fixed-dim`    | `#91db2a` |
+| `--verde-rutas`       | Línea del mapa (Stitch) | `#a3e635` |
+| `--texto-principal`   | `on-primary`            | `#ffffff` |
+| `--texto-formularios` | `inverse-on-surface`    | `#ecf1f9` |
+| `--texto-secundario`  | `primary-fixed-dim`     | `#bac7e4` |
+| `--placeholder`       | `on-primary-container`  | `#7e8ba6` |
+| `--error`             | `error-soft`            | `#ffb4ab` |
 
 - En las variables de shadcn, `--primary` es el dorado del botón (`#fddeb1`),
   `--background` el azul nocturno y `--card` el azul institucional.
@@ -369,26 +443,33 @@ español:
   (por ejemplo `bg-primary-hover` o `text-live`).
 - `--radius: 0.75rem`: `rounded-lg` da 12 px, `rounded-md` 10 px y `rounded-sm`
   8 px. En login y registro, campos y botones se fijan en 8 px.
-- Ojo al copiar clases de los mockups: los nombres no son los mismos que en la
-  app. `bg-primary` del mockup es `bg-background`, `bg-primary-container` es
-  `bg-card` y el botón dorado (`bg-secondary-fixed`) es `bg-primary`.
+- Ojo al copiar clases de login y registro: los nombres no son los mismos que
+  en la app. `bg-primary` de esos mockups es `bg-background`,
+  `bg-primary-container` es `bg-card` y el botón dorado
+  (`bg-secondary-fixed`) es `bg-primary`. Los mockups nuevos ya usan los nombres
+  de la app.
+- **Propuesta:** agregar `--color-warning: #fbbf24` (Demorado, 9.3:1 sobre
+  `card`) y `--color-gold: #b69b72` (insignias, siguiente parada y ocupación
+  media). Los mockups nuevos ya los usan como `warning` y `gold`.
 
 ## Pendientes de decidir
 
-1. **Mapa y lista de paradas en oscuro.** El demo es claro y la capa de
-   [mapas.md](mapas.md) está filtrada para verse clara. Falta decidir cómo se ven
-   el mapa, el panel y los marcadores sobre fondo oscuro.
+1. **Capa del mapa en oscuro.** Los mockups muestran cómo se ve el mapa en
+   oscuro (ver [En oscuro](#en-oscuro)), pero la capa de [mapas.md](mapas.md)
+   está filtrada para verse clara. Falta elegir el filtro o la capa oscura en
+   Leaflet (Sosa).
 2. **Dorado y verde.** El texto del DESIGN.md original usaba los colores del
    logo (`#B69B72`, `#84CC16`) y los tokens de los mockups usan otros
    (`#715b37`, `#91db2a`). Aquí se conservan todos, cada uno con su uso: el del
    logo para rellenos y bordes, y el más oscuro o más claro para texto, según el
-   fondo, por contraste. Además, `app.css` agregó un verde para las rutas
-   (`#a3e635`) que no viene en los mockups ni en el logo; la línea de la ruta
-   del demo usa `#84cc16`. Falta que el equipo lo confirme.
-3. **Esquinas.** Los mockups usan 4, 8 y 12 px (decisión 5 del README) y
-   `app.css` quedó en 8, 10 y 12 px. El DESIGN.md original traía otras dos
-   escalas que no se conservaron.
-4. **Íconos.** Material Symbols o `lucide-react` (decisión 3 del README).
-5. **Pantallas sin mockup.** Panel de administración, sidebar, tablas y
-   gráficas. Se diseñan con la paleta oscura de `app.css` y, cuando haya mockup,
-   se agregan aquí.
+   fondo, por contraste. Además, la línea del mapa de los mockups de Stitch usa
+   `#a3e635`, que `app.css` tomó como `--verde-rutas`, y el demo usa
+   `#84cc16`. Falta que el equipo lo confirme.
+3. **Esquinas.** Login y registro usan 4, 8 y 12 px (decisión 5 del README) y
+   `app.css` quedó en 8, 10 y 12 px, que es lo que usan los mockups nuevos. El
+   DESIGN.md original trae otras dos escalas: 4, 8, 12, 16 y 24 px en los
+   tokens y 8, 12 y 16 px en el texto.
+4. **Íconos.** Los mockups nuevos ya usan lucide; falta confirmarlo en la
+   decisión 3 del README.
+5. **Tokens nuevos.** Agregar `warning` y `gold` a `app.css` (ver
+   [Tokens en app.css](#tokens-en-appcss)).

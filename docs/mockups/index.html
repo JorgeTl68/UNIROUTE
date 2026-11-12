@@ -1,0 +1,438 @@
+<!doctype html>
+<!--
+  Índice de los mockups de UniRoute. Abre cada pantalla y dice para qué tarea
+  es y quién la hace. El sistema de diseño está en docs/DESIGN.md.
+-->
+<html lang="es">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="color-scheme" content="dark" />
+        <title>UniRoute · Mockups</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+            rel="stylesheet"
+        />
+        <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+        <script src="assets/uniroute.js"></script>
+        <script src="https://unpkg.com/lucide@0.475.0/dist/umd/lucide.min.js"></script>
+    </head>
+    <body class="bg-background text-foreground">
+        <main class="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+            <div class="flex items-center gap-3">
+                <img
+                    src="../../public/branding/isotipo-oscuro.svg"
+                    alt=""
+                    class="size-11"
+                />
+                <div>
+                    <h1 class="text-2xl font-bold tracking-tight sm:text-3xl">
+                        Mockups de UniRoute
+                    </h1>
+                    <p class="text-sm text-muted-foreground">
+                        Todas las pantallas, en el tema oscuro de la app. El
+                        sistema de diseño está en
+                        <span class="font-semibold text-foreground"
+                            >docs/DESIGN.md</span
+                        >.
+                    </p>
+                </div>
+            </div>
+
+            <div
+                class="mt-6 grid gap-3 rounded-2xl border border-border bg-card p-5 text-sm text-muted-foreground md:grid-cols-3"
+            >
+                <p class="flex gap-2">
+                    <i
+                        data-lucide="copy"
+                        class="mt-0.5 size-4 shrink-0 text-primary"
+                    ></i
+                    ><span
+                        ><span class="font-semibold text-foreground"
+                            >Las clases se copian tal cual.</span
+                        >
+                        Usan los mismos nombres de app.css (bg-card, bg-primary,
+                        text-live…).</span
+                    >
+                </p>
+                <p class="flex gap-2">
+                    <i
+                        data-lucide="shapes"
+                        class="mt-0.5 size-4 shrink-0 text-primary"
+                    ></i
+                    ><span
+                        ><span class="font-semibold text-foreground"
+                            >Íconos de lucide.</span
+                        >
+                        El nombre de cada ícono es el del componente de
+                        lucide-react (bus-front → BusFront).</span
+                    >
+                </p>
+                <p class="flex gap-2">
+                    <i
+                        data-lucide="database"
+                        class="mt-0.5 size-4 shrink-0 text-primary"
+                    ></i
+                    ><span
+                        ><span class="font-semibold text-foreground"
+                            >Los datos son de ejemplo.</span
+                        >
+                        En la app todo sale de la base de datos; cada mockup
+                        trae sus notas al inicio del archivo.</span
+                    >
+                </p>
+            </div>
+
+            <h2 class="mt-10 text-lg font-bold">Estudiante</h2>
+            <ul class="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                <li>
+                    <a
+                        href="dashboard.html"
+                        class="flex h-full flex-col rounded-xl border border-border bg-card p-4 hover:border-primary/60"
+                        ><span
+                            class="flex items-center gap-2 font-semibold text-white"
+                            ><i
+                                data-lucide="layout-grid"
+                                class="size-4 text-primary"
+                            ></i
+                            >Dashboard en Vivo</span
+                        ><span class="mt-1 text-xs text-muted-foreground"
+                            >S2-01 Sosa · S4-07 Andrés · S4-08 Sosa</span
+                        ></a
+                    >
+                </li>
+                <li>
+                    <a
+                        href="detalle-ruta.html"
+                        class="flex h-full flex-col rounded-xl border border-border bg-card p-4 hover:border-primary/60"
+                        ><span
+                            class="flex items-center gap-2 font-semibold text-white"
+                            ><i
+                                data-lucide="route"
+                                class="size-4 text-primary"
+                            ></i
+                            >Detalle de Rutas y Paradas</span
+                        ><span class="mt-1 text-xs text-muted-foreground"
+                            >S2-02 · S3-03 · S4-02 Kiroz</span
+                        ></a
+                    >
+                </li>
+                <li>
+                    <a
+                        href="horarios.html"
+                        class="flex h-full flex-col rounded-xl border border-border bg-card p-4 hover:border-primary/60"
+                        ><span
+                            class="flex items-center gap-2 font-semibold text-white"
+                            ><i
+                                data-lucide="clock-3"
+                                class="size-4 text-primary"
+                            ></i
+                            >Horarios e Itinerarios</span
+                        ><span class="mt-1 text-xs text-muted-foreground"
+                            >S3-04 Kiroz</span
+                        ></a
+                    >
+                </li>
+                <li>
+                    <a
+                        href="notificaciones.html"
+                        class="flex h-full flex-col rounded-xl border border-border bg-card p-4 hover:border-primary/60"
+                        ><span
+                            class="flex items-center gap-2 font-semibold text-white"
+                            ><i
+                                data-lucide="bell-ring"
+                                class="size-4 text-primary"
+                            ></i
+                            >Mis Notificaciones y Alertas</span
+                        ><span class="mt-1 text-xs text-muted-foreground"
+                            >S3-08 Andrés · S4-01 Santana · S4-02 Kiroz</span
+                        ></a
+                    >
+                </li>
+                <li>
+                    <a
+                        href="perfil.html"
+                        class="flex h-full flex-col rounded-xl border border-border bg-card p-4 hover:border-primary/60"
+                        ><span
+                            class="flex items-center gap-2 font-semibold text-white"
+                            ><i
+                                data-lucide="settings"
+                                class="size-4 text-primary"
+                            ></i
+                            >Perfil y Ajustes</span
+                        ><span class="mt-1 text-xs text-muted-foreground"
+                            >S2-08 Andrés</span
+                        ></a
+                    >
+                </li>
+                <li>
+                    <a
+                        href="emergencia.html"
+                        class="flex h-full flex-col rounded-xl border border-border bg-card p-4 hover:border-primary/60"
+                        ><span
+                            class="flex items-center gap-2 font-semibold text-white"
+                            ><i
+                                data-lucide="siren"
+                                class="size-4 text-destructive"
+                            ></i
+                            >Reportar emergencia</span
+                        ><span class="mt-1 text-xs text-muted-foreground"
+                            >S4-06 Jorge · todos los roles</span
+                        ></a
+                    >
+                </li>
+            </ul>
+
+            <h2 class="mt-10 text-lg font-bold">Inicio y acceso</h2>
+            <ul class="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                <li>
+                    <a
+                        href="inicio.html"
+                        class="flex h-full flex-col rounded-xl border border-border bg-card p-4 hover:border-primary/60"
+                        ><span
+                            class="flex items-center gap-2 font-semibold text-white"
+                            ><i
+                                data-lucide="house"
+                                class="size-4 text-primary"
+                            ></i
+                            >Página de inicio</span
+                        ><span class="mt-1 text-xs text-muted-foreground"
+                            >S2-09 Andrés</span
+                        ></a
+                    >
+                </li>
+                <li>
+                    <a
+                        href="login.html"
+                        class="flex h-full flex-col rounded-xl border border-border bg-card p-4 hover:border-primary/60"
+                        ><span
+                            class="flex items-center gap-2 font-semibold text-white"
+                            ><i
+                                data-lucide="log-in"
+                                class="size-4 text-primary"
+                            ></i
+                            >Iniciar sesión</span
+                        ><span class="mt-1 text-xs text-muted-foreground"
+                            >S2-08 Andrés · íconos de Material Symbols</span
+                        ></a
+                    >
+                </li>
+                <li>
+                    <a
+                        href="registro.html"
+                        class="flex h-full flex-col rounded-xl border border-border bg-card p-4 hover:border-primary/60"
+                        ><span
+                            class="flex items-center gap-2 font-semibold text-white"
+                            ><i
+                                data-lucide="user-plus"
+                                class="size-4 text-primary"
+                            ></i
+                            >Crear cuenta</span
+                        ><span class="mt-1 text-xs text-muted-foreground"
+                            >S2-08 Andrés · S2-11 · íconos de Material
+                            Symbols</span
+                        ></a
+                    >
+                </li>
+                <li>
+                    <a
+                        href="recuperar-contrasena.html"
+                        class="flex h-full flex-col rounded-xl border border-border bg-card p-4 hover:border-primary/60"
+                        ><span
+                            class="flex items-center gap-2 font-semibold text-white"
+                            ><i
+                                data-lucide="key-round"
+                                class="size-4 text-primary"
+                            ></i
+                            >Recuperar contraseña y verificación</span
+                        ><span class="mt-1 text-xs text-muted-foreground"
+                            >S2-08 Andrés · 5 pantallas del starter</span
+                        ></a
+                    >
+                </li>
+            </ul>
+
+            <h2 class="mt-10 text-lg font-bold">Conductor</h2>
+            <ul class="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                <li>
+                    <a
+                        href="conductor.html"
+                        class="flex h-full flex-col rounded-xl border border-border bg-card p-4 hover:border-primary/60"
+                        ><span
+                            class="flex items-center gap-2 font-semibold text-white"
+                            ><i
+                                data-lucide="smartphone"
+                                class="size-4 text-primary"
+                            ></i
+                            >Pantalla de conductor</span
+                        ><span class="mt-1 text-xs text-muted-foreground"
+                            >S3-07 Jorge · para celular</span
+                        ></a
+                    >
+                </li>
+            </ul>
+
+            <h2 class="mt-10 text-lg font-bold">Administración</h2>
+            <ul class="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                <li>
+                    <a
+                        href="admin-flota.html"
+                        class="flex h-full flex-col rounded-xl border border-border bg-card p-4 hover:border-primary/60"
+                        ><span
+                            class="flex items-center gap-2 font-semibold text-white"
+                            ><i
+                                data-lucide="bus-front"
+                                class="size-4 text-primary"
+                            ></i
+                            >Consola de flota</span
+                        ><span class="mt-1 text-xs text-muted-foreground"
+                            >S2-03 Adaia · ya en main (PR #7)</span
+                        ></a
+                    >
+                </li>
+                <li>
+                    <a
+                        href="admin-unidad-nueva.html"
+                        class="flex h-full flex-col rounded-xl border border-border bg-card p-4 hover:border-primary/60"
+                        ><span
+                            class="flex items-center gap-2 font-semibold text-white"
+                            ><i
+                                data-lucide="circle-plus"
+                                class="size-4 text-primary"
+                            ></i
+                            >Registrar unidad</span
+                        ><span class="mt-1 text-xs text-muted-foreground"
+                            >S2-04 Adaia · ya en main (PR #7)</span
+                        ></a
+                    >
+                </li>
+                <li>
+                    <a
+                        href="admin-conductores.html"
+                        class="flex h-full flex-col rounded-xl border border-border bg-card p-4 hover:border-primary/60"
+                        ><span
+                            class="flex items-center gap-2 font-semibold text-white"
+                            ><i
+                                data-lucide="id-card"
+                                class="size-4 text-primary"
+                            ></i
+                            >Conductores</span
+                        ><span class="mt-1 text-xs text-muted-foreground"
+                            >S3-05 Adaia · ya en main (PR #7)</span
+                        ></a
+                    >
+                </li>
+                <li>
+                    <a
+                        href="admin-mantenimiento.html"
+                        class="flex h-full flex-col rounded-xl border border-border bg-card p-4 hover:border-primary/60"
+                        ><span
+                            class="flex items-center gap-2 font-semibold text-white"
+                            ><i
+                                data-lucide="wrench"
+                                class="size-4 text-primary"
+                            ></i
+                            >Mantenimiento</span
+                        ><span class="mt-1 text-xs text-muted-foreground"
+                            >S4-03 Adaia · ya en main (PR #7)</span
+                        ></a
+                    >
+                </li>
+                <li>
+                    <a
+                        href="admin-rutas.html"
+                        class="flex h-full flex-col rounded-xl border border-border bg-card p-4 hover:border-primary/60"
+                        ><span
+                            class="flex items-center gap-2 font-semibold text-white"
+                            ><i
+                                data-lucide="route"
+                                class="size-4 text-primary"
+                            ></i
+                            >Rutas y paradas</span
+                        ><span class="mt-1 text-xs text-muted-foreground"
+                            >S1-13 Enrique</span
+                        ></a
+                    >
+                </li>
+                <li>
+                    <a
+                        href="admin-ruta-nueva.html"
+                        class="flex h-full flex-col rounded-xl border border-border bg-card p-4 hover:border-primary/60"
+                        ><span
+                            class="flex items-center gap-2 font-semibold text-white"
+                            ><i
+                                data-lucide="map-pin-plus"
+                                class="size-4 text-primary"
+                            ></i
+                            >Crear ruta</span
+                        ><span class="mt-1 text-xs text-muted-foreground"
+                            >S2-05 Enrique</span
+                        ></a
+                    >
+                </li>
+                <li>
+                    <a
+                        href="admin-horarios.html"
+                        class="flex h-full flex-col rounded-xl border border-border bg-card p-4 hover:border-primary/60"
+                        ><span
+                            class="flex items-center gap-2 font-semibold text-white"
+                            ><i
+                                data-lucide="calendar-clock"
+                                class="size-4 text-primary"
+                            ></i
+                            >Horarios de salida</span
+                        ><span class="mt-1 text-xs text-muted-foreground"
+                            >S3-06 Enrique</span
+                        ></a
+                    >
+                </li>
+                <li>
+                    <a
+                        href="admin-incidencias.html"
+                        class="flex h-full flex-col rounded-xl border border-border bg-card p-4 hover:border-primary/60"
+                        ><span
+                            class="flex items-center gap-2 font-semibold text-white"
+                            ><i
+                                data-lucide="triangle-alert"
+                                class="size-4 text-primary"
+                            ></i
+                            >Incidencias</span
+                        ><span class="mt-1 text-xs text-muted-foreground"
+                            >S4-04 Enrique</span
+                        ></a
+                    >
+                </li>
+                <li>
+                    <a
+                        href="admin-aforo.html"
+                        class="flex h-full flex-col rounded-xl border border-border bg-card p-4 hover:border-primary/60"
+                        ><span
+                            class="flex items-center gap-2 font-semibold text-white"
+                            ><i
+                                data-lucide="chart-column"
+                                class="size-4 text-primary"
+                            ></i
+                            >Reportes de aforo</span
+                        ><span class="mt-1 text-xs text-muted-foreground"
+                            >S4-05 Enrique</span
+                        ></a
+                    >
+                </li>
+            </ul>
+
+            <p class="mt-10 text-xs text-muted-foreground">
+                Para verlos: desde la carpeta del proyecto,
+                <span class="font-mono text-foreground"
+                    >python -m http.server 8765</span
+                >
+                y abrir
+                <span class="font-mono text-foreground"
+                    >http://localhost:8765/docs/mockups/</span
+                >. También abren con doble clic, pero el logo necesita que
+                exista la carpeta public/branding.
+            </p>
+        </main>
+    </body>
+</html>
