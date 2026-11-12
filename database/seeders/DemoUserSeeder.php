@@ -24,7 +24,7 @@ class DemoUserSeeder extends Seeder
      */
     public function run(): void
     {
-        $campusId = Campus::where('slug', CampusSeeder::CENTRAL)->value('id');
+        $campusId = Campus::where('slug', CampusSeeder::UTC)->value('id');
 
         self::upsert(self::ADMIN_EMAIL, 'Administración UniRoute', UserRole::Admin, ['campus_id' => $campusId]);
 

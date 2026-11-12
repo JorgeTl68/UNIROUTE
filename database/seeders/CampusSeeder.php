@@ -6,26 +6,22 @@ use App\Models\Campus;
 use Illuminate\Database\Seeder;
 
 /**
- * PROVISIONAL: coordenadas aproximadas hasta tener los datos reales de S0-05.
+ * La Universidad Tecnológica de Coahuila, en Av. Industrial Metalúrgica
+ * (Ramos Arizpe). Es el destino de todas las rutas de TECSA.
  */
 class CampusSeeder extends Seeder
 {
-    public const string CENTRAL = 'campus-central-saltillo';
-
-    public const string RAMOS_ARIZPE = 'campus-ramos-arizpe';
+    public const string UTC = 'utc';
 
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        $campuses = [
-            ['slug' => self::CENTRAL, 'name' => 'Campus Central Saltillo', 'latitude' => 25.4262, 'longitude' => -100.9925],
-            ['slug' => self::RAMOS_ARIZPE, 'name' => 'Campus Ramos Arizpe', 'latitude' => 25.5400, 'longitude' => -100.9470],
-        ];
-
-        foreach ($campuses as $campus) {
-            Campus::updateOrCreate(['slug' => $campus['slug']], $campus);
-        }
+        Campus::updateOrCreate(['slug' => self::UTC], [
+            'name' => 'UTC Ramos Arizpe',
+            'latitude' => 25.5576848,
+            'longitude' => -100.9356719,
+        ]);
     }
 }

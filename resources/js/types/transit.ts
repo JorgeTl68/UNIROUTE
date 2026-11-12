@@ -74,7 +74,8 @@ export type TransitRoute = Timestamps & {
     color: string;
     /** Polilínea codificada (precisión 5) que devuelve OSRM. */
     encoded_polyline: string | null;
-    frequency_minutes: number;
+    /** Cada cuánto sale; null si sale una vez por turno. */
+    frequency_minutes: number | null;
     service_starts_at: TimeOfDay;
     service_ends_at: TimeOfDay;
     is_active: boolean;

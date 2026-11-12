@@ -38,6 +38,7 @@ class FleetSeeder extends Seeder
         ['email' => 'laura.rivas@uniroute.test', 'name' => 'Laura Rivas', 'license_number' => 'COA-100202', 'hired_at' => '2021-08-16', 'rating' => 4.7],
         ['email' => 'javier.castillo@uniroute.test', 'name' => 'Javier Castillo', 'license_number' => 'COA-100203', 'hired_at' => '2019-05-06', 'rating' => 4.8],
         ['email' => 'esteban.peralta@uniroute.test', 'name' => 'Esteban Peralta', 'license_number' => 'COA-100204', 'hired_at' => '2023-01-09', 'rating' => 4.6],
+        ['email' => 'rocio.medina@uniroute.test', 'name' => 'Rocío Medina', 'license_number' => 'COA-100205', 'hired_at' => '2022-03-14', 'rating' => 4.8],
     ];
 
     /**

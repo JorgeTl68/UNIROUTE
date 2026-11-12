@@ -24,7 +24,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $description
  * @property string $color
  * @property string|null $encoded_polyline
- * @property int $frequency_minutes
+ * @property int|null $frequency_minutes
  * @property string $service_starts_at
  * @property string $service_ends_at
  * @property bool $is_active

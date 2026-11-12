@@ -167,7 +167,7 @@ class TransitRouteController extends Controller
                 'description' => $validated['description'] ?? null,
                 'color' => $validated['color'],
                 'encoded_polyline' => $preview['encoded_polyline'],
-                'frequency_minutes' => $validated['frequency_minutes'],
+                'frequency_minutes' => $validated['frequency_minutes'] ?? null,
                 'service_starts_at' => $validated['service_starts_at'],
                 'service_ends_at' => $validated['service_ends_at'],
                 'is_active' => true,

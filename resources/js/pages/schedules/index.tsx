@@ -10,7 +10,7 @@ type ScheduleRoute = {
     name: string;
     description: string | null;
     color: string;
-    frequency_minutes: number;
+    frequency_minutes: number | null;
     stops: { id: number; name: string; minutes_from_start: number }[];
     departures: string[];
 };
@@ -202,7 +202,8 @@ export default function Schedules({
                                             {route.name}
                                         </h2>
                                         <p className="text-xs text-muted-foreground">
-                                            Cada {route.frequency_minutes} min ·{' '}
+                                            {route.frequency_minutes !== null &&
+                                                `Cada ${route.frequency_minutes} min · `}
                                             {route.stops.length} paradas ·{' '}
                                             {duration} min de recorrido
                                         </p>

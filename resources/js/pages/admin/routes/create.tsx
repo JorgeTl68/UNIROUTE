@@ -429,14 +429,14 @@ export default function CreateRoute({
                                 <div className="grid gap-4 sm:grid-cols-3">
                                     <div className="grid gap-2">
                                         <Label htmlFor="frequency_minutes">
-                                            Frecuencia
+                                            Frecuencia (opcional)
                                         </Label>
                                         <Input
                                             id="frequency_minutes"
                                             type="number"
                                             min="1"
                                             max="65535"
-                                            required
+                                            placeholder="Por turno"
                                             value={form.data.frequency_minutes}
                                             onChange={(event) =>
                                                 form.setData(
