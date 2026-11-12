@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Settings;
 
+use App\Models\Campus;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -41,6 +42,29 @@ class ProfileUpdateTest extends TestCase
         $this->assertSame('Test User', $user->name);
         $this->assertSame('test@example.com', $user->email);
         $this->assertNull($user->email_verified_at);
+    }
+
+    public function test_campus_and_alarm_preference_can_be_updated()
+    {
+        $user = User::factory()->student()->create(['student_id' => 'A0001']);
+        $campus = Campus::factory()->create();
+
+        $this->actingAs($user)
+            ->patch(route('profile.update'), [
+                'name' => $user->name,
+                'email' => $user->email,
+                'campus_id' => $campus->id,
+                'alarm_minutes_before' => 10,
+                'student_id' => 'B9999',
+            ])
+            ->assertSessionHasNoErrors();
+
+        $user->refresh();
+
+        $this->assertSame($campus->id, $user->campus_id);
+        $this->assertSame(10, $user->alarm_minutes_before);
+        // La matrícula no se cambia desde el perfil.
+        $this->assertSame('A0001', $user->student_id);
     }
 
     public function test_email_is_stored_in_lowercase_so_the_user_can_still_log_in()
