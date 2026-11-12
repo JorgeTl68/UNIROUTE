@@ -45,6 +45,30 @@ class EtaCalculatorTest extends TestCase
         $this->assertTrue($etas[0]['arrives_at']->equalTo($now->addMinutes($expectedFirst)));
     }
 
+    public function test_skips_stops_the_unit_already_passed(): void
+    {
+        $route = $this->routeWithTwoStops();
+
+        // La unidad va a unos 700 m del inicio: ya pasó "Media" (a ~500 m).
+        $etas = app(EtaCalculator::class)->forRoute($route, 25.40, -100.993, 36.0);
+
+        $this->assertCount(1, $etas);
+        $this->assertSame('Final', $etas[0]['stop_name']);
+        $this->assertGreaterThan(0, $etas[0]['eta_minutes']);
+    }
+
+    public function test_keeps_a_stop_the_unit_is_standing_at(): void
+    {
+        $route = $this->routeWithTwoStops();
+
+        // Unos 10 m después de "Media": sigue contando como llegada inmediata.
+        $etas = app(EtaCalculator::class)->forRoute($route, 25.40, -100.9949, 36.0);
+
+        $this->assertCount(2, $etas);
+        $this->assertSame('Media', $etas[0]['stop_name']);
+        $this->assertSame(0, $etas[0]['eta_minutes']);
+    }
+
     public function test_uses_the_trip_schedule_to_compute_the_delay(): void
     {
         $route = $this->routeWithTwoStops();

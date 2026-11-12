@@ -16,9 +16,16 @@ use InvalidArgumentException;
  *
  * La distancia se mide sobre la polilínea y se divide entre la velocidad
  * promedio. El retraso se compara contra la hora programada del viaje.
+ * Las paradas que la unidad ya dejó atrás no se incluyen.
  */
 class EtaCalculator
 {
+    /**
+     * Margen para no descartar una parada en la que la unidad apenas se
+     * detuvo: el GPS puede ubicarla unos metros adelante.
+     */
+    private const float PASSED_STOP_TOLERANCE_METERS = 30.0;
+
     /**
      * @return list<array{stop_id: int, stop_name: string, trip_id: int|null, distance_meters: float, eta_minutes: int, arrives_at: CarbonImmutable, delay_minutes: int}>
      */
@@ -51,6 +58,11 @@ class EtaCalculator
 
         foreach ($route->stops as $stop) {
             $stopAlong = $path->distanceAlongFor($stop->latitude, $stop->longitude);
+
+            if ($stopAlong < $currentAlong - self::PASSED_STOP_TOLERANCE_METERS) {
+                continue;
+            }
+
             $remaining = max(0.0, $stopAlong - $currentAlong);
             $etaMinutes = (int) ceil($remaining / $metersPerMinute);
             $arrivesAt = $now->addMinutes($etaMinutes);
