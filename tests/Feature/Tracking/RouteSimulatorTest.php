@@ -5,6 +5,8 @@ namespace Tests\Feature\Tracking;
 use App\Enums\TripStatus;
 use App\Models\Trip;
 use App\Models\Vehicle;
+use App\Models\VehiclePosition;
+use App\Services\Tracking\PositionRecorder;
 use App\Services\Tracking\RoutePath;
 use App\Services\Tracking\RouteSimulator;
 use App\Services\Tracking\SimulatedUnit;
@@ -95,5 +97,28 @@ class RouteSimulatorTest extends TestCase
         $this->assertSame($trip->vehicle_id, $unit->trip->vehicle_id);
         $this->assertSame($trip->driver_id, $unit->trip->driver_id);
         $this->assertSame(0.0, $unit->progressMeters);
+    }
+
+    public function test_the_simulator_hands_the_unit_over_when_the_driver_sends_real_gps(): void
+    {
+        [$path, $stops] = $this->straightRoute();
+        $trip = Trip::factory()->inProgress()->create();
+        $unit = new SimulatedUnit($trip->vehicle, $trip, $path, 10.0, 50, $stops);
+        $simulator = app(RouteSimulator::class);
+
+        $simulator->tick([$unit], 5);
+        $this->assertSame(1, VehiclePosition::where('trip_id', $trip->id)->count());
+
+        // El celular del conductor manda su ubicación real.
+        $this->travel(2)->seconds();
+        app(PositionRecorder::class)->record($trip->vehicle, 25.43, -101.0, 0.0, 90, $trip);
+
+        $simulator->tick([$unit], 5);
+        $simulator->tick([$unit], 5);
+
+        $this->assertTrue($unit->handedOver);
+        // Solo la posición simulada y la del celular: el simulador ya no la mueve.
+        $this->assertSame(2, VehiclePosition::where('trip_id', $trip->id)->count());
+        $this->assertSame(25.43, (float) $trip->refresh()->latestPosition?->latitude);
     }
 }

@@ -92,8 +92,15 @@ class SimulateFleetCommand extends Command
 
         do {
             $round++;
+            $simulated = array_filter($units, fn (SimulatedUnit $unit): bool => ! $unit->handedOver);
             $recorded = $simulator->tick($units, $interval);
             $this->line(sprintf('[%s] %d posiciones registradas.', now()->format('H:i:s'), $recorded));
+
+            foreach ($simulated as $unit) {
+                if ($unit->handedOver) {
+                    $this->info("{$unit->vehicle->code}: el conductor manda su GPS real; el simulador deja de moverla.");
+                }
+            }
 
             if ($iterations > 0 && $round >= $iterations) {
                 break;

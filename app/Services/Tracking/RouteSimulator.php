@@ -4,11 +4,16 @@ namespace App\Services\Tracking;
 
 use App\Enums\TripStatus;
 use App\Models\Trip;
+use App\Models\VehiclePosition;
 
 /**
  * Hace avanzar las unidades simuladas y registra cada posición. Los pasajeros
  * suben en las paradas y bajan todos en la última; al terminar el recorrido
  * el viaje se cierra y la unidad sale otra vez desde el inicio con uno nuevo.
+ *
+ * Si a un viaje le llegan posiciones que no mandó el simulador (el GPS del
+ * celular del conductor), le cede la unidad: deja de moverla para que no
+ * brinque entre el punto simulado y el real.
  */
 class RouteSimulator
 {
@@ -26,6 +31,16 @@ class RouteSimulator
         $recorded = 0;
 
         foreach ($units as $unit) {
+            if ($unit->handedOver) {
+                continue;
+            }
+
+            if ($this->receivesRealGps($unit)) {
+                $unit->handedOver = true;
+
+                continue;
+            }
+
             $step = $unit->advance($intervalSeconds);
 
             if ($step['finished']) {
@@ -37,7 +52,7 @@ class RouteSimulator
                 $this->boardPassengers($unit, $step['is_last_stop']);
             }
 
-            $this->recorder->record(
+            $position = $this->recorder->record(
                 $unit->vehicle,
                 $step['latitude'],
                 $step['longitude'],
@@ -46,10 +61,26 @@ class RouteSimulator
                 $unit->trip,
             );
 
+            $unit->lastRecordedAt = $position->recorded_at;
             $recorded++;
         }
 
         return $recorded;
+    }
+
+    /**
+     * ¿Llegó al viaje una posición más reciente que la última del simulador?
+     */
+    private function receivesRealGps(SimulatedUnit $unit): bool
+    {
+        if ($unit->trip === null || $unit->lastRecordedAt === null) {
+            return false;
+        }
+
+        return VehiclePosition::query()
+            ->where('trip_id', $unit->trip->id)
+            ->where('recorded_at', '>', $unit->lastRecordedAt)
+            ->exists();
     }
 
     /**

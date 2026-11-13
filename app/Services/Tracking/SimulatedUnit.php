@@ -4,12 +4,14 @@ namespace App\Services\Tracking;
 
 use App\Models\Trip;
 use App\Models\Vehicle;
+use Carbon\CarbonInterface;
 
 /**
  * Unidad simulada: avanza sobre el trazado de su ruta como un camión de
  * verdad. Cambia un poco de velocidad con el tráfico, frena al acercarse a
  * cada parada, se detiene en ella para que suban pasajeros y, al llegar a la
- * última, espera y termina el recorrido.
+ * última, espera y termina el recorrido. Si el conductor empieza a mandar su
+ * GPS real, la unidad deja de simularse (ver RouteSimulator).
  */
 final class SimulatedUnit
 {
@@ -34,6 +36,16 @@ final class SimulatedUnit
     private const float MIN_TRAFFIC = 0.7;
 
     private const float MAX_TRAFFIC = 1.15;
+
+    /**
+     * Hora de la última posición que mandó el simulador.
+     */
+    public ?CarbonInterface $lastRecordedAt = null;
+
+    /**
+     * La unidad ya la mueve el GPS real del conductor.
+     */
+    public bool $handedOver = false;
 
     private float $speed;
 
