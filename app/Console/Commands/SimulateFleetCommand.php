@@ -235,6 +235,8 @@ class SimulateFleetCommand extends Command
     {
         /** @var array<int, RoutePath> $paths */
         $paths = [];
+        /** @var array<int, list<float>> $stops */
+        $stops = [];
 
         foreach ($routes as $route) {
             $path = RoutePath::fromRoute($route);
@@ -246,6 +248,7 @@ class SimulateFleetCommand extends Command
             }
 
             $paths[$route->id] = $path;
+            $stops[$route->id] = $this->stopDistances($route, $path);
         }
 
         if ($paths === []) {
@@ -256,6 +259,7 @@ class SimulateFleetCommand extends Command
         $trips = Trip::query()
             ->inProgress()
             ->whereIn('vehicle_id', $vehicles->pluck('id'))
+            ->with('latestPosition')
             ->get()
             ->keyBy('vehicle_id');
 
@@ -267,18 +271,43 @@ class SimulateFleetCommand extends Command
             $trip = $trips->get($vehicle->id);
 
             if ($trip !== null && isset($paths[$trip->route_id])) {
-                $path = $paths[$trip->route_id];
+                $routeId = $trip->route_id;
             } else {
                 $trip = null;
-                $path = $paths[$routeIds[$index % count($routeIds)]];
+                $routeId = $routeIds[$index % count($routeIds)];
             }
 
+            $path = $paths[$routeId];
             $speed = random_int(600, 1100) / 100;
-            $progress = $path->lengthMeters() * (($index + 0.5) / $unitCount);
+            $position = $trip?->latestPosition;
 
-            $units[] = new SimulatedUnit($vehicle, $trip, $path, $speed, $progress);
+            // Un viaje que ya iba en camino sigue desde su última posición.
+            $progress = $position === null
+                ? $path->lengthMeters() * (($index + 0.5) / $unitCount)
+                : $path->distanceAlongFor($position->latitude, $position->longitude);
+
+            $units[] = new SimulatedUnit($vehicle, $trip, $path, $speed, $progress, $stops[$routeId]);
         }
 
         return $units;
+    }
+
+    /**
+     * Distancia de cada parada sobre el trazado, en el orden de la ruta.
+     *
+     * @return list<float>
+     */
+    private function stopDistances(TransitRoute $route, RoutePath $path): array
+    {
+        $distances = [];
+        $previous = 0.0;
+
+        foreach ($route->stops as $stop) {
+            // Nunca hacia atrás: una parada mal ubicada no regresa a la unidad.
+            $previous = max($previous, $path->distanceAlongFor($stop->latitude, $stop->longitude));
+            $distances[] = $previous;
+        }
+
+        return $distances;
     }
 }
