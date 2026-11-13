@@ -9,9 +9,12 @@ import { useEffect, useRef } from 'react';
 export default function MapillaryViewer({
     imageId,
     accessToken,
+    onError,
 }: {
     imageId: string;
     accessToken: string;
+    /** Mapillary no entregó la foto (token sin permiso, foto borrada…). */
+    onError: () => void;
 }) {
     const container = useRef<HTMLDivElement>(null);
 
@@ -21,13 +24,20 @@ export default function MapillaryViewer({
         const viewer = new Viewer({
             accessToken,
             container: container.current,
-            imageId,
             // Sin portada: la vista abre directo en la foto de la parada.
             component: { cover: false },
         });
+        let active = true;
 
-        return () => viewer.remove();
-    }, [imageId, accessToken]);
+        viewer.moveTo(imageId).catch(() => {
+            if (active) onError();
+        });
+
+        return () => {
+            active = false;
+            viewer.remove();
+        };
+    }, [imageId, accessToken, onError]);
 
     return <div ref={container} className="size-full" />;
 }

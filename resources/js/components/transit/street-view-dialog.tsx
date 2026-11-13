@@ -1,6 +1,6 @@
 import 'leaflet/dist/leaflet.css';
 import { LoaderCircle, Rotate3d } from 'lucide-react';
-import { lazy, Suspense, useEffect, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import { CircleMarker, MapContainer, TileLayer } from 'react-leaflet';
 import {
     Dialog,
@@ -31,7 +31,9 @@ type StreetImage = {
 type Lookup =
     | { status: 'loading' }
     | { status: 'ready'; image: StreetImage; accessToken: string }
-    | { status: 'none' };
+    | { status: 'none' }
+    /** Había foto, pero Mapillary no la entregó al visor. */
+    | { status: 'failed' };
 
 /** Más lejos que esto, se avisa a qué distancia de la parada se tomó la foto. */
 const NEAR_METERS = 25;
@@ -46,6 +48,10 @@ function describe(lookup: Lookup): string {
 
     if (lookup.status === 'none') {
         return 'Esta parada todavía no tiene vista de calle. Así se ve desde el satélite.';
+    }
+
+    if (lookup.status === 'failed') {
+        return 'No se pudo cargar la foto de Mapillary. Así se ve desde el satélite.';
     }
 
     const { captured_at, distance_meters } = lookup.image;
@@ -67,7 +73,7 @@ function Spinner() {
     );
 }
 
-/** Vista satelital de la parada cuando Mapillary no tiene fotos cerca. */
+/** Vista satelital de la parada cuando no hay foto de calle que mostrar. */
 function SatelliteView({ stop }: { stop: StopPoint }) {
     return (
         <MapContainer
@@ -96,6 +102,7 @@ function SatelliteView({ stop }: { stop: StopPoint }) {
 
 function StreetViewContent({ stop }: { stop: StopPoint }) {
     const [lookup, setLookup] = useState<Lookup>({ status: 'loading' });
+    const showFailure = useCallback(() => setLookup({ status: 'failed' }), []);
 
     useEffect(() => {
         const controller = new AbortController();
@@ -147,10 +154,13 @@ function StreetViewContent({ stop }: { stop: StopPoint }) {
                         <MapillaryViewer
                             imageId={lookup.image.id}
                             accessToken={lookup.accessToken}
+                            onError={showFailure}
                         />
                     </Suspense>
                 )}
-                {lookup.status === 'none' && <SatelliteView stop={stop} />}
+                {(lookup.status === 'none' || lookup.status === 'failed') && (
+                    <SatelliteView stop={stop} />
+                )}
             </div>
         </>
     );

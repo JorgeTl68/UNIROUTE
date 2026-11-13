@@ -117,23 +117,29 @@ son de **Mapillary**: abiertas, gratis y sin tarjeta. Leaflet por sí solo no
 tiene vista de calle, y Google Street View dentro de la app pediría llave con
 facturación.
 
-- `App\Services\Transit\StreetView` busca en la API de Mapillary las fotos a
-  menos de 100 m de la parada, toma la más cercana y la guarda una semana en
-  caché. Si no hay ninguna, también se recuerda; si Mapillary no responde, se
-  vuelve a intentar la siguiente vez.
+- `App\Services\Transit\StreetView` lee las fotos de los **mosaicos de
+  cobertura** de Mapillary (zoom 14, capa `image`; los decodifica
+  `App\Services\Transit\VectorTile`), toma la más cercana a menos de 100 m de
+  la parada y la guarda en caché. Si no hay ninguna, también se recuerda; si
+  Mapillary no responde, se vuelve a intentar la siguiente vez. La búsqueda por
+  zona de la API (`/images?bbox=`) regresa vacío, por eso se usan los mosaicos.
+- `php artisan uniroute:vista-calle` renueva todas las paradas; corre cada
+  lunes a las 03:30. Cada mosaico pesa ~2 MB, así que la primera búsqueda de
+  una parada tarda unos segundos; con el comando ya quedan listas.
 - `GET /stops/{stop}/street-view` regresa la foto y el token, porque el visor
   (`mapillary-js`) lo necesita en el navegador. Es el token de cliente,
   pensado para ser público.
 - El visor se carga aparte (`React.lazy`) solo al abrir el modal.
-- Sin fotos cerca, o sin token, el modal muestra la parada en la vista
-  satelital de Esri.
-- Cobertura revisada el 2026-11-12: buena en el centro de Saltillo, en Blvd.
-  Valdez Sánchez hasta Arteaga y en la carretera a Monterrey; frente a la UTC
-  (Av. Industrial Metalúrgica) no hay fotos.
+- Sin fotos cerca, sin token, o si Mapillary no entrega la foto, el modal
+  muestra la parada en la vista satelital de Esri.
+- Cobertura revisada el 2026-11-12: 15 de las 22 paradas tienen foto a menos de
+  6 m. Sin foto: OXXO Santa Elena, UTC, María Mazzarello, Arco de las Lomas,
+  Blvd. del Valle, OXXO Gas 4 de Octubre y Valdez Sánchez y Minería.
 
 Para sacar el token: crear una cuenta en mapillary.com, ir a **Dashboard →
-Developers → Register application** y copiar el **Client Token** (empieza con
-`MLY|`) en `MAPILLARY_TOKEN`.
+Developers → Register application**, marcar el permiso **Read** y copiar el
+**Client Token** (empieza con `MLY|`) en `MAPILLARY_TOKEN`. Sin el permiso
+Read, los mosaicos funcionan pero el visor no recibe las fotos.
 
 ## Variables de entorno
 

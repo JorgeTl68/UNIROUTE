@@ -15,3 +15,7 @@ Schedule::command('uniroute:generar-viajes')
 Schedule::command('uniroute:limpiar-posiciones')
     ->dailyAt('03:00')
     ->withoutOverlapping();
+
+Schedule::command('uniroute:vista-calle')
+    ->weeklyOn(1, '03:30')
+    ->withoutOverlapping();
