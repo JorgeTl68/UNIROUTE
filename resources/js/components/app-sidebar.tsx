@@ -31,7 +31,10 @@ const mainNavItems: NavItem[] = [
 ];
 
 export function AppSidebar() {
-    const { auth } = usePage().props;
+    const page = usePage();
+    const auth = page.props.auth;
+    const currentUrl = page.url;
+
     const navigation =
         auth.user.role === 'admin'
             ? [
@@ -43,6 +46,13 @@ export function AppSidebar() {
                   },
               ]
             : mainNavItems;
+
+    const studentNavItems = [
+        { label: 'Detalle de Rutas y Paradas', href: '/schedules', Icon: Route },
+        { label: 'Horarios e Itinerarios', href: '/schedules', Icon: Clock3 },
+        { label: 'Mis Notificaciones y Alertas', href: '/schedules', Icon: BellRing },
+    ];
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
@@ -73,39 +83,35 @@ export function AppSidebar() {
                     <span className="size-1.5 rounded-full bg-live" />
                     UniRoute · Red universitaria
                 </div>
+
                 <NavMain items={navigation} />
-                <div className="space-y-1 px-3 group-data-[collapsible=icon]:hidden">
-                    {[
-                        { label: 'Detalle de Rutas y Paradas', Icon: Route },
-                        { label: 'Horarios e Itinerarios', Icon: Clock3 },
-                        {
-                            label: 'Mis Notificaciones y Alertas',
-                            Icon: BellRing,
-                        },
-                    ].map(({ label, Icon }) => (
-                        <div
-                            key={label}
-                            aria-disabled="true"
-                            title="Módulo pendiente de integración"
-                            className="flex items-center gap-3 rounded-lg px-3 py-3 text-xs text-placeholder"
+
+                {auth.user.role === 'student' && (
+                    <div className="space-y-1 px-3 group-data-[collapsible=icon]:hidden">
+                        {studentNavItems.map(({ label, href, Icon }) => (
+                            <Link
+                                key={label}
+                                href={href}
+                                className={`flex items-center gap-3 rounded-lg px-3 py-3 text-xs transition-colors ${
+                                    currentUrl.startsWith(href)
+                                        ? 'bg-secondary text-foreground font-medium'
+                                        : 'text-placeholder hover:bg-secondary hover:text-foreground'
+                                }`}
+                            >
+                                <Icon className="size-4 shrink-0" />
+                                <span>{label}</span>
+                            </Link>
+                        ))}
+
+                        <Link
+                            href="/settings/profile"
+                            className="flex items-center gap-3 rounded-lg px-3 py-3 text-xs hover:bg-secondary"
                         >
-                            <Icon className="size-4 shrink-0" />
-                            <span>
-                                {label}
-                                <span className="mt-0.5 block text-[9px]">
-                                    Próximamente
-                                </span>
-                            </span>
-                        </div>
-                    ))}
-                    <Link
-                        href="/settings/profile"
-                        className="flex items-center gap-3 rounded-lg px-3 py-3 text-xs hover:bg-secondary"
-                    >
-                        <Settings className="size-4" />
-                        Perfil y Ajustes
-                    </Link>
-                </div>
+                            <Settings className="size-4" />
+                            Perfil y Ajustes
+                        </Link>
+                    </div>
+                )}
             </SidebarContent>
 
             <SidebarFooter>
@@ -119,6 +125,7 @@ export function AppSidebar() {
                         transporte de tu campus.
                     </p>
                 </div>
+
                 <NavUser />
             </SidebarFooter>
         </Sidebar>

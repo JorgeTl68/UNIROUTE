@@ -92,6 +92,26 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
         return $this->hasMany(Trip::class, 'driver_id');
     }
 
+    /**
+     * Rutas favoritas del estudiante.
+     *
+     * @return HasMany<FavoriteRoute, $this>
+     */
+    public function favoriteRoutes(): HasMany
+    {
+        return $this->hasMany(FavoriteRoute::class);
+    }
+
+    /**
+     * Alertas de llegada configuradas por el estudiante.
+     *
+     * @return HasMany<ArrivalAlarm, $this>
+     */
+    public function arrivalAlarms(): HasMany
+    {
+        return $this->hasMany(ArrivalAlarm::class);
+    }
+
     public function hasRole(UserRole ...$roles): bool
     {
         return in_array($this->role, $roles, true);

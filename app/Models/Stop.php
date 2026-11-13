@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
@@ -47,5 +48,15 @@ class Stop extends Model
         return $this->belongsToMany(TransitRoute::class, 'route_stop', 'stop_id', 'route_id')
             ->withPivot(['position', 'minutes_from_start'])
             ->withTimestamps();
+    }
+
+    /**
+     * Alertas de llegada configuradas para esta parada.
+     *
+     * @return HasMany<ArrivalAlarm, $this>
+     */
+    public function arrivalAlarms(): HasMany
+    {
+        return $this->hasMany(ArrivalAlarm::class);
     }
 }

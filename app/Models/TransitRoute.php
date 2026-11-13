@@ -49,11 +49,6 @@ class TransitRoute extends Model
     /** @use HasFactory<TransitRouteFactory> */
     use HasFactory;
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -101,7 +96,27 @@ class TransitRoute extends Model
     }
 
     /**
-     * @param  Builder<TransitRoute>  $query
+     * Estudiantes que tienen esta ruta como favorita.
+     *
+     * @return HasMany<FavoriteRoute, $this>
+     */
+    public function favoriteRoutes(): HasMany
+    {
+        return $this->hasMany(FavoriteRoute::class, 'route_id');
+    }
+
+    /**
+     * Alertas de llegada asociadas a esta ruta.
+     *
+     * @return HasMany<ArrivalAlarm, $this>
+     */
+    public function arrivalAlarms(): HasMany
+    {
+        return $this->hasMany(ArrivalAlarm::class, 'route_id');
+    }
+
+    /**
+     * @param Builder<TransitRoute> $query
      */
     public function scopeActive(Builder $query): void
     {
@@ -109,7 +124,7 @@ class TransitRoute extends Model
     }
 
     /**
-     * @param  Builder<TransitRoute>  $query
+     * @param Builder<TransitRoute> $query
      */
     public function scopeForCampus(Builder $query, Campus|int $campus): void
     {
