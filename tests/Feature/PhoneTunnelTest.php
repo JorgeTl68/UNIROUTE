@@ -55,8 +55,10 @@ class PhoneTunnelTest extends TestCase
 
     public function test_the_phone_command_stops_if_the_frontend_does_not_build(): void
     {
+        // Sin espacio fijo antes de los argumentos: en Linux cada uno va entre
+        // comillas ('cloudflared' '--version') y en Windows no.
         Process::fake([
-            '*cloudflared* --version' => Process::result('cloudflared version 2026.11.0'),
+            '*cloudflared*--version*' => Process::result('cloudflared version 2026.11.0'),
             'npm run build' => Process::result(errorOutput: 'error', exitCode: 1),
         ]);
 
@@ -70,8 +72,8 @@ class PhoneTunnelTest extends TestCase
     public function test_the_tunnel_command_runs_cloudflared_without_shell_quotes(): void
     {
         Process::fake([
-            '*cloudflared* --version' => Process::result('cloudflared version 2026.11.0'),
-            '*cloudflared* tunnel *' => Process::result('https://demo.trycloudflare.com'),
+            '*cloudflared*--version*' => Process::result('cloudflared version 2026.11.0'),
+            '*cloudflared*tunnel*' => Process::result('https://demo.trycloudflare.com'),
         ]);
 
         $this->artisan('uniroute:tunel')->assertSuccessful();
