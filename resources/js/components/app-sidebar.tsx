@@ -58,40 +58,42 @@ export function AppSidebar() {
 
                 <nav aria-label="Menú principal" className="px-2">
                     <SidebarMenu className="gap-1">
-                        {navigationFor(auth.user.role).map((item) => {
-                            const active = isActiveSection(item, url);
-                            const unread =
-                                item.badge === 'notifications'
-                                    ? (notifications?.unread ?? 0)
-                                    : 0;
+                        {navigationFor(auth.user.role)
+                            .filter((item) => item.sidebar !== false)
+                            .map((item) => {
+                                const active = isActiveSection(item, url);
+                                const unread =
+                                    item.badge === 'notifications'
+                                        ? (notifications?.unread ?? 0)
+                                        : 0;
 
-                            return (
-                                <SidebarMenuItem key={item.href}>
-                                    <SidebarMenuButton
-                                        asChild
-                                        isActive={active}
-                                        tooltip={item.label}
-                                        className="h-10 data-[active=true]:bg-primary data-[active=true]:font-semibold data-[active=true]:text-primary-foreground"
-                                    >
-                                        <Link
-                                            href={item.href}
-                                            prefetch
-                                            aria-current={
-                                                active ? 'page' : undefined
-                                            }
+                                return (
+                                    <SidebarMenuItem key={item.href}>
+                                        <SidebarMenuButton
+                                            asChild
+                                            isActive={active}
+                                            tooltip={item.label}
+                                            className="h-10 data-[active=true]:bg-primary data-[active=true]:font-semibold data-[active=true]:text-primary-foreground"
                                         >
-                                            <item.icon className="size-[18px]" />
-                                            <span>{item.label}</span>
-                                        </Link>
-                                    </SidebarMenuButton>
-                                    {unread > 0 && (
-                                        <SidebarMenuBadge className="top-2.5 rounded-full bg-secondary px-2 text-[11px] font-bold text-foreground peer-data-[active=true]/menu-button:bg-primary-foreground/15 peer-data-[active=true]/menu-button:text-primary-foreground">
-                                            {unread}
-                                        </SidebarMenuBadge>
-                                    )}
-                                </SidebarMenuItem>
-                            );
-                        })}
+                                            <Link
+                                                href={item.href}
+                                                prefetch
+                                                aria-current={
+                                                    active ? 'page' : undefined
+                                                }
+                                            >
+                                                <item.icon className="size-[18px]" />
+                                                <span>{item.label}</span>
+                                            </Link>
+                                        </SidebarMenuButton>
+                                        {unread > 0 && (
+                                            <SidebarMenuBadge className="top-2.5 rounded-full bg-secondary px-2 text-[11px] font-bold text-foreground peer-data-[active=true]/menu-button:bg-primary-foreground/15 peer-data-[active=true]/menu-button:text-primary-foreground">
+                                                {unread}
+                                            </SidebarMenuBadge>
+                                        )}
+                                    </SidebarMenuItem>
+                                );
+                            })}
                     </SidebarMenu>
                 </nav>
             </SidebarContent>
