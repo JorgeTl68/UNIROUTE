@@ -7,6 +7,7 @@ use App\Http\Controllers\Transit\ArrivalAlarmController;
 use App\Http\Controllers\Transit\FavoriteRouteController;
 use App\Http\Controllers\Transit\RouteController;
 use App\Http\Controllers\Transit\ScheduleController;
+use App\Http\Controllers\Transit\StreetViewController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -18,6 +19,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('routes/{transitRoute}/favorite', [FavoriteRouteController::class, 'destroy'])->name('routes.favorite.destroy');
 
     Route::get('schedules', ScheduleController::class)->name('schedules.index');
+
+    Route::get('stops/{stop}/street-view', StreetViewController::class)
+        ->middleware('throttle:30,1')
+        ->name('stops.street-view');
 
     Route::post('arrival-alarms', [ArrivalAlarmController::class, 'store'])->name('arrival-alarms.store');
     Route::delete('arrival-alarms/{arrivalAlarm}', [ArrivalAlarmController::class, 'destroy'])->name('arrival-alarms.destroy');

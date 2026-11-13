@@ -284,10 +284,6 @@
 .transit-popup .leaflet-popup-content p {
     margin: 0;
 }
-/* Leaflet pinta los enlaces de azul; en el globo van en el dorado del tema. */
-.transit-map .transit-popup a {
-    color: var(--dorado);
-}
 /* Con el globo abierto, la etiqueta de la parada se encimaría debajo. */
 .leaflet-map-pane:has(.transit-popup) .leaflet-tooltip-pane {
     display: none;

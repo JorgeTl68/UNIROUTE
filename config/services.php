@@ -28,6 +28,12 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'mapillary' => [
+        // Token de cliente de Mapillary para la vista de calle de las
+        // paradas. Es gratis y público. Ver docs/mapas.md.
+        'token' => env('MAPILLARY_TOKEN'),
+    ],
+
     'osrm' => [
         // Servidor de rutas por calles sobre OpenStreetMap. No usa llave.
         // Ver docs/mapas.md.
