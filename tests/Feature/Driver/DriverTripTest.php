@@ -23,6 +23,8 @@ class DriverTripTest extends TestCase
 
     public function test_the_driver_sees_the_next_trip_of_today(): void
     {
+        // A mediodía, para que "en dos horas" siga siendo hoy.
+        $this->travelTo(today()->setTime(12, 0));
         $driver = User::factory()->driver()->create();
         Trip::factory()->create(['driver_id' => $driver->id, 'scheduled_at' => now()->addHours(2)]);
         $next = Trip::factory()->create(['driver_id' => $driver->id, 'scheduled_at' => now()->addMinutes(5)]);
