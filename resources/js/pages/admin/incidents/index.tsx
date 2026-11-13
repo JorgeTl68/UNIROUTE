@@ -1,3 +1,4 @@
+import { DetourDialog } from '@/components/admin/detour-dialog';
 import { Head, router, useForm } from '@inertiajs/react';
 import {
     CircleCheck,
@@ -36,6 +37,7 @@ import type {
 type Option = { value: string; label: string };
 
 type Props = {
+    routeStops: Record<number, { id: number; name: string }[]>;
     open: Incident[];
     resolved: Incident[];
     routes: Pick<TransitRoute, 'id' | 'number' | 'name' | 'color'>[];
@@ -86,7 +88,13 @@ const roleLabels: Record<UserRole, string> = {
 const fieldClass =
     'w-full rounded-md border border-border bg-background px-3 py-2.5 text-sm text-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/50';
 
-function IncidentCard({ incident }: { incident: Incident }) {
+function IncidentCard({
+    incident,
+    stops,
+}: {
+    incident: Incident;
+    stops: { id: number; name: string }[];
+}) {
     const Icon = typeIcons[incident.type];
     const style = severityStyles[incident.severity];
     const context = [
@@ -145,6 +153,7 @@ function IncidentCard({ incident }: { incident: Incident }) {
                 </a>
             )}
             <div className="mt-4 flex flex-wrap gap-2">
+                <DetourDialog incident={incident} stops={stops} />
                 {incident.route &&
                     (incident.students_notified_at ? (
                         <span className="flex items-center gap-2 rounded-md border border-border px-3 py-2 text-xs font-semibold text-muted-foreground">
@@ -374,6 +383,7 @@ function NewIncidentDialog({
 
 export default function AdminIncidents({
     open,
+    routeStops,
     resolved,
     routes,
     vehicles,
@@ -446,6 +456,11 @@ export default function AdminIncidents({
                             <IncidentCard
                                 key={incident.id}
                                 incident={incident}
+                                stops={
+                                    incident.route_id
+                                        ? (routeStops[incident.route_id] ?? [])
+                                        : []
+                                }
                             />
                         ))
                     )}

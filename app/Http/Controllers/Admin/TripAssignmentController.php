@@ -11,6 +11,7 @@ use App\Models\TransitRoute;
 use App\Models\Trip;
 use App\Models\User;
 use App\Models\Vehicle;
+use Carbon\CarbonImmutable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -49,7 +50,11 @@ class TripAssignmentController extends Controller
                 ->leftJoin('routes as old_route', 'old_route.id', '=', 'changes.previous_route_id')
                 ->leftJoin('routes as new_route', 'new_route.id', '=', 'changes.route_id')
                 ->where('changes.trip_id', $trip->id)->orderByDesc('changes.id')->limit(20)
-                ->get(['changes.id', 'changes.created_at', 'changes.reason', 'actor.name as actor', 'old_driver.name as previous_driver', 'new_driver.name as driver', 'old_vehicle.code as previous_vehicle', 'new_vehicle.code as vehicle', 'old_route.name as previous_route', 'new_route.name as route']),
+                ->get(['changes.id', 'changes.created_at', 'changes.reason', 'actor.name as actor', 'old_driver.name as previous_driver', 'new_driver.name as driver', 'old_vehicle.code as previous_vehicle', 'new_vehicle.code as vehicle', 'old_route.name as previous_route', 'new_route.name as route'])->map(function ($change) {
+                    $change->created_at = CarbonImmutable::parse($change->created_at, (string) config('app.timezone'))->toIso8601String();
+
+                    return $change;
+                }),
         ]);
     }
 

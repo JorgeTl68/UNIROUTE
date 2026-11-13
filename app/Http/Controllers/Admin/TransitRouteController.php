@@ -81,6 +81,7 @@ class TransitRouteController extends Controller
         $preview = session(self::PREVIEW_SESSION_KEY);
 
         return Inertia::render('admin/routes/create', [
+            'createdStop' => session('created_stop_id'),
             'campuses' => Campus::query()->orderBy('name')->orderBy('id')->get(['id', 'name', 'latitude', 'longitude']),
             'stops' => Stop::query()->orderBy('name')->orderBy('id')->get(['id', 'name', 'latitude', 'longitude']),
             'preview' => is_array($preview) ? [

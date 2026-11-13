@@ -6,6 +6,7 @@ use App\Enums\IncidentSeverity;
 use App\Enums\IncidentType;
 use App\Events\IncidentReported;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\ApplyDetourRequest;
 use App\Http\Requests\Admin\StoreIncidentRequest;
 use App\Http\Resources\IncidentResource;
 use App\Models\Incident;
@@ -15,7 +16,9 @@ use App\Models\Vehicle;
 use App\Notifications\TransitNotification;
 use App\Services\Notifications\NotificationDispatcher;
 use App\Services\Realtime\SafeBroadcaster;
+use App\Services\Tracking\RouteDetourManager;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -37,7 +40,7 @@ class IncidentController extends Controller
 
         $open = Incident::query()
             ->open()
-            ->with(['route', 'vehicle', 'reporter'])
+            ->with(['route', 'vehicle', 'reporter', 'detour'])
             ->latest()
             ->get()
             ->sortByDesc(fn (Incident $incident): int => $incident->severity->rank())
@@ -45,6 +48,7 @@ class IncidentController extends Controller
 
         return Inertia::render('admin/incidents/index', [
             'open' => IncidentResource::collection($open),
+            'routeStops' => TransitRoute::with('stops')->get()->mapWithKeys(fn (TransitRoute $route) => [$route->id => $route->stops->map(fn ($stop) => ['id' => $stop->id, 'name' => $stop->name])->values()]),
             'resolved' => IncidentResource::collection(
                 Incident::query()
                     ->whereNotNull('resolved_at')
@@ -110,12 +114,26 @@ class IncidentController extends Controller
         return back();
     }
 
-    public function resolve(Incident $incident): RedirectResponse
+    public function resolve(Request $request, Incident $incident, RouteDetourManager $detours, SafeBroadcaster $broadcaster): RedirectResponse
     {
         Gate::authorize('update', $incident);
 
-        $incident->update(['resolved_at' => now()]);
+        $detours->resolve($incident, $request->user()->id);
+        $incident->refresh()->load('route');
+        if ($incident->route !== null) {
+            $broadcaster->dispatch(new IncidentReported($incident, $incident->route->campus_id));
+        }
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Incidencia marcada como resuelta.']);
+
+        return back();
+    }
+
+    public function detour(ApplyDetourRequest $request, Incident $incident, RouteDetourManager $detours, SafeBroadcaster $broadcaster): RedirectResponse
+    {
+        $detours->apply($incident, array_values(array_map('intval', $request->validated('skipped_stop_ids'))), $request->user()->id);
+        $incident->refresh()->load('route');
+        $broadcaster->dispatch(new IncidentReported($incident, $incident->route->campus_id));
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Desvío aplicado. Las paradas y el trazado se restaurarán al resolver la incidencia.']);
 
         return back();
     }

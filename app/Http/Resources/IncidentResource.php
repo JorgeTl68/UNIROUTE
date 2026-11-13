@@ -22,6 +22,7 @@ class IncidentResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'detour' => $this->whenLoaded('detour', fn (): ?array => $this->detour === null ? null : ['active' => $this->detour->restored_at === null, 'skipped_stop_ids' => $this->detour->skipped_stop_ids, 'restored_at' => $this->detour->restored_at]),
             'type' => $this->type,
             'type_label' => $this->type->label(),
             'severity' => $this->severity,
@@ -36,7 +37,7 @@ class IncidentResource extends JsonResource
             'resolved_at' => $this->resolved_at,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            'route' => $this->whenLoaded('route', fn (): array => [
+            'route' => $this->whenLoaded('route', fn (): ?array => $this->route === null ? null : [
                 'id' => $this->route->id,
                 'number' => $this->route->number,
                 'name' => $this->route->name,

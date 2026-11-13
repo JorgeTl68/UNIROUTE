@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\TripStatus;
 use App\Enums\VehicleAmenity;
 use App\Enums\VehicleStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreVehicleRequest;
+use App\Http\Resources\IncidentResource;
+use App\Models\Incident;
 use App\Models\Trip;
 use App\Models\Vehicle;
 use Illuminate\Http\RedirectResponse;
@@ -28,7 +31,17 @@ class VehicleController extends Controller
         $status = $validated['status'] ?? null;
         $search = $validated['search'] ?? null;
 
+        $todayTrips = Trip::query()->onDate(now())->where('status', '!=', TripStatus::Cancelled)->with('vehicle')->get();
+        $started = $todayTrips->filter(fn (Trip $trip) => $trip->started_at !== null);
+        $punctual = $started->filter(fn (Trip $trip) => abs($trip->started_at->getTimestamp() - $trip->scheduled_at->getTimestamp()) <= 120)->count();
+        $measured = $started->filter(fn (Trip $trip) => $trip->vehicle !== null && $trip->vehicle->capacity > 0);
+        $capacity = $measured->sum(fn (Trip $trip) => $trip->vehicle->capacity);
+        $occupancy = $measured->sum(fn (Trip $trip) => min($trip->occupancy, $trip->vehicle->capacity));
+        $incident = Incident::query()->open()->with(['route', 'vehicle'])->latest()->orderByDesc('id')->get()
+            ->sortByDesc(fn (Incident $incident) => $incident->severity->rank())->first();
+
         return Inertia::render('admin/fleet/index', [
+            'alert' => $incident === null ? null : IncidentResource::make($incident),
             'operations' => [
                 'departures' => Trip::query()->upcoming()->with(['driver', 'route', 'vehicle'])->limit(3)->get(),
                 'hourly' => Trip::query()->onDate(now())->get(['scheduled_at', 'occupancy'])
@@ -52,6 +65,10 @@ class VehicleController extends Controller
                 'label' => $amenity->label(),
             ], VehicleAmenity::cases()),
             'stats' => [
+                'trips_today' => $todayTrips->count(),
+                'started_trips' => $started->count(),
+                'punctuality_percent' => $started->isEmpty() ? null : round($punctual / $started->count() * 100, 1),
+                'average_occupancy_percent' => $capacity === 0 ? null : round($occupancy / $capacity * 100, 1),
                 'total' => Vehicle::count(),
                 'in_service' => Vehicle::where('status', VehicleStatus::InService)->count(),
                 'standby' => Vehicle::where('status', VehicleStatus::Standby)->count(),

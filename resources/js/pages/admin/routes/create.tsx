@@ -1,3 +1,4 @@
+import { MapStopCreator } from '@/components/admin/map-stop-creator';
 import { Head, Link, useForm } from '@inertiajs/react';
 import polyline from '@mapbox/polyline';
 import { useEffect, useMemo, useState } from 'react';
@@ -517,7 +518,7 @@ export default function CreateRoute({
                                         aria-label="Parada existente"
                                     >
                                         <option value="">
-                                            Selecciona una parada
+                                            Selecciona una parada existente
                                         </option>
                                         {stops
                                             .filter(
@@ -705,7 +706,7 @@ export default function CreateRoute({
                                               ),
                                           ) +
                                           ' min'
-                                        : 'La línea recta es una referencia. Calcula el trazado por calles antes de guardar.'}
+                                        : 'Haz clic en el mapa para crear una parada. Calcula el trazado por calles antes de guardar.'}
                                 </div>
                                 <Button
                                     type="button"
@@ -731,6 +732,25 @@ export default function CreateRoute({
                                 className="h-[420px] w-full xl:h-[600px]"
                                 scrollWheelZoom
                             >
+                                <MapStopCreator
+                                    onCreated={(id) => {
+                                        const previous = form.data.stops.at(-1);
+                                        replaceStops([
+                                            ...form.data.stops,
+                                            {
+                                                id,
+                                                minutes_from_start: previous
+                                                    ? String(
+                                                          Number(
+                                                              previous.minutes_from_start ||
+                                                                  0,
+                                                          ) + 5,
+                                                      )
+                                                    : '0',
+                                            },
+                                        ]);
+                                    }}
+                                />
                                 <TileLayer
                                     attribution="© OpenStreetMap contributors"
                                     url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"

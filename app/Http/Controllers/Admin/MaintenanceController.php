@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\CompleteMaintenanceRequest;
 use App\Http\Requests\Admin\StoreMaintenanceRequest;
 use App\Models\Vehicle;
+use Carbon\CarbonImmutable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -31,7 +32,7 @@ class MaintenanceController extends Controller
                 ->join('vehicles', 'vehicles.id', '=', 'records.vehicle_id')
                 ->when($filters['state'] ?? null, fn ($query, $state) => $state === 'open' ? $query->whereNull('records.completed_at') : $query->whereNotNull('records.completed_at'))
                 ->when($filters['vehicle_id'] ?? null, fn ($query, $id) => $query->where('records.vehicle_id', $id))
-                ->orderByDesc('records.id')->select(['records.*', 'vehicles.code', 'vehicles.plate'])->paginate(10)->withQueryString(),
+                ->orderByDesc('records.id')->select(['records.*', 'vehicles.code', 'vehicles.plate'])->paginate(10)->withQueryString()->through(fn ($record) => $this->withIsoDates($record)),
             'filters' => ['state' => $filters['state'] ?? '', 'vehicle_id' => $filters['vehicle_id'] ?? ''],
             'vehicles' => Vehicle::orderBy('code')->get(['id', 'code', 'plate']),
             'stats' => [
@@ -83,7 +84,7 @@ class MaintenanceController extends Controller
         abort_if($entry === null, 404);
 
         return Inertia::render('admin/fleet/maintenance/show', [
-            'record' => $entry,
+            'record' => $this->withIsoDates($entry),
             'scheduledTrips' => Vehicle::query()->whereKey($entry->vehicle_id)->firstOrFail()->trips()->upcoming()->count(),
         ]);
     }
@@ -112,5 +113,16 @@ class MaintenanceController extends Controller
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Mantenimiento cerrado. La unidad quedó en espera, disponible para asignación.']);
 
         return to_route('admin.maintenance.show', $record);
+    }
+
+    private function withIsoDates(object $record): object
+    {
+        foreach (['created_at', 'updated_at', 'completed_at'] as $field) {
+            if (isset($record->{$field})) {
+                $record->{$field} = CarbonImmutable::parse($record->{$field}, (string) config('app.timezone'))->toIso8601String();
+            }
+        }
+
+        return $record;
     }
 }
