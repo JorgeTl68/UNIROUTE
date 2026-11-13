@@ -20,6 +20,8 @@ export type AppNavItem = {
     short?: string;
     roles?: UserRole[];
     badge?: 'notifications';
+    /** false: no va en la barra lateral (está en el menú de la cuenta). */
+    sidebar?: false;
 };
 
 /** Las secciones de la app (mockup: UR.nav en assets/uniroute.js). */
@@ -73,11 +75,14 @@ export const appNavigation: AppNavItem[] = [
         roles: ['admin'],
     },
     {
+        // En escritorio está en el menú de la cuenta, junto a "Cerrar sesión";
+        // en celular sigue en la barra inferior.
         label: 'Perfil y Ajustes',
         href: '/settings/profile',
         icon: Settings,
         match: '/settings',
         short: 'Perfil',
+        sidebar: false,
     },
 ];
 

@@ -42,8 +42,9 @@ Cómo están hechos:
   Datos grandes (hora de llegada, minutos) y textos cortos.
 - Azul nocturno como base, dorado champán como acento de marca y verde
   señalización para lo que está en vivo o ya pasó.
-- La app va en oscuro, con la paleta de login y registro, y cada quien puede
-  cambiarla a claro (ver [Temas claro y oscuro](#temas-claro-y-oscuro)).
+- La app va en blanco con detalles azules, dorados y verdes; la bienvenida, el
+  login y el registro van en oscuro, y cada quien puede pasar toda la app a
+  oscuro (ver [Temas claro y oscuro](#temas-claro-y-oscuro)).
 
 ## Color
 
@@ -400,10 +401,11 @@ Con Leaflet falta oscurecer la capa de OpenStreetMap (ver
 
 ## Temas claro y oscuro
 
-El oscuro, con la paleta de login y registro, es el predeterminado (decisión 6
-del README, 2026-11-11). Desde el 2026-11-12 también hay tema claro: cada quien
-elige **Oscuro**, **Claro** o **Como el sistema** en el menú de su cuenta (y en
-el de Modo conductor).
+Desde el 2026-11-12 la app abre en **claro** (decisión 6 del README) y el
+inicio —bienvenida, login, registro y las demás pantallas de cuenta— va siempre
+en **oscuro**, con la paleta de login y registro. Cada quien puede elegir
+**Oscuro**, **Claro** o **Como el sistema** en el menú de su cuenta (y en el de
+Modo conductor).
 
 - En `app.css`, `:root` lleva el tema claro y `.dark` el oscuro. La preferencia
   se guarda en la cookie `appearance` y `app.blade.php` pone la clase `.dark`
@@ -421,8 +423,9 @@ el de Modo conductor).
   `text-on-accent`: azul nocturno en oscuro y blanco en claro.
 - El mapa usa la capa de OpenStreetMap en gris en claro y oscurecida en oscuro
   (clase `osm-tiles`).
-- El panel de marca del login y la ilustración de bienvenida se quedan en
-  oscuro en los dos temas: llevan la clase `dark`.
+- La bienvenida (`welcome.tsx`) y los layouts de cuenta (`auth-transit-layout`
+  y `auth-simple-layout`) llevan la clase `dark`, así que se quedan en oscuro
+  en los dos temas.
 
 ## Movimiento
 
