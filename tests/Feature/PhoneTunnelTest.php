@@ -66,4 +66,28 @@ class PhoneTunnelTest extends TestCase
 
         Process::assertRan(fn (PendingProcess $process) => $process->command === 'npm run build');
     }
+
+    public function test_the_tunnel_command_runs_cloudflared_without_shell_quotes(): void
+    {
+        Process::fake([
+            '*cloudflared* --version' => Process::result('cloudflared version 2026.11.0'),
+            '*cloudflared* tunnel *' => Process::result('https://demo.trycloudflare.com'),
+        ]);
+
+        $this->artisan('uniroute:tunel')->assertSuccessful();
+
+        // Como arreglo, sin comillas: así no rompe la línea de php artisan dev.
+        Process::assertRan(fn (PendingProcess $process) => is_array($process->command)
+            && in_array('tunnel', $process->command, true)
+            && in_array('http://127.0.0.1:8000', $process->command, true));
+    }
+
+    public function test_the_tunnel_command_asks_to_install_cloudflared_when_it_is_missing(): void
+    {
+        Process::fake(['*cloudflared*' => Process::result(exitCode: 1)]);
+
+        $this->artisan('uniroute:tunel')
+            ->expectsOutputToContain('winget install --id Cloudflare.cloudflared')
+            ->assertFailed();
+    }
 }

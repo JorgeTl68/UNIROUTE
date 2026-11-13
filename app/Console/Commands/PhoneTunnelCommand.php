@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Support\Cloudflared;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\DevCommands;
 use Illuminate\Support\Facades\Process;
@@ -18,16 +19,9 @@ class PhoneTunnelCommand extends Command
      */
     protected $description = 'Levanta UniRoute con una liga https de Cloudflare para abrirlo en el celular';
 
-    /**
-     * Dirección local de php artisan serve, a la que apunta el túnel.
-     */
-    private const string LOCAL_URL = 'http://127.0.0.1:8000';
-
-    public function handle(): int
+    public function handle(Cloudflared $cloudflared): int
     {
-        $cloudflared = $this->cloudflared();
-
-        if ($cloudflared === null) {
+        if ($cloudflared->binary() === null) {
             $this->error('Falta cloudflared. Instálalo una vez con: winget install --id Cloudflare.cloudflared');
 
             return self::FAILURE;
@@ -52,7 +46,7 @@ class PhoneTunnelCommand extends Command
         }
 
         DevCommands::except('vite');
-        DevCommands::register($cloudflared.' tunnel --url '.self::LOCAL_URL, 'tunel');
+        DevCommands::artisan('uniroute:tunel', 'tunel');
         DevCommands::artisan('uniroute:simular --iniciar', 'simulador');
 
         $this->newLine();
@@ -60,31 +54,5 @@ class PhoneTunnelCommand extends Command
         $this->line('En el celular los camiones se actualizan cada 15 s; en esta máquina, al instante.');
 
         return $this->call('dev');
-    }
-
-    /**
-     * Comando para correr cloudflared, o null si no está instalado. Además del
-     * PATH, busca en su carpeta de Windows: las terminales abiertas antes de
-     * instalarlo (como las de VS Code) no ven el PATH nuevo.
-     */
-    private function cloudflared(): ?string
-    {
-        $candidates = ['cloudflared'];
-
-        foreach (['ProgramFiles(x86)', 'ProgramFiles'] as $variable) {
-            $folder = getenv($variable);
-
-            if (is_string($folder) && $folder !== '') {
-                $candidates[] = '"'.$folder.'\cloudflared\cloudflared.exe"';
-            }
-        }
-
-        foreach ($candidates as $candidate) {
-            if (Process::run($candidate.' --version')->successful()) {
-                return $candidate;
-            }
-        }
-
-        return null;
     }
 }

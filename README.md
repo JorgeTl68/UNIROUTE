@@ -109,7 +109,8 @@ php artisan uniroute:celular
 ```
 
 Compila el frontend, levanta todo sin Vite (el celular no puede llegar a él),
-abre el túnel y arranca el simulador. La liga `https://….trycloudflare.com`
+abre el túnel (`php artisan uniroute:tunel`, que también se puede correr solo)
+y arranca el simulador. La liga `https://….trycloudflare.com`
 aparece en la pestaña **tunel** y cambia cada vez que se abre. En el celular
 los camiones se actualizan cada 15 s; en la computadora, al instante. Laravel
 solo confía en el túnel cuando la petición llega de la misma máquina
