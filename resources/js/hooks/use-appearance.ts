@@ -2,8 +2,8 @@ import { useSyncExternalStore } from 'react';
 
 export type Appearance = 'dark' | 'light' | 'system';
 
-/** UniRoute nació oscura: es el tema de quien no ha elegido otro. */
-const DEFAULT_APPEARANCE: Appearance = 'dark';
+/** Tema de quien no ha elegido otro. Bienvenida y login van siempre en oscuro. */
+const DEFAULT_APPEARANCE: Appearance = 'light';
 
 const COOKIE = 'appearance';
 

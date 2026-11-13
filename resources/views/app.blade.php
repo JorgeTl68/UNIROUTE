@@ -1,8 +1,8 @@
 @php
-    // Tema elegido en el menú de la cuenta (cookie "appearance"); oscuro si no hay.
+    // Tema elegido en el menú de la cuenta (cookie "appearance"); claro si no hay.
     $appearance = in_array(request()->cookie('appearance'), ['dark', 'light', 'system'], true)
         ? request()->cookie('appearance')
-        : 'dark';
+        : 'light';
 @endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" @class(['dark' => $appearance !== 'light'])>

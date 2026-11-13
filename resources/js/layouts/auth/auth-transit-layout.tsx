@@ -9,8 +9,8 @@ export default function AuthTransitLayout({
     description,
 }: AuthLayoutProps) {
     return (
-        <div className="auth-transit min-h-svh bg-background text-foreground lg:grid lg:grid-cols-[55%_45%]">
-            <aside className="auth-transit-panel dark relative isolate flex min-h-[340px] flex-col overflow-hidden border-b border-border bg-card px-6 py-8 text-foreground sm:px-10 lg:min-h-svh lg:border-r lg:border-b-0">
+        <div className="auth-transit dark min-h-svh bg-background text-foreground lg:grid lg:grid-cols-[55%_45%]">
+            <aside className="auth-transit-panel relative isolate flex min-h-[340px] flex-col overflow-hidden border-b border-border bg-card px-6 py-8 text-foreground sm:px-10 lg:min-h-svh lg:border-r lg:border-b-0">
                 <div
                     aria-hidden="true"
                     className="auth-map-grid absolute inset-0 -z-20"
