@@ -352,7 +352,9 @@ function LiveDashboard({
     const [userPosition, setUserPosition] = useState<[number, number] | null>(
         null,
     );
-    const [locationDenied, setLocationDenied] = useState(false);
+    const [locationIssue, setLocationIssue] = useState<
+        'denied' | 'insecure' | null
+    >(null);
 
     const selected = routes.find((route) => route.id === selectedId) ?? null;
     const lead = selected?.vehicles[0];
@@ -400,14 +402,22 @@ function LiveDashboard({
     const chooseNear = () => {
         setFilter('near');
 
-        if (userPosition || !navigator.geolocation) return;
+        if (userPosition) return;
+
+        // Los navegadores solo comparten la ubicación en sitios seguros
+        // (https o localhost); en http ni siquiera preguntan.
+        if (!window.isSecureContext || !navigator.geolocation) {
+            setLocationIssue('insecure');
+
+            return;
+        }
 
         navigator.geolocation.getCurrentPosition(
             ({ coords }) => {
-                setLocationDenied(false);
+                setLocationIssue(null);
                 setUserPosition([coords.latitude, coords.longitude]);
             },
-            () => setLocationDenied(true),
+            () => setLocationIssue('denied'),
         );
     };
 
@@ -525,11 +535,12 @@ function LiveDashboard({
                 </div>
 
                 <div className="flex-1 space-y-3 px-4 pb-24 md:pb-6 lg:overflow-y-auto">
-                    {filter === 'near' && locationDenied && (
+                    {filter === 'near' && locationIssue && (
                         <p className="flex items-center gap-2 rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">
                             <MapPinOff className="size-4 shrink-0" />
-                            Activa la ubicación del navegador para ver las rutas
-                            cercanas.
+                            {locationIssue === 'insecure'
+                                ? 'Tu navegador solo comparte la ubicación en sitios con https. Abre UniRoute con https para ver las rutas cercanas.'
+                                : 'Activa la ubicación del navegador para ver las rutas cercanas.'}
                         </p>
                     )}
                     {visible.map((route) => (
@@ -541,7 +552,7 @@ function LiveDashboard({
                             onSelect={() => setSelectedId(route.id)}
                         />
                     ))}
-                    {visible.length === 0 && !locationDenied && (
+                    {visible.length === 0 && !locationIssue && (
                         <p className="rounded-xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
                             {routes.length === 0
                                 ? 'Este campus todavía no tiene rutas activas.'

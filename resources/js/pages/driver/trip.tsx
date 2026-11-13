@@ -84,7 +84,7 @@ type Props = {
     }[];
 };
 
-type GpsState = 'waiting' | 'active' | 'denied' | 'unavailable';
+type GpsState = 'waiting' | 'active' | 'denied' | 'unavailable' | 'insecure';
 
 /** Cada cuánto se manda la ubicación mientras el viaje está en curso. */
 const SEND_EVERY_MILLISECONDS = 5_000;
@@ -104,6 +104,11 @@ const gpsLabels: Record<GpsState, { label: string; className: string }> = {
     },
     unavailable: {
         label: 'Sin GPS',
+        className: 'bg-warning/15 text-warning',
+    },
+    // El navegador solo comparte la ubicación en sitios con https.
+    insecure: {
+        label: 'GPS requiere https',
         className: 'bg-warning/15 text-warning',
     },
 };
@@ -152,8 +157,8 @@ function useTripGps(trip: DriverTrip | null) {
     useEffect(() => {
         if (!inProgress || tripId === undefined) return;
 
-        if (!navigator.geolocation) {
-            setState('unavailable');
+        if (!window.isSecureContext || !navigator.geolocation) {
+            setState(window.isSecureContext ? 'unavailable' : 'insecure');
 
             return;
         }
