@@ -15,6 +15,7 @@ import {
     useSidebar,
 } from '@/components/ui/sidebar';
 import { isActiveSection, navigationFor } from '@/lib/navigation';
+import { cn } from '@/lib/utils';
 
 /**
  * Sidebar de la app (DESIGN.md · Layout de la app): logo, estado de la red,
@@ -73,7 +74,11 @@ export function AppSidebar() {
                                             asChild
                                             isActive={active}
                                             tooltip={item.label}
-                                            className="h-10 data-[active=true]:bg-primary data-[active=true]:font-semibold data-[active=true]:text-primary-foreground"
+                                            className={cn(
+                                                'h-10 data-[active=true]:bg-primary data-[active=true]:font-semibold data-[active=true]:text-primary-foreground',
+                                                // Deja lugar al contador para que no se encime con el texto.
+                                                unread > 0 && 'pr-10',
+                                            )}
                                         >
                                             <Link
                                                 href={item.href}

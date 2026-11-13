@@ -303,12 +303,17 @@
         animation: transit-pulse 1.8s ease-out infinite;
     }
 }
-/* La unidad se desliza entre posiciones; al hacer zoom se mueve de golpe. */
+/*
+ * La unidad se desliza de una posición a la siguiente durante los 5 s que
+ * tarda en llegar la nueva (simulador y GPS del conductor), así avanza sin
+ * pausas. Al hacer zoom se acomoda de golpe.
+ */
 @media (prefers-reduced-motion: no-preference) {
     .transit-unit {
-        transition: transform 1s linear;
+        transition: transform 5s linear;
     }
-    .leaflet-zoom-anim .transit-unit {
+    .leaflet-zoom-anim .transit-unit,
+    .transit-zooming .transit-unit {
         transition: none;
     }
 }

@@ -2,7 +2,7 @@ import polyline from '@mapbox/polyline';
 import 'leaflet/dist/leaflet.css';
 import { LocateFixed, Minus, Plus } from 'lucide-react';
 import type { ReactNode } from 'react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
     MapContainer,
     Marker,
@@ -11,6 +11,7 @@ import {
     TileLayer,
     Tooltip,
     useMap,
+    useMapEvents,
 } from 'react-leaflet';
 import {
     minorStopIcon,
@@ -60,23 +61,64 @@ const controlButton =
 const controlBox =
     'flex flex-col overflow-hidden rounded-xl border border-border bg-card/95 shadow-lg backdrop-blur';
 
+/**
+ * Polilíneas ya decodificadas. Las páginas recargan sus rutas cada pocos
+ * segundos; así no se decodifican otra vez y el trazado es el mismo arreglo.
+ */
+const decodedPaths = new Map<string, LatLngTuple[]>();
+
 /** Trazado guardado de la ruta o, si no hay, la unión de sus paradas. */
 function routePath(route: MapRoute): LatLngTuple[] {
-    if (route.encoded_polyline) {
-        return polyline.decode(route.encoded_polyline) as LatLngTuple[];
+    if (!route.encoded_polyline) {
+        return route.stops.map((stop) => [stop.latitude, stop.longitude]);
     }
 
-    return route.stops.map((stop) => [stop.latitude, stop.longitude]);
+    let path = decodedPaths.get(route.encoded_polyline);
+
+    if (!path) {
+        path = polyline.decode(route.encoded_polyline) as LatLngTuple[];
+        decodedPaths.set(route.encoded_polyline, path);
+    }
+
+    return path;
 }
 
-function FitToPath({ path }: { path: LatLngTuple[] }) {
+/**
+ * Encuadra la ruta al elegirla. Solo cuando cambia de ruta: si no, cada
+ * actualización en vivo regresaría el mapa a su zoom inicial.
+ */
+function FitToPath({
+    routeId,
+    path,
+}: {
+    routeId: number;
+    path: LatLngTuple[];
+}) {
     const map = useMap();
+    const fittedRouteId = useRef<number | null>(null);
 
     useEffect(() => {
-        if (path.length > 1) {
-            map.fitBounds(path, { padding: [48, 48] });
-        }
-    }, [map, path]);
+        if (fittedRouteId.current === routeId || path.length < 2) return;
+
+        fittedRouteId.current = routeId;
+        map.fitBounds(path, { padding: [48, 48] });
+    }, [map, routeId, path]);
+
+    return null;
+}
+
+/**
+ * Durante un zoom las unidades no se deslizan: Leaflet las reacomoda de
+ * golpe en la nueva escala (ver .transit-zooming en app.css).
+ */
+function ZoomGuard() {
+    const map = useMapEvents({
+        zoomstart: () => map.getContainer().classList.add('transit-zooming'),
+        zoomend: () =>
+            requestAnimationFrame(() =>
+                map.getContainer().classList.remove('transit-zooming'),
+            ),
+    });
 
     return null;
 }
@@ -295,7 +337,7 @@ export function TransitMap({
                                 </Popup>
                             </Marker>
                         ))}
-                        <FitToPath path={selectedPath} />
+                        <FitToPath routeId={selected.id} path={selectedPath} />
                     </>
                 )}
 
@@ -327,6 +369,8 @@ export function TransitMap({
                         <Tooltip direction="top">Tu ubicación</Tooltip>
                     </Marker>
                 )}
+
+                <ZoomGuard />
 
                 <MapControls
                     onLocate={setUserPosition}
