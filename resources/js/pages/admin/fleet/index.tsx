@@ -1,4 +1,4 @@
-﻿import { Head, Link, router } from '@inertiajs/react';
+﻿import { Head, Link, router, usePoll } from '@inertiajs/react';
 import { useState } from 'react';
 import {
     Activity,
@@ -9,7 +9,6 @@ import {
     BusFront,
     ChevronLeft,
     ChevronRight,
-    CircleParking,
     Clock3,
     Filter,
     Fuel,
@@ -22,6 +21,7 @@ import {
 import type { Paginated } from '@/types/pagination';
 import { VehicleFormDialog } from '@/components/admin/vehicle-form-dialog';
 import type {
+    Incident,
     Trip,
     Vehicle,
     VehicleAmenity,
@@ -39,7 +39,12 @@ type Props = {
     filters: { status: VehicleStatus | null; search: string | null };
     statuses: { value: VehicleStatus; label: string }[];
     amenities: { value: VehicleAmenity; label: string }[];
+    alert: Incident | null;
     stats: {
+        trips_today: number;
+        started_trips: number;
+        punctuality_percent: number | null;
+        average_occupancy_percent: number | null;
         total: number;
         in_service: number;
         standby: number;
@@ -71,7 +76,9 @@ export default function Fleet({
     amenities,
     stats,
     operations,
+    alert,
 }: Props) {
+    usePoll(15_000, { only: ['stats', 'alert', 'operations', 'vehicles'] });
     const [tab, setTab] = useState('fleet');
     const [search, setSearch] = useState(filters.search ?? '');
     const servicePercent = stats.total
@@ -148,34 +155,44 @@ export default function Fleet({
             color: 'bg-live',
         },
         {
-            label: 'Unidades en servicio',
-            value: stats.in_service,
+            label: 'Viajes de hoy',
+            value: stats.trips_today,
             unit: '',
-            detail: 'Disponibilidad de la flota',
-            foot: 'Estado registrado',
-            percent: servicePercent,
+            detail: 'Programados, en curso y completados',
+            foot: 'Sin cancelados',
+            percent: stats.trips_today
+                ? (stats.started_trips / stats.trips_today) * 100
+                : 0,
             icon: Activity,
             color: 'bg-primary',
         },
         {
-            label: 'Unidades en reserva',
-            value: stats.standby,
+            label: 'Puntualidad global',
+            value:
+                stats.punctuality_percent === null
+                    ? '—'
+                    : stats.punctuality_percent + '%',
             unit: '',
-            detail: 'En espera de asignación',
-            foot: 'Flota de respaldo',
-            percent: stats.total ? (stats.standby / stats.total) * 100 : 0,
-            icon: CircleParking,
-            color: 'bg-primary-hover',
+            detail: 'Salida dentro de ±2 minutos',
+            foot: stats.started_trips
+                ? stats.started_trips + ' viajes iniciados'
+                : 'Sin salidas registradas',
+            percent: stats.punctuality_percent ?? 0,
+            icon: Clock3,
+            color: 'bg-live',
         },
         {
-            label: 'Mantenimiento',
-            value: stats.maintenance,
+            label: 'Ocupación promedio',
+            value:
+                stats.average_occupancy_percent === null
+                    ? '—'
+                    : stats.average_occupancy_percent + '%',
             unit: '',
-            detail: 'Unidades fuera de servicio',
-            foot: 'Control técnico',
-            percent: stats.total ? (stats.maintenance / stats.total) * 100 : 0,
-            icon: Wrench,
-            color: 'bg-destructive',
+            detail: 'Ocupación registrada / capacidad',
+            foot: 'Viajes iniciados hoy',
+            percent: stats.average_occupancy_percent ?? 0,
+            icon: UsersRound,
+            color: 'bg-primary-hover',
         },
     ];
     const histogram = (
@@ -386,13 +403,20 @@ export default function Fleet({
                     </section>
                     <section
                         aria-label="Estado operativo"
-                        className={`${panel} flex flex-wrap items-center justify-between gap-4 p-4`}
+                        className={
+                            panel +
+                            ' flex flex-wrap items-center justify-between gap-4 p-4'
+                        }
                     >
                         <div className="flex items-center gap-4">
                             <span
-                                className={`rounded-lg p-3 ${stats.maintenance ? 'bg-destructive/10 text-destructive' : 'bg-live/10 text-live'}`}
+                                className={
+                                    alert
+                                        ? 'rounded-lg bg-destructive/10 p-3 text-destructive'
+                                        : 'rounded-lg bg-live/10 p-3 text-live'
+                                }
                             >
-                                {stats.maintenance ? (
+                                {alert ? (
                                     <AlertTriangle className="size-5" />
                                 ) : (
                                     <ShieldCheck className="size-5" />
@@ -400,25 +424,30 @@ export default function Fleet({
                             </span>
                             <div>
                                 <h2 className="text-sm font-semibold">
-                                    {stats.maintenance
-                                        ? 'Atención operativa de la flota'
-                                        : 'Flota sin unidades en mantenimiento'}
+                                    {alert
+                                        ? alert.type_label +
+                                          ' · ' +
+                                          alert.severity_label +
+                                          (alert.route
+                                              ? ' · Ruta ' + alert.route.number
+                                              : '')
+                                        : 'Sin incidencias operativas abiertas'}
                                 </h2>
                                 <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                                    {stats.maintenance
-                                        ? `${stats.maintenance} unidades registradas en mantenimiento. Revisa su disponibilidad antes de asignar un viaje.`
-                                        : 'Consulta el estado registrado de las unidades y las próximas salidas.'}
+                                    {alert?.message ??
+                                        'La flota no tiene incidencias abiertas registradas. ' +
+                                            stats.maintenance +
+                                            ' unidades en mantenimiento.'}
                                 </p>
                             </div>
                         </div>
-                        <button
-                            type="button"
-                            onClick={() => chooseTab('maintenance')}
+                        <Link
+                            href="/admin/incidents"
                             className="rounded-lg bg-secondary px-4 py-2.5 text-xs hover:text-primary"
                         >
-                            Revisar unidades
+                            Ver incidencias
                             <ArrowRight className="ml-2 inline size-3" />
-                        </button>
+                        </Link>
                     </section>
                     <section
                         className={`${panel} p-1.5`}

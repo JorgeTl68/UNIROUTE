@@ -199,6 +199,7 @@ export default function RouteShow({
     default_alarm_minutes,
 }: RouteDetailProps) {
     const { withLive, updatedAt } = useLivePositions(`route.${route.id}`, [
+        'route',
         'stops',
         'vehicles',
         'upcoming_departures',

@@ -10,12 +10,14 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 
 /**
  * Incidencia operativa: tráfico, desvío, falla o emergencia reportada por un
  * estudiante, un conductor o el área de transporte.
  *
+ * @property-read RouteDetour|null $detour
  * @property int $id
  * @property IncidentType $type
  * @property IncidentSeverity $severity
@@ -94,5 +96,11 @@ class Incident extends Model
     public function scopeOpen(Builder $query): void
     {
         $query->whereNull('resolved_at');
+    }
+
+    /** @return HasOne<RouteDetour, $this> */
+    public function detour(): HasOne
+    {
+        return $this->hasOne(RouteDetour::class);
     }
 }

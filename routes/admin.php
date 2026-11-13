@@ -3,10 +3,13 @@
 use App\Http\Controllers\Admin\IncidentController;
 use App\Http\Controllers\Admin\OccupancyReportController;
 use App\Http\Controllers\Admin\ScheduleController;
+use App\Http\Controllers\Admin\StopController;
 use App\Http\Controllers\Admin\TransitRouteController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
+    Route::post('/admin/stops', [StopController::class, 'store'])->name('admin.stops.store');
+    Route::post('/admin/incidents/{incident}/detour', [IncidentController::class, 'detour'])->name('admin.incidents.detour');
     Route::get('/admin/routes', [TransitRouteController::class, 'index'])->name('admin.routes.index');
     Route::get('/admin/routes/create', [TransitRouteController::class, 'create'])->name('admin.routes.create');
     // El servidor público de OSRM acepta una consulta por segundo; se limita

@@ -19,9 +19,7 @@ export type MaintenanceRecord = {
     created_at: string;
 };
 export const recordDate = (value: string) =>
-    new Date(
-        value.includes('T') ? value : value.replace(' ', 'T') + 'Z',
-    ).toLocaleString('es-MX', {
+    new Date(value).toLocaleString('es-MX', {
         timeZone: 'America/Mexico_City',
         dateStyle: 'short',
         timeStyle: 'short',

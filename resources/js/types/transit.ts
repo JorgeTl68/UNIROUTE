@@ -171,7 +171,12 @@ export type Incident = Timestamps & {
     longitude: number | null;
     students_notified_at: IsoDateTime | null;
     resolved_at: IsoDateTime | null;
-    route?: Pick<TransitRoute, 'id' | 'number' | 'name' | 'color'>;
+    route?: Pick<TransitRoute, 'id' | 'number' | 'name' | 'color'> | null;
+    detour?: {
+        active: boolean;
+        skipped_stop_ids: number[];
+        restored_at: string | null;
+    } | null;
     vehicle?: Pick<Vehicle, 'id' | 'code'> | null;
     reporter?: Pick<User, 'id' | 'name'> & { role: UserRole };
 };
