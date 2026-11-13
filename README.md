@@ -79,17 +79,42 @@ node --version
 
 ## Desarrollo
 
-Ejecutar en terminales separadas:
+Dos terminales:
 
 ```sh
-php artisan serve
-npm run dev
-php artisan queue:listen --tries=1
+php artisan dev
+php artisan uniroute:simular --iniciar
 ```
 
-La aplicación estará en `http://localhost:8000`. Con Laragon, el sitio debe
+`php artisan dev` levanta todo junto: el servidor, Vite, Reverb y la cola. El
+simulador mueve los camiones. La aplicación estará en `http://127.0.0.1:8000`
+(ahí también funciona la ubicación del navegador). Con Laragon, el sitio debe
 apuntar a `public/` y `APP_URL` debe coincidir con su dominio local.
 El correo se escribe en el registro local hasta configurar un proveedor SMTP.
+
+### Probar en el celular
+
+Un túnel gratis de Cloudflare le da a la app local una liga con https, que se
+abre en el celular desde cualquier red. Por ser https, ahí también funciona el
+GPS del modo conductor. Hay que instalar `cloudflared` una sola vez:
+
+```sh
+winget install --id Cloudflare.cloudflared
+```
+
+Y en lugar de `php artisan dev` (detenerlo antes):
+
+```sh
+php artisan uniroute:celular
+```
+
+Compila el frontend, levanta todo sin Vite (el celular no puede llegar a él),
+abre el túnel (`php artisan uniroute:tunel`, que también se puede correr solo)
+y arranca el simulador. La liga `https://….trycloudflare.com`
+aparece en la pestaña **tunel** y cambia cada vez que se abre. En el celular
+los camiones se actualizan cada 15 s; en la computadora, al instante. Laravel
+solo confía en el túnel cuando la petición llega de la misma máquina
+(`trustProxies` en `bootstrap/app.php`).
 
 ### Viajes y rastreo
 
