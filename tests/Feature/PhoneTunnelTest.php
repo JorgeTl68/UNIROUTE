@@ -43,7 +43,8 @@ class PhoneTunnelTest extends TestCase
 
     public function test_the_phone_command_asks_to_install_cloudflared_when_it_is_missing(): void
     {
-        Process::fake(['cloudflared --version' => Process::result(exitCode: 1)]);
+        // También cubre la carpeta de Windows donde se instala.
+        Process::fake(['*cloudflared*' => Process::result(exitCode: 1)]);
 
         $this->artisan('uniroute:celular')
             ->expectsOutputToContain('winget install --id Cloudflare.cloudflared')
@@ -55,7 +56,7 @@ class PhoneTunnelTest extends TestCase
     public function test_the_phone_command_stops_if_the_frontend_does_not_build(): void
     {
         Process::fake([
-            'cloudflared --version' => Process::result('cloudflared version 2026.11.0'),
+            '*cloudflared* --version' => Process::result('cloudflared version 2026.11.0'),
             'npm run build' => Process::result(errorOutput: 'error', exitCode: 1),
         ]);
 

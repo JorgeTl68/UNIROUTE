@@ -25,7 +25,9 @@ class PhoneTunnelCommand extends Command
 
     public function handle(): int
     {
-        if (! Process::run('cloudflared --version')->successful()) {
+        $cloudflared = $this->cloudflared();
+
+        if ($cloudflared === null) {
             $this->error('Falta cloudflared. Instálalo una vez con: winget install --id Cloudflare.cloudflared');
 
             return self::FAILURE;
@@ -50,7 +52,7 @@ class PhoneTunnelCommand extends Command
         }
 
         DevCommands::except('vite');
-        DevCommands::register('cloudflared tunnel --url '.self::LOCAL_URL, 'tunel');
+        DevCommands::register($cloudflared.' tunnel --url '.self::LOCAL_URL, 'tunel');
         DevCommands::artisan('uniroute:simular --iniciar', 'simulador');
 
         $this->newLine();
@@ -58,5 +60,31 @@ class PhoneTunnelCommand extends Command
         $this->line('En el celular los camiones se actualizan cada 15 s; en esta máquina, al instante.');
 
         return $this->call('dev');
+    }
+
+    /**
+     * Comando para correr cloudflared, o null si no está instalado. Además del
+     * PATH, busca en su carpeta de Windows: las terminales abiertas antes de
+     * instalarlo (como las de VS Code) no ven el PATH nuevo.
+     */
+    private function cloudflared(): ?string
+    {
+        $candidates = ['cloudflared'];
+
+        foreach (['ProgramFiles(x86)', 'ProgramFiles'] as $variable) {
+            $folder = getenv($variable);
+
+            if (is_string($folder) && $folder !== '') {
+                $candidates[] = '"'.$folder.'\cloudflared\cloudflared.exe"';
+            }
+        }
+
+        foreach ($candidates as $candidate) {
+            if (Process::run($candidate.' --version')->successful()) {
+                return $candidate;
+            }
+        }
+
+        return null;
     }
 }
